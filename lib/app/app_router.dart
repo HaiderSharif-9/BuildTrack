@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../core/debug/debug_ui_kit.dart';
 
 /// Router provider for go_router
 final goRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-    initialLocation: '/',
+    initialLocation: '/debug',
     routes: [
       GoRoute(
         path: '/',
@@ -20,6 +21,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const HomeScreen(),
           ),
         ],
+      ),
+      GoRoute(
+        path: '/debug',
+        builder: (context, state) => const DebugUiKitScreen(),
       ),
     ],
   );
