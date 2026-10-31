@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import 'app_button.dart';
-import 'app_card.dart';
 
 class EmptyState extends StatelessWidget {
   final String title;
