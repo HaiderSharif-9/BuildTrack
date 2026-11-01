@@ -331,4 +331,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get info => 'Info';
+
+  @override
+  String get allSites => 'All Sites';
+
+  @override
+  String get trend => 'Daily Trend';
+
+  @override
+  String get recentActivity => 'Recent Activity';
 }

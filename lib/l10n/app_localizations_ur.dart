@@ -331,4 +331,13 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get info => 'معلومات';
+
+  @override
+  String get allSites => 'تمام سائٹس';
+
+  @override
+  String get trend => 'روزانہ کا رجحان';
+
+  @override
+  String get recentActivity => 'حالیہ سرگرمی';
 }

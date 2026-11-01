@@ -742,6 +742,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Info'**
   String get info;
+
+  /// No description provided for @allSites.
+  ///
+  /// In en, this message translates to:
+  /// **'All Sites'**
+  String get allSites;
+
+  /// No description provided for @trend.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Trend'**
+  String get trend;
+
+  /// No description provided for @recentActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Activity'**
+  String get recentActivity;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

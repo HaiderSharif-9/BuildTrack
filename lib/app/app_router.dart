@@ -8,6 +8,7 @@ import '../features/auth/presentation/signup_screen.dart';
 import '../features/auth/presentation/change_password_screen.dart';
 import '../features/auth/presentation/forgot_password_screen.dart';
 import '../features/auth/presentation/my_account_screen.dart';
+import '../features/dashboard/presentation/dashboard_screen.dart';
 import 'app_shell.dart';
 
 /// Router provider for go_router
@@ -118,11 +119,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('Dashboard'),
-      ),
-    );
+    return const DashboardScreen();
   }
 }
 

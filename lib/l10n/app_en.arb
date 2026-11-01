@@ -106,5 +106,9 @@
   "admin": "Admin",
   "accountant": "Accountant",
   "manager": "Manager",
-  "info": "Info"
+  "info": "Info",
+  "allSites": "All Sites",
+  "sites": "Sites",
+  "trend": "Daily Trend",
+  "recentActivity": "Recent Activity"
 }
