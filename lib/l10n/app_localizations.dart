@@ -520,6 +520,228 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'About BuildTrack'**
   String get about;
+
+  /// No description provided for @appSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Building Today | For A Better Tomorrow'**
+  String get appSubtitle;
+
+  /// No description provided for @login.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get login;
+
+  /// No description provided for @phoneOrEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone or Email'**
+  String get phoneOrEmail;
+
+  /// No description provided for @enterPhoneOrEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your phone or email'**
+  String get enterPhoneOrEmail;
+
+  /// No description provided for @enterPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get enterPassword;
+
+  /// No description provided for @pleaseEnterCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter phone/email and password'**
+  String get pleaseEnterCredentials;
+
+  /// No description provided for @signUpAsFirstAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Create first admin account'**
+  String get signUpAsFirstAdmin;
+
+  /// No description provided for @createFirstAdminAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create First Admin Account'**
+  String get createFirstAdminAccount;
+
+  /// No description provided for @devModeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Development mode: After creating the first admin, new users default to manager role'**
+  String get devModeMessage;
+
+  /// No description provided for @fullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Name'**
+  String get fullName;
+
+  /// No description provided for @enterFullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your full name'**
+  String get enterFullName;
+
+  /// No description provided for @email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// No description provided for @enterEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email address'**
+  String get enterEmail;
+
+  /// No description provided for @pleaseEnterEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email'**
+  String get pleaseEnterEmail;
+
+  /// No description provided for @pleaseEnterFullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your full name'**
+  String get pleaseEnterFullName;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Account'**
+  String get createAccount;
+
+  /// No description provided for @passwordMustBeAtLeast8Characters.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 8 characters'**
+  String get passwordMustBeAtLeast8Characters;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @accountCreatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Account created successfully'**
+  String get accountCreatedSuccessfully;
+
+  /// No description provided for @forceChangePasswordMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please set a new password to continue'**
+  String get forceChangePasswordMessage;
+
+  /// No description provided for @enterNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your new password'**
+  String get enterNewPassword;
+
+  /// No description provided for @updatePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Password'**
+  String get updatePassword;
+
+  /// No description provided for @passwordChangedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Password changed successfully'**
+  String get passwordChangedSuccessfully;
+
+  /// No description provided for @resetPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Password'**
+  String get resetPassword;
+
+  /// No description provided for @enterEmailToResetPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email address and we\'ll send you a password reset link'**
+  String get enterEmailToResetPassword;
+
+  /// No description provided for @sendResetEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Reset Email'**
+  String get sendResetEmail;
+
+  /// No description provided for @passwordResetEmailSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset email sent. Check your inbox.'**
+  String get passwordResetEmailSent;
+
+  /// No description provided for @actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get actions;
+
+  /// No description provided for @displayMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Display Mode'**
+  String get displayMode;
+
+  /// No description provided for @light.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get light;
+
+  /// No description provided for @dark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get dark;
+
+  /// No description provided for @system.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get system;
+
+  /// No description provided for @confirmLogout.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to logout?'**
+  String get confirmLogout;
+
+  /// No description provided for @admin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get admin;
+
+  /// No description provided for @accountant.
+  ///
+  /// In en, this message translates to:
+  /// **'Accountant'**
+  String get accountant;
+
+  /// No description provided for @manager.
+  ///
+  /// In en, this message translates to:
+  /// **'Manager'**
+  String get manager;
+
+  /// No description provided for @info.
+  ///
+  /// In en, this message translates to:
+  /// **'Info'**
+  String get info;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

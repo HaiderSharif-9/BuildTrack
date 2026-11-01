@@ -220,4 +220,115 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get about => 'بلڈ ٹریک کے بارے میں';
+
+  @override
+  String get appSubtitle => 'آج تعمیر کریں | بہتر کل کے لیے';
+
+  @override
+  String get login => 'لاگ ان';
+
+  @override
+  String get phoneOrEmail => 'فون یا ای میل';
+
+  @override
+  String get enterPhoneOrEmail => 'اپنا فون یا ای میل درج کریں';
+
+  @override
+  String get enterPassword => 'اپنا پاس ورڈ درج کریں';
+
+  @override
+  String get pleaseEnterCredentials => 'براہ کرم فون/ای میل اور پاس ورڈ درج کریں';
+
+  @override
+  String get signUpAsFirstAdmin => 'پہلا منتظم اکاؤنٹ بنائیں';
+
+  @override
+  String get createFirstAdminAccount => 'پہلا منتظم اکاؤنٹ بنائیں';
+
+  @override
+  String get devModeMessage => 'ڈویلپمنٹ موڈ: پہلا منتظم بننے کے بعد، نئے صارفین منیجر کے طور پر شامل ہوں گے';
+
+  @override
+  String get fullName => 'پورا نام';
+
+  @override
+  String get enterFullName => 'اپنا پورا نام درج کریں';
+
+  @override
+  String get email => 'ای میل';
+
+  @override
+  String get enterEmail => 'اپنا ای میل پتہ درج کریں';
+
+  @override
+  String get pleaseEnterEmail => 'براہ کرم اپنا ای میل درج کریں';
+
+  @override
+  String get pleaseEnterFullName => 'براہ کرم اپنا نام درج کریں';
+
+  @override
+  String get createAccount => 'اکاؤنٹ بنائیں';
+
+  @override
+  String get passwordMustBeAtLeast8Characters => 'پاس ورڈ کم از کم 8 حروف ہونے چاہیں';
+
+  @override
+  String get passwordsDoNotMatch => 'پاس ورڈ ایک دوسرے سے مطابقت نہیں رکھتے';
+
+  @override
+  String get accountCreatedSuccessfully => 'اکاؤنٹ کامیابی سے بنایا گیا';
+
+  @override
+  String get forceChangePasswordMessage => 'براہ کرم جاری رہنے کے لیے نیا پاس ورڈ سیٹ کریں';
+
+  @override
+  String get enterNewPassword => 'اپنا نیا پاس ورڈ درج کریں';
+
+  @override
+  String get updatePassword => 'پاس ورڈ اپڈیٹ کریں';
+
+  @override
+  String get passwordChangedSuccessfully => 'پاس ورڈ کامیابی سے تبدیل ہو گیا';
+
+  @override
+  String get resetPassword => 'پاس ورڈ دوبارہ سیٹ کریں';
+
+  @override
+  String get enterEmailToResetPassword => 'اپنا ای میل پتہ درج کریں اور ہم آپ کو پاس ورڈ ری سیٹ کرنے کا لنک بھیجیں گے';
+
+  @override
+  String get sendResetEmail => 'ری سیٹ ای میل بھیجیں';
+
+  @override
+  String get passwordResetEmailSent => 'پاس ورڈ ری سیٹ ای میل بھیجی گئی۔ اپنے ان باکس کو چیک کریں۔';
+
+  @override
+  String get actions => 'کام';
+
+  @override
+  String get displayMode => 'ڈسپلے موڈ';
+
+  @override
+  String get light => 'روشنی';
+
+  @override
+  String get dark => 'تاریک';
+
+  @override
+  String get system => 'سسٹم';
+
+  @override
+  String get confirmLogout => 'کیا آپ واقعی لاگ آؤٹ کرنا چاہتے ہیں؟';
+
+  @override
+  String get admin => 'منتظم';
+
+  @override
+  String get accountant => 'اکاؤنٹنٹ';
+
+  @override
+  String get manager => 'منیجر';
+
+  @override
+  String get info => 'معلومات';
 }

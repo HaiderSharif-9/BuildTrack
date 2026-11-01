@@ -239,3 +239,61 @@ ThemeData buildDarkTheme() {
     ),
   );
 }
+
+/// Extension to access colors based on theme brightness
+extension AppColorsExtension on BuildContext {
+  AppColorsValue get appColors {
+    final isDark = Theme.of(this).brightness == Brightness.dark;
+    return AppColorsValue(isDark: isDark);
+  }
+}
+
+class AppColorsValue {
+  final bool isDark;
+
+  AppColorsValue({required this.isDark});
+
+  // Background
+  Color get bg => isDark ? AppColors.darkBg : AppColors.lightBg;
+
+  // Surfaces
+  Color get surface => isDark ? AppColors.darkSurface : AppColors.lightSurface;
+  Color get surfaceAlt => isDark ? AppColors.darkSurfaceAlt : AppColors.lightSurfaceAlt;
+
+  // Borders
+  Color get border => isDark ? AppColors.darkBorder : AppColors.lightBorder;
+
+  // Text
+  Color get textPrimary => isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+  Color get textSecondary => isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+  Color get textMuted => isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted;
+
+  // Brand
+  Color get primary => AppColors.primary;
+  Color get charcoal900 => AppColors.charcoal900;
+  Color get charcoal700 => AppColors.charcoal700;
+  Color get goldText => isDark ? AppColors.goldTextDark : AppColors.goldTextLight;
+
+  // Semantic
+  Color get success => isDark ? AppColors.incomeDark : AppColors.incomeLight;
+  Color get successText => isDark ? AppColors.incomeDark : AppColors.incomeTextLight;
+  Color get successBg => isDark ? AppColors.incomeBgDark : AppColors.incomeBgLight;
+
+  Color get error => isDark ? AppColors.expenseDark : AppColors.expenseLight;
+  Color get errorText => isDark ? AppColors.expenseDark : AppColors.expenseTextLight;
+  Color get errorBg => isDark ? AppColors.expenseBgDark : AppColors.expenseBgLight;
+
+  Color get info => isDark ? AppColors.profitDark : AppColors.profitLight;
+  Color get infoBg => isDark ? AppColors.profitBgDark : AppColors.profitBgLight;
+
+  Color get warning => isDark ? AppColors.warningDark : AppColors.warningLight;
+  Color get warningBg => isDark ? AppColors.warningBgDark : AppColors.warningBgLight;
+}
+
+/// Compatibility accessor for AppColors
+extension AppColorsAccessor on AppColors {
+  static AppColorsValue of(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return AppColorsValue(isDark: isDark);
+  }
+}

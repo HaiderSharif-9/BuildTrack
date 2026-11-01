@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'l10n/app_localizations.dart';
 import 'core/theme/app_theme.dart';
 import 'app/app_router.dart';
+import 'features/auth/presentation/my_account_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,12 +25,15 @@ class BuildTrackApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final goRouter = ref.watch(goRouterProvider);
+    final language = ref.watch(languageProvider);
+    final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(
       title: 'BuildTrack',
       theme: buildLightTheme(),
       darkTheme: buildDarkTheme(),
-      themeMode: ThemeMode.system,
+      themeMode: themeMode,
+      locale: Locale(language),
       localizationsDelegates: [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,

@@ -2,26 +2,108 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../core/debug/debug_ui_kit.dart';
+import '../features/auth/presentation/splash_screen.dart';
+import '../features/auth/presentation/login_screen.dart';
+import '../features/auth/presentation/signup_screen.dart';
+import '../features/auth/presentation/change_password_screen.dart';
+import '../features/auth/presentation/forgot_password_screen.dart';
+import '../features/auth/presentation/my_account_screen.dart';
+import 'app_shell.dart';
 
 /// Router provider for go_router
 final goRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-    initialLocation: '/debug',
+    initialLocation: '/',
     routes: [
+      // Splash screen
       GoRoute(
         path: '/',
         builder: (context, state) => const SplashScreen(),
-        routes: [
-          GoRoute(
-            path: 'login',
-            builder: (context, state) => const LoginScreen(),
+      ),
+
+      // Auth routes
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/signup',
+        builder: (context, state) => const SignUpScreen(),
+      ),
+      GoRoute(
+        path: '/forgot-password',
+        builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: '/change-password',
+        builder: (context, state) => const ChangePasswordScreen(),
+      ),
+
+      // Main app with bottom navigation
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) => AppShell(
+          navigationShell: navigationShell,
+        ),
+        branches: [
+          // Home branch
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/home',
+                builder: (context, state) => const HomeScreen(),
+              ),
+            ],
           ),
-          GoRoute(
-            path: 'home',
-            builder: (context, state) => const HomeScreen(),
+          // Sites branch
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/sites',
+                builder: (context, state) => const SitesScreen(),
+              ),
+            ],
+          ),
+          // Attendance branch (center)
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/attendance',
+                builder: (context, state) => const AttendanceScreen(),
+              ),
+            ],
+          ),
+          // Money branch
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/money',
+                builder: (context, state) => const MoneyScreen(),
+              ),
+            ],
+          ),
+          // More branch
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/more',
+                builder: (context, state) => const MoreScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'account',
+                    builder: (context, state) => const MyAccountScreen(),
+                  ),
+                  GoRoute(
+                    path: 'about',
+                    builder: (context, state) => const AboutScreen(),
+                  ),
+                ],
+              ),
+            ],
           ),
         ],
       ),
+
+      // Debug UI Kit
       GoRoute(
         path: '/debug',
         builder: (context, state) => const DebugUiKitScreen(),
@@ -30,33 +112,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
   );
 });
 
-// Placeholder screens (will be replaced with real implementations)
-class SplashScreen extends StatelessWidget {
-  const SplashScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('BuildTrack - Splash'),
-      ),
-    );
-  }
-}
-
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('Login Screen'),
-      ),
-    );
-  }
-}
-
+// Placeholder screens
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -64,7 +120,73 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(
-        child: Text('Home Screen'),
+        child: Text('Dashboard'),
+      ),
+    );
+  }
+}
+
+class SitesScreen extends StatelessWidget {
+  const SitesScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: Text('Sites'),
+      ),
+    );
+  }
+}
+
+class AttendanceScreen extends StatelessWidget {
+  const AttendanceScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: Text('Attendance'),
+      ),
+    );
+  }
+}
+
+class MoneyScreen extends StatelessWidget {
+  const MoneyScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: Text('Money & Ledger'),
+      ),
+    );
+  }
+}
+
+class MoreScreen extends StatelessWidget {
+  const MoreScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: Text('More Options'),
+      ),
+    );
+  }
+}
+
+class AboutScreen extends StatelessWidget {
+  const AboutScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('About')),
+      body: const Center(
+        child: Text('About BuildTrack'),
       ),
     );
   }

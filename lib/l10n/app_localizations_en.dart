@@ -220,4 +220,115 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get about => 'About BuildTrack';
+
+  @override
+  String get appSubtitle => 'Building Today | For A Better Tomorrow';
+
+  @override
+  String get login => 'Login';
+
+  @override
+  String get phoneOrEmail => 'Phone or Email';
+
+  @override
+  String get enterPhoneOrEmail => 'Enter your phone or email';
+
+  @override
+  String get enterPassword => 'Enter your password';
+
+  @override
+  String get pleaseEnterCredentials => 'Please enter phone/email and password';
+
+  @override
+  String get signUpAsFirstAdmin => 'Create first admin account';
+
+  @override
+  String get createFirstAdminAccount => 'Create First Admin Account';
+
+  @override
+  String get devModeMessage => 'Development mode: After creating the first admin, new users default to manager role';
+
+  @override
+  String get fullName => 'Full Name';
+
+  @override
+  String get enterFullName => 'Enter your full name';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get enterEmail => 'Enter your email address';
+
+  @override
+  String get pleaseEnterEmail => 'Please enter your email';
+
+  @override
+  String get pleaseEnterFullName => 'Please enter your full name';
+
+  @override
+  String get createAccount => 'Create Account';
+
+  @override
+  String get passwordMustBeAtLeast8Characters => 'Password must be at least 8 characters';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get accountCreatedSuccessfully => 'Account created successfully';
+
+  @override
+  String get forceChangePasswordMessage => 'Please set a new password to continue';
+
+  @override
+  String get enterNewPassword => 'Enter your new password';
+
+  @override
+  String get updatePassword => 'Update Password';
+
+  @override
+  String get passwordChangedSuccessfully => 'Password changed successfully';
+
+  @override
+  String get resetPassword => 'Reset Password';
+
+  @override
+  String get enterEmailToResetPassword => 'Enter your email address and we\'ll send you a password reset link';
+
+  @override
+  String get sendResetEmail => 'Send Reset Email';
+
+  @override
+  String get passwordResetEmailSent => 'Password reset email sent. Check your inbox.';
+
+  @override
+  String get actions => 'Actions';
+
+  @override
+  String get displayMode => 'Display Mode';
+
+  @override
+  String get light => 'Light';
+
+  @override
+  String get dark => 'Dark';
+
+  @override
+  String get system => 'System';
+
+  @override
+  String get confirmLogout => 'Are you sure you want to logout?';
+
+  @override
+  String get admin => 'Admin';
+
+  @override
+  String get accountant => 'Accountant';
+
+  @override
+  String get manager => 'Manager';
+
+  @override
+  String get info => 'Info';
 }
