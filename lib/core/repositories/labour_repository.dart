@@ -1,184 +1,240 @@
-import '../models/labour.dart';
-import 'base_repository.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../core/models/labour.dart';
+import '../../core/models/money.dart';
 
-class LabourRepository extends BaseRepository {
-  LabourRepository(super.supabase);
+class LabourRepository {
+  final _supabase = Supabase.instance.client;
 
-  /// Get a single labour record (name, trade only - public)
-  Future<Labour> getLabour(String labourId) async {
+  /// Get all labour (active only) - managers see assigned only
+  Future<List<Labour>> getLabour() async {
     try {
-      final response = await supabase
+      final response = await _supabase
           .from('labour')
           .select()
-          .eq('id', labourId)
-          .single();
-
-      return Labour.fromJson(response);
-    } catch (e) {
-      throw Exception(handleError(e));
-    }
-  }
-
-  /// List all active labour
-  Future<List<Labour>> listLabour() async {
-    try {
-      final response = await supabase
-          .from('labour')
-          .select()
+          .eq('deleted_at', null)
           .eq('active', true)
           .order('name');
 
-      return (response as List).map((e) => Labour.fromJson(e)).toList();
+      return (response as List)
+          .map((item) => Labour.fromJson(item as Map<String, dynamic>))
+          .toList();
     } catch (e) {
-      throw Exception(handleError(e));
+      throw Exception('Error fetching labour: $e');
     }
   }
 
-  /// List labour assigned to a project
-  Future<List<Labour>> listProjectLabour(String projectId) async {
+  /// Get labour for a specific site (assigned only)
+  Future<List<Map<String, dynamic>>> getSiteLabour(String projectId) async {
     try {
-      final response = await supabase
+      final response = await _supabase
+          .from('project_labour')
+          .select('''
+            labour(id, name, trade, active),
+            project_labour_rate(rate_override)
+          ''')
+          .eq('project_id', projectId)
+          .order('labour(name)');
+
+      return (response as List)
+          .map((item) => item as Map<String, dynamic>)
+          .toList();
+    } catch (e) {
+      throw Exception('Error fetching site labour: $e');
+    }
+  }
+
+  /// Get labour detail with private data (admin/accountant only)
+  Future<Map<String, dynamic>?> getLabourDetail(String labourId) async {
+    try {
+      final response = await _supabase
           .from('labour')
           .select('''
-            *,
-            project_labour!inner(project_id)
+            id, name, trade, active, created_at, updated_at,
+            labour_private(phone, cnic, default_rate)
           ''')
-          .eq('project_labour.project_id', projectId)
-          .eq('active', true)
-          .order('name');
+          .eq('id', labourId)
+          .eq('deleted_at', null)
+          .maybeSingle();
 
-      return (response as List).map((e) => Labour.fromJson(e)).toList();
+      return response as Map<String, dynamic>?;
     } catch (e) {
-      throw Exception(handleError(e));
+      throw Exception('Error fetching labour detail: $e');
     }
   }
 
-  /// Create new labour (any role can add to their assigned sites)
-  Future<Labour> createLabour(Labour labour) async {
+  /// Create labour
+  Future<Labour> createLabour({
+    required String name,
+    required String trade,
+    String? phone,
+    String? cnic,
+    required Money defaultRate,
+  }) async {
     try {
-      final response = await supabase
+      // Create labour record
+      final labourResponse = await _supabase
           .from('labour')
-          .insert(labour.toJson())
+          .insert({
+            'name': name,
+            'trade': trade,
+            'active': true,
+          })
           .select()
           .single();
 
-      return Labour.fromJson(response);
+      final labourId = labourResponse['id'] as String;
+
+      // Create labour_private record
+      if (phone != null || cnic != null) {
+        await _supabase.from('labour_private').insert({
+          'labour_id': labourId,
+          'phone': phone,
+          'cnic': cnic,
+          'default_rate': defaultRate.toDbString(),
+        });
+      }
+
+      return Labour.fromJson(labourResponse as Map<String, dynamic>);
     } catch (e) {
-      throw Exception(handleError(e));
+      throw Exception('Error creating labour: $e');
     }
   }
 
-  /// Update labour (admin/accountant only)
-  Future<Labour> updateLabour(Labour labour) async {
+  /// Update labour
+  Future<Labour> updateLabour({
+    required String id,
+    required String name,
+    required String trade,
+  }) async {
     try {
-      final response = await supabase
+      final response = await _supabase
           .from('labour')
-          .update(labour.toJson())
-          .eq('id', labour.id)
+          .update({
+            'name': name,
+            'trade': trade,
+          })
+          .eq('id', id)
           .select()
           .single();
 
-      return Labour.fromJson(response);
+      return Labour.fromJson(response as Map<String, dynamic>);
     } catch (e) {
-      throw Exception(handleError(e));
+      throw Exception('Error updating labour: $e');
+    }
+  }
+
+  /// Update labour private data (admin/accountant only)
+  Future<void> updateLabourPrivate({
+    required String labourId,
+    String? phone,
+    String? cnic,
+    required Money defaultRate,
+  }) async {
+    try {
+      await _supabase
+          .from('labour_private')
+          .upsert({
+            'labour_id': labourId,
+            'phone': phone,
+            'cnic': cnic,
+            'default_rate': defaultRate.toDbString(),
+          })
+          .eq('labour_id', labourId);
+    } catch (e) {
+      throw Exception('Error updating labour private: $e');
     }
   }
 
   /// Soft delete labour
-  Future<void> deleteLabour(String labourId) async {
+  Future<void> deleteLabour(String id) async {
     try {
-      await supabase
+      await _supabase
           .from('labour')
           .update({'deleted_at': DateTime.now().toIso8601String()})
-          .eq('id', labourId);
+          .eq('id', id);
     } catch (e) {
-      throw Exception(handleError(e));
+      throw Exception('Error deleting labour: $e');
     }
   }
-}
 
-class LabourPrivateRepository extends BaseRepository {
-  LabourPrivateRepository(super.supabase);
-
-  /// Get sensitive labour data (admin/accountant only)
-  Future<LabourPrivate> getLabourPrivate(String labourId) async {
+  /// Search labour by name or trade
+  Future<List<Labour>> searchLabour(String query) async {
     try {
-      final response = await supabase
+      final response = await _supabase
+          .from('labour')
+          .select()
+          .eq('deleted_at', null)
+          .eq('active', true)
+          .or('name.ilike.%$query%,trade.ilike.%$query%')
+          .order('name');
+
+      return (response as List)
+          .map((item) => Labour.fromJson(item as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      throw Exception('Error searching labour: $e');
+    }
+  }
+
+  /// Check for duplicate by phone or CNIC
+  Future<bool> hasDuplicateByPhoneOrCnic({
+    String? phone,
+    String? cnic,
+    String? excludeLabourId,
+  }) async {
+    try {
+      if ((phone == null || phone.isEmpty) && (cnic == null || cnic.isEmpty)) {
+        return false;
+      }
+
+      String query = '';
+      if (phone != null && phone.isNotEmpty) {
+        query = 'phone.eq.$phone';
+      }
+      if (cnic != null && cnic.isNotEmpty) {
+        if (query.isNotEmpty) query += ',';
+        query += 'cnic.eq.$cnic';
+      }
+
+      final response = await _supabase
           .from('labour_private')
-          .select()
-          .eq('labour_id', labourId)
-          .single();
+          .select('labour_id')
+          .or(query)
+          .limit(1);
 
-      return LabourPrivate.fromJson(response);
+      if ((response as List).isEmpty) return false;
+
+      // If excluding a labour ID, check if it's a different one
+      if (excludeLabourId != null) {
+        final existingId = (response[0] as Map)['labour_id'];
+        return existingId != excludeLabourId;
+      }
+
+      return true;
     } catch (e) {
-      throw Exception(handleError(e));
+      throw Exception('Error checking duplicates: $e');
     }
   }
 
-  /// Update labour private info (admin/accountant only)
-  Future<LabourPrivate> updateLabourPrivate(LabourPrivate labourPrivate) async {
+  /// Batch create labour from import
+  Future<List<Labour>> batchCreateLabour(List<Map<String, dynamic>> items) async {
     try {
-      final response = await supabase
-          .from('labour_private')
-          .upsert(labourPrivate.toJson())
-          .eq('labour_id', labourPrivate.labourId)
-          .select()
-          .single();
+      final created = <Labour>[];
 
-      return LabourPrivate.fromJson(response);
+      for (final item in items) {
+        final labour = await createLabour(
+          name: item['name'] as String,
+          trade: item['trade'] as String,
+          phone: item['phone'] as String?,
+          cnic: item['cnic'] as String?,
+          defaultRate: Money.fromString(item['default_rate']?.toString() ?? '0'),
+        );
+        created.add(labour);
+      }
+
+      return created;
     } catch (e) {
-      throw Exception(handleError(e));
-    }
-  }
-}
-
-class ProjectLabourRateRepository extends BaseRepository {
-  ProjectLabourRateRepository(super.supabase);
-
-  /// Get rate override for a specific project+labour (admin/accountant only)
-  Future<ProjectLabourRate?> getRate(String projectId, String labourId) async {
-    try {
-      final response = await supabase
-          .from('project_labour_rate')
-          .select()
-          .eq('project_id', projectId)
-          .eq('labour_id', labourId)
-          .single();
-
-      return ProjectLabourRate.fromJson(response);
-    } catch (e) {
-      // No override; use default rate
-      return null;
-    }
-  }
-
-  /// Set rate override (admin/accountant only)
-  Future<ProjectLabourRate> setRate(ProjectLabourRate rate) async {
-    try {
-      final response = await supabase
-          .from('project_labour_rate')
-          .upsert(rate.toJson())
-          .eq('project_id', rate.projectId)
-          .eq('labour_id', rate.labourId)
-          .select()
-          .single();
-
-      return ProjectLabourRate.fromJson(response);
-    } catch (e) {
-      throw Exception(handleError(e));
-    }
-  }
-
-  /// Remove rate override (use default again)
-  Future<void> removeRateOverride(String projectId, String labourId) async {
-    try {
-      await supabase
-          .from('project_labour_rate')
-          .delete()
-          .eq('project_id', projectId)
-          .eq('labour_id', labourId);
-    } catch (e) {
-      throw Exception(handleError(e));
+      throw Exception('Error batch creating labour: $e');
     }
   }
 }

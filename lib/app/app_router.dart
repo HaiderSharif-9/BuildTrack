@@ -11,6 +11,7 @@ import '../features/auth/presentation/my_account_screen.dart';
 import '../features/dashboard/presentation/dashboard_screen.dart';
 import '../features/sites/presentation/sites_screen.dart';
 import '../features/sites/presentation/site_detail_screen.dart';
+import '../features/labour/presentation/labour_screen.dart';
 import 'app_shell.dart';
 
 /// Router provider for go_router
@@ -92,13 +93,17 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          // More branch
+          // More branch (Labour, Payments, Purchases, Reports, Settings)
           StatefulShellBranch(
             routes: [
               GoRoute(
                 path: '/more',
                 builder: (context, state) => const MoreScreen(),
                 routes: [
+                  GoRoute(
+                    path: 'labour',
+                    builder: (context, state) => const LabourScreen(),
+                  ),
                   GoRoute(
                     path: 'account',
                     builder: (context, state) => const MyAccountScreen(),
