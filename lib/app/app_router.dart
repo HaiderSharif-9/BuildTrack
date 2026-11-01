@@ -9,6 +9,8 @@ import '../features/auth/presentation/change_password_screen.dart';
 import '../features/auth/presentation/forgot_password_screen.dart';
 import '../features/auth/presentation/my_account_screen.dart';
 import '../features/dashboard/presentation/dashboard_screen.dart';
+import '../features/sites/presentation/sites_screen.dart';
+import '../features/sites/presentation/site_detail_screen.dart';
 import 'app_shell.dart';
 
 /// Router provider for go_router
@@ -61,6 +63,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/sites',
                 builder: (context, state) => const SitesScreen(),
+                routes: [
+                  GoRoute(
+                    path: ':id',
+                    builder: (context, state) => SiteDetailScreen(
+                      siteId: state.pathParameters['id']!,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -130,7 +140,7 @@ class SitesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(
-        child: Text('Sites'),
+        child: Text('Sites - Placeholder'),
       ),
     );
   }
