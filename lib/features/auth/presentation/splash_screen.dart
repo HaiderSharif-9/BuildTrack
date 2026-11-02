@@ -59,7 +59,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = AppColors.of(context);
+    final colors = AppColors;
 
     return Scaffold(
       body: Container(
@@ -82,7 +82,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 width: 100,
                 height: 100,
                 decoration: BoxDecoration(
-                  color: colors.primary,
+                  color: AppColors.primary,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Center(
@@ -108,14 +108,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               Text(
                 'by Care Constructiona Pvt Ltd',
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colors.textSecondary.withOpacity(0.8),
+                  color: AppColors.lightTextSecondary.withOpacity(0.8),
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 'Building Today | For A Better Tomorrow',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: colors.goldText,
+                  color: AppColors.goldTextLight,
                   fontStyle: FontStyle.italic,
                 ),
               ),
@@ -125,7 +125,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 height: 24,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
                 ),
               ),
             ],

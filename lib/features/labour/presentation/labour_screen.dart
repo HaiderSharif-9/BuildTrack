@@ -12,7 +12,7 @@ class LabourScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colors = AppColors.of(context);
+    final colors = AppColors;
     final labour = ref.watch(labourListProvider);
     final searchQuery = ref.watch(labourSearchProvider);
 

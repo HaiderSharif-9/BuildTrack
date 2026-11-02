@@ -102,11 +102,11 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colors = AppColors.of(context);
+    final colors = AppColors;
 
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(color: colors.textPrimary),
+        leading: BackButton(color: AppColors.lightTextPrimary),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -124,7 +124,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             Text(
               l10n.devModeMessage,
               style: theme.textTheme.bodySmall?.copyWith(
-                color: colors.textSecondary,
+                color: AppColors.lightTextSecondary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -183,14 +183,14 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: colors.error.withOpacity(0.1),
-                        border: Border.all(color: colors.error),
+                        color: AppColors.expenseLight.withOpacity(0.1),
+                        border: Border.all(color: AppColors.expenseLight),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         _errorMessage!,
                         style: TextStyle(
-                          color: colors.error,
+                          color: AppColors.expenseLight,
                           fontSize: 13,
                         ),
                       ),

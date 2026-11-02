@@ -30,7 +30,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
     final themeMode = ref.watch(themeModeProvider);
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colors = AppColors.of(context);
+    final colors = AppColors;
 
     return Scaffold(
       appBar: AppBar(
@@ -51,7 +51,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: colors.primary,
+                        color: AppColors.primary,
                         shape: BoxShape.circle,
                       ),
                       child: Center(
@@ -97,7 +97,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                       Text(
                         userProfile!.phone!,
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: colors.textSecondary,
+                          color: AppColors.lightTextSecondary,
                         ),
                       ),
                     ],
@@ -120,7 +120,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.language, color: colors.primary),
+                        Icon(Icons.language, color: AppColors.primary),
                         const SizedBox(width: 12),
                         Text(
                           l10n.language,
@@ -163,7 +163,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                           themeMode == ThemeMode.dark
                               ? Icons.dark_mode
                               : Icons.light_mode,
-                          color: colors.primary,
+                          color: AppColors.primary,
                         ),
                         const SizedBox(width: 12),
                         Text(
@@ -217,7 +217,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.lock_outline, color: colors.primary),
+                        Icon(Icons.lock_outline, color: AppColors.primary),
                         const SizedBox(width: 12),
                         Text(
                           l10n.changePassword,
@@ -225,7 +225,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                         ),
                       ],
                     ),
-                    Icon(Icons.arrow_forward, color: colors.textSecondary),
+                    Icon(Icons.arrow_forward, color: AppColors.lightTextSecondary),
                   ],
                 ),
               ),
@@ -241,7 +241,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.info_outline, color: colors.primary),
+                        Icon(Icons.info_outline, color: AppColors.primary),
                         const SizedBox(width: 12),
                         Text(
                           l10n.about,
@@ -249,7 +249,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                         ),
                       ],
                     ),
-                    Icon(Icons.arrow_forward, color: colors.textSecondary),
+                    Icon(Icons.arrow_forward, color: AppColors.lightTextSecondary),
                   ],
                 ),
               ),
@@ -326,9 +326,9 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
   Color _getRoleBgColor(String? role, AppColors colors) {
     switch (role) {
       case 'admin':
-        return colors.primary.withOpacity(0.1);
+        return AppColors.primary.withOpacity(0.1);
       case 'accountant':
-        return colors.success.withOpacity(0.1);
+        return AppColors.incomeLight.withOpacity(0.1);
       case 'manager':
         return colors.info.withOpacity(0.1);
       default:
@@ -339,13 +339,13 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
   Color _getRoleTextColor(String? role, AppColors colors) {
     switch (role) {
       case 'admin':
-        return colors.primary;
+        return AppColors.primary;
       case 'accountant':
-        return colors.success;
+        return AppColors.incomeLight;
       case 'manager':
         return colors.info;
       default:
-        return colors.textSecondary;
+        return AppColors.lightTextSecondary;
     }
   }
 }

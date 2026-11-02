@@ -71,7 +71,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colors = AppColors.of(context);
+    final colors = AppColors;
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -97,7 +97,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    color: colors.primary,
+                    color: AppColors.primary,
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Center(
@@ -123,7 +123,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Text(
                   l10n.appSubtitle,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: colors.goldText,
+                    color: AppColors.goldTextLight,
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -180,7 +180,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           child: Text(
                             l10n.forgotPassword,
                             style: TextStyle(
-                              color: colors.goldText,
+                              color: AppColors.goldTextLight,
                               fontSize: 12,
                             ),
                           ),
@@ -193,16 +193,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: colors.error.withOpacity(0.1),
+                            color: AppColors.expenseLight.withOpacity(0.1),
                             border: Border.all(
-                              color: colors.error,
+                              color: AppColors.expenseLight,
                             ),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
                             _errorMessage!,
                             style: TextStyle(
-                              color: colors.error,
+                              color: AppColors.expenseLight,
                               fontSize: 13,
                             ),
                           ),
@@ -240,7 +240,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   child: Text(
                     l10n.signUpAsFirstAdmin,
                     style: TextStyle(
-                      color: colors.goldText,
+                      color: AppColors.goldTextLight,
                       fontSize: 13,
                     ),
                   ),

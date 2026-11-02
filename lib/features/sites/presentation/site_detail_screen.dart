@@ -17,7 +17,7 @@ class SiteDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colors = AppColors.of(context);
+    final colors = AppColors;
     final siteDetail = ref.watch(siteDetailProvider(siteId));
 
     return Scaffold(

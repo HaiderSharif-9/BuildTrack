@@ -1,11 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/models/profile.dart';
 import '../../../core/repositories/profile_repository.dart';
 import 'auth_service.dart';
 
 /// Profile repository provider
 final profileRepositoryProvider = Provider<ProfileRepository>((ref) {
-  return ProfileRepository();
+  return ProfileRepository(Supabase.instance.client);
 });
 
 /// Current user's profile provider

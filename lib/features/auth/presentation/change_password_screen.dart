@@ -88,7 +88,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colors = AppColors.of(context);
+    final colors = AppColors;
 
     return WillPopScope(
       onWillPop: () async => !widget.isForced,
@@ -96,7 +96,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
         appBar: widget.isForced
             ? null
             : AppBar(
-                leading: BackButton(color: colors.textPrimary),
+                leading: BackButton(color: AppColors.lightTextPrimary),
                 backgroundColor: Colors.transparent,
                 elevation: 0,
               ),
@@ -108,7 +108,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                 Icon(
                   Icons.lock_outline,
                   size: 48,
-                  color: colors.primary,
+                  color: AppColors.primary,
                 ),
                 const SizedBox(height: 16),
               ],
@@ -123,7 +123,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                     ? l10n.forceChangePasswordMessage
                     : l10n.enterNewPassword,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: colors.textSecondary,
+                  color: AppColors.lightTextSecondary,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -164,14 +164,14 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: colors.error.withOpacity(0.1),
-                          border: Border.all(color: colors.error),
+                          color: AppColors.expenseLight.withOpacity(0.1),
+                          border: Border.all(color: AppColors.expenseLight),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
                           _errorMessage!,
                           style: TextStyle(
-                            color: colors.error,
+                            color: AppColors.expenseLight,
                             fontSize: 13,
                           ),
                         ),

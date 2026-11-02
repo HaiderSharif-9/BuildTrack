@@ -75,11 +75,11 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colors = AppColors.of(context);
+    final colors = AppColors;
 
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(color: colors.textPrimary),
+        leading: BackButton(color: AppColors.lightTextPrimary),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -91,7 +91,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             Icon(
               Icons.mail_outline,
               size: 48,
-              color: colors.primary,
+              color: AppColors.primary,
             ),
             const SizedBox(height: 16),
             Text(
@@ -103,7 +103,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             Text(
               l10n.enterEmailToResetPassword,
               style: theme.textTheme.bodySmall?.copyWith(
-                color: colors.textSecondary,
+                color: AppColors.lightTextSecondary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -124,14 +124,14 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: colors.error.withOpacity(0.1),
-                        border: Border.all(color: colors.error),
+                        color: AppColors.expenseLight.withOpacity(0.1),
+                        border: Border.all(color: AppColors.expenseLight),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         _errorMessage!,
                         style: TextStyle(
-                          color: colors.error,
+                          color: AppColors.expenseLight,
                           fontSize: 13,
                         ),
                       ),
@@ -140,15 +140,15 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: colors.success.withOpacity(0.1),
-                        border: Border.all(color: colors.success),
+                        color: AppColors.incomeLight.withOpacity(0.1),
+                        border: Border.all(color: AppColors.incomeLight),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
                         children: [
                           Icon(
                             Icons.check_circle,
-                            color: colors.success,
+                            color: AppColors.incomeLight,
                             size: 20,
                           ),
                           const SizedBox(width: 8),
@@ -156,7 +156,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                             child: Text(
                               _successMessage!,
                               style: TextStyle(
-                                color: colors.success,
+                                color: AppColors.incomeLight,
                                 fontSize: 13,
                               ),
                             ),
