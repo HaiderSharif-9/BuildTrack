@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/theme/app_theme.dart';
-import '../../core/widgets/index.dart';
-import '../../l10n/app_localizations.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/index.dart';
+import '../../../l10n/app_localizations.dart';
 import '../data/sites_providers.dart';
 
 class SitesScreen extends ConsumerWidget {
@@ -12,8 +12,6 @@ class SitesScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final colors = AppColors.of(context);
     final sites = ref.watch(sitesListProvider);
 
     return Scaffold(
@@ -35,11 +33,7 @@ class SitesScreen extends ConsumerWidget {
             ? EmptyState(
                 icon: Icons.location_off,
                 title: l10n.noData,
-                description: 'No sites created yet',
-                action: 'Add Site',
-                onAction: () {
-                  // TODO: Show add site sheet
-                },
+                subtitle: 'No sites created yet',
               )
             : ListView.builder(
                 padding: const EdgeInsets.all(16),
@@ -51,8 +45,6 @@ class SitesScreen extends ConsumerWidget {
                     onTap: () {
                       context.push('/sites/${site['id']}');
                     },
-                    colors: colors,
-                    theme: theme,
                   );
                 },
               ),
@@ -73,20 +65,18 @@ class SitesScreen extends ConsumerWidget {
 class _SiteCard extends StatelessWidget {
   final Map<String, dynamic> site;
   final VoidCallback onTap;
-  final AppColorsValue colors;
-  final ThemeData theme;
 
   const _SiteCard({
     required this.site,
     required this.onTap,
-    required this.colors,
-    required this.theme,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final status = site['status'] as String;
-    final statusColor = _getStatusColor(status, colors);
+    final statusColor = _getStatusColor(status, isDark);
 
     return GestureDetector(
       onTap: onTap,
@@ -110,13 +100,21 @@ class _SiteCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          Icon(Icons.location_on, size: 14, color: colors.textSecondary),
+                          Icon(
+                            Icons.location_on,
+                            size: 14,
+                            color: isDark
+                                ? AppColors.darkTextSecondary
+                                : AppColors.lightTextSecondary,
+                          ),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
                               site['location'] as String,
                               style: theme.textTheme.bodySmall?.copyWith(
-                                color: colors.textSecondary,
+                                color: isDark
+                                    ? AppColors.darkTextSecondary
+                                    : AppColors.lightTextSecondary,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -131,7 +129,7 @@ class _SiteCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.1),
+                    color: statusColor.withValues(alpha: 0.1),
                     border: Border.all(color: statusColor),
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -150,18 +148,18 @@ class _SiteCard extends StatelessWidget {
     );
   }
 
-  Color _getStatusColor(String status, AppColorsValue colors) {
+  Color _getStatusColor(String status, bool isDark) {
     switch (status) {
       case 'planning':
-        return colors.warning;
+        return AppColors.warning;
       case 'in_progress':
-        return colors.success;
+        return AppColors.income;
       case 'on_hold':
-        return colors.textSecondary;
+        return isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
       case 'completed':
-        return colors.info;
+        return AppColors.primary;
       default:
-        return colors.textSecondary;
+        return isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
     }
   }
 }

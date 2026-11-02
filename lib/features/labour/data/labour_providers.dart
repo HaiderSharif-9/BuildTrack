@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/models/labour.dart';
-import '../../core/repositories/labour_repository.dart';
+import '../../../core/models/labour.dart';
+import '../../../core/repositories/labour_repository.dart';
 
 /// Labour repository provider
 final labourRepositoryProvider = Provider<LabourRepository>((ref) {

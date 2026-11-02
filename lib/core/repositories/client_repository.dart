@@ -10,7 +10,6 @@ class ClientRepository {
       final response = await _supabase
           .from('clients')
           .select()
-          .eq('deleted_at', null)
           .order('name');
 
       return (response as List)
@@ -28,7 +27,6 @@ class ClientRepository {
           .from('clients')
           .select()
           .eq('id', id)
-          .eq('deleted_at', null)
           .maybeSingle();
 
       if (response == null) return null;
@@ -104,7 +102,6 @@ class ClientRepository {
       final response = await _supabase
           .from('clients')
           .select()
-          .eq('deleted_at', null)
           .ilike('name', '%$query%')
           .order('name');
 

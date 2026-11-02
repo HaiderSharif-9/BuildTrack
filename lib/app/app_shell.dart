@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
 import '../../l10n/app_localizations.dart';
-import '../data/auth_providers.dart';
+import '../features/auth/data/auth_providers.dart';
 
 class AppShell extends ConsumerWidget {
   final StatefulNavigationShell navigationShell;
@@ -23,8 +23,6 @@ class AppShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userRole = ref.watch(currentUserRoleProvider);
-    final theme = Theme.of(context);
-    final colors = AppColors.of(context);
     final l10n = AppLocalizations.of(context)!;
 
     return userRole.when(
@@ -38,7 +36,7 @@ class AppShell extends ConsumerWidget {
             decoration: BoxDecoration(
               border: Border(
                 top: BorderSide(
-                  color: colors.border,
+                  color: AppColors.lightBorder,
                   width: 1,
                 ),
               ),
@@ -46,8 +44,8 @@ class AppShell extends ConsumerWidget {
             child: NavigationBar(
               selectedIndex: navigationShell.currentIndex,
               onDestinationSelected: _goBranch,
-              backgroundColor: colors.surface,
-              indicatorColor: colors.primary.withOpacity(0.1),
+              backgroundColor: AppColors.lightSurface,
+              indicatorColor: AppColors.primary.withOpacity(0.1),
               height: 64,
               destinations: tabs
                   .map((tab) => NavigationDestination(

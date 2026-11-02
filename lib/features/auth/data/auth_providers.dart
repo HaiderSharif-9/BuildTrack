@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/models/profile.dart';
-import '../../core/repositories/profile_repository.dart';
+import '../../../core/models/profile.dart';
+import '../../../core/repositories/profile_repository.dart';
 import 'auth_service.dart';
 
 /// Profile repository provider

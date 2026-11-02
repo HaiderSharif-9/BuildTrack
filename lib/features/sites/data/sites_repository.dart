@@ -1,6 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../core/models/project.dart';
-import '../../core/models/money.dart';
+import '../../../core/models/project.dart';
+import '../../../core/models/money.dart';
 
 class SitesRepository {
   final _supabase = Supabase.instance.client;

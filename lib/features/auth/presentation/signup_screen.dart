@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/theme/app_theme.dart';
-import '../../core/widgets/index.dart';
-import '../../l10n/app_localizations.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/index.dart';
+import '../../../l10n/app_localizations.dart';
 import '../data/auth_service.dart';
 
 class SignUpScreen extends ConsumerStatefulWidget {

@@ -11,7 +11,6 @@ class LabourRepository {
       final response = await _supabase
           .from('labour')
           .select()
-          .eq('deleted_at', null)
           .eq('active', true)
           .order('name');
 
@@ -53,7 +52,6 @@ class LabourRepository {
             labour_private(phone, cnic, default_rate)
           ''')
           .eq('id', labourId)
-          .eq('deleted_at', null)
           .maybeSingle();
 
       return response as Map<String, dynamic>?;
@@ -163,7 +161,6 @@ class LabourRepository {
       final response = await _supabase
           .from('labour')
           .select()
-          .eq('deleted_at', null)
           .eq('active', true)
           .or('name.ilike.%$query%,trade.ilike.%$query%')
           .order('name');

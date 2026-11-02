@@ -1,6 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../core/models/date_range.dart';
-import '../../core/models/dashboard_summary.dart';
+import '../../../core/models/date_range.dart';
+import '../../../core/models/dashboard_summary.dart';
 
 class DashboardRepository {
   final _supabase = Supabase.instance.client;

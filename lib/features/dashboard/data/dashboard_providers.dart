@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/models/date_range.dart';
-import '../../core/models/dashboard_summary.dart';
+import '../../../core/models/date_range.dart';
+import '../../../core/models/dashboard_summary.dart';
 import '../../features/auth/data/auth_providers.dart';
 import 'dashboard_repository.dart';
 

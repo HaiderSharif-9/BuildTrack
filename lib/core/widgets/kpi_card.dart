@@ -19,12 +19,15 @@ class KpiCard extends StatelessWidget {
   });
 
   Color _getColor(bool isDark) {
-    return switch (type) {
-      'income' => isDark ? AppColors.incomeDark : AppColors.incomeLight,
-      'expense' => isDark ? AppColors.expenseDark : AppColors.expenseLight,
-      'profit' => isDark ? AppColors.profitDark : AppColors.profitLight,
-      _ => AppColors.primary,
-    };
+    if (type == 'income') {
+      return isDark ? AppColors.incomeDark : AppColors.incomeLight;
+    } else if (type == 'expense') {
+      return isDark ? AppColors.expenseDark : AppColors.expenseLight;
+    } else if (type == 'profit') {
+      return isDark ? AppColors.profitDark : AppColors.profitLight;
+    } else {
+      return AppColors.primary;
+    }
   }
 
   @override
