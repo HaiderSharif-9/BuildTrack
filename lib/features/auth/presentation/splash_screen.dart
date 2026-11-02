@@ -59,7 +59,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = AppColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       body: Container(
@@ -68,8 +68,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              colors.charcoal900,
-              colors.charcoal700,
+              AppColors.charcoal900,
+              AppColors.charcoal700,
             ],
           ),
         ),
@@ -90,7 +90,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                     '◆',
                     style: TextStyle(
                       fontSize: 48,
-                      color: colors.charcoal900,
+                      color: AppColors.charcoal900,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

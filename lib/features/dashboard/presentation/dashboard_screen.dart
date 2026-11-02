@@ -13,7 +13,7 @@ class DashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colors = AppColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
@@ -130,14 +130,14 @@ class _PeriodChip extends StatelessWidget {
       label: Text(label),
       selected: isSelected,
       onSelected: (_) => onPressed(),
-      backgroundColor: colors.surface,
-      selectedColor: colors.primary,
+      backgroundColor: AppColors.surface,
+      selectedColor: AppColors.primary,
       labelStyle: TextStyle(
-        color: isSelected ? colors.charcoal900 : colors.textPrimary,
+        color: isSelected ? AppColors.charcoal900 : AppColors.textPrimary,
         fontWeight: FontWeight.w600,
       ),
       side: BorderSide(
-        color: isSelected ? colors.primary : colors.border,
+        color: isSelected ? AppColors.primary : AppColors.border,
       ),
     );
   }
@@ -161,7 +161,7 @@ class _SiteFilter extends ConsumerWidget {
       data: (sites) => AppCard(
         child: Row(
           children: [
-            Icon(Icons.location_on, color: colors.primary, size: 20),
+            Icon(Icons.location_on, color: AppColors.primary, size: 20),
             const SizedBox(width: 12),
             Expanded(
               child: DropdownButton<String?>(
@@ -273,7 +273,7 @@ class _ChartsSection extends StatelessWidget {
           child: Container(
             height: 200,
             decoration: BoxDecoration(
-              color: colors.surfaceAlt,
+              color: AppColors.surfaceAlt,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
@@ -291,7 +291,7 @@ class _ChartsSection extends StatelessWidget {
           child: Container(
             height: 200,
             decoration: BoxDecoration(
-              color: colors.surfaceAlt,
+              color: AppColors.surfaceAlt,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
@@ -330,7 +330,7 @@ class _SiteCardsSection extends StatelessWidget {
           child: Container(
             height: 120,
             decoration: BoxDecoration(
-              color: colors.surfaceAlt,
+              color: AppColors.surfaceAlt,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
@@ -368,7 +368,7 @@ class _RecentActivitySection extends StatelessWidget {
           child: Container(
             height: 150,
             decoration: BoxDecoration(
-              color: colors.surfaceAlt,
+              color: AppColors.surfaceAlt,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(

@@ -102,7 +102,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colors = AppColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
@@ -136,29 +136,29 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     controller: _fullNameController,
                     label: l10n.fullName,
                     hint: l10n.enterFullName,
-                    enabled: !_isLoading,
-                    icon: Icons.person,
+                    
+                    
                   ),
                   const SizedBox(height: 16),
                   AppTextField(
                     controller: _emailController,
                     label: l10n.email,
                     hint: l10n.enterEmail,
-                    enabled: !_isLoading,
+                    
                     keyboardType: TextInputType.emailAddress,
-                    icon: Icons.email,
+                    
                   ),
                   const SizedBox(height: 16),
                   AppTextField(
                     controller: _passwordController,
                     label: l10n.password,
                     hint: l10n.enterPassword,
-                    enabled: !_isLoading,
+                    
                     obscure: !_showPassword,
                     suffixIcon: _showPassword
                         ? Icons.visibility_off
                         : Icons.visibility,
-                    onSuffixIconTap: () {
+                    onSuffixTap: () {
                       setState(() =>
                           _showPassword = !_showPassword);
                     },
@@ -168,12 +168,12 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     controller: _confirmPasswordController,
                     label: l10n.confirmPassword,
                     hint: l10n.confirmPasswordHint,
-                    enabled: !_isLoading,
+                    
                     obscure: !_showConfirmPassword,
                     suffixIcon: _showConfirmPassword
                         ? Icons.visibility_off
                         : Icons.visibility,
-                    onSuffixIconTap: () {
+                    onSuffixTap: () {
                       setState(() =>
                           _showConfirmPassword = !_showConfirmPassword);
                     },

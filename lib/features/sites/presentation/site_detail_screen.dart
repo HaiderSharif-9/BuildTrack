@@ -17,7 +17,7 @@ class SiteDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colors = AppColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final siteDetail = ref.watch(siteDetailProvider(siteId));
 
     return Scaffold(
@@ -54,7 +54,7 @@ class SiteDetailScreen extends ConsumerWidget {
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          Icon(Icons.location_on, color: colors.primary, size: 16),
+                          Icon(Icons.location_on, color: AppColors.primary, size: 16),
                           const SizedBox(width: 8),
                           Text(
                             detail['location'] as String,
@@ -69,12 +69,12 @@ class SiteDetailScreen extends ConsumerWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: colors.primary.withOpacity(0.1),
+                          color: AppColors.primary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           (detail['status'] as String).replaceAll('_', ' '),
-                          style: TextStyle(color: colors.primary),
+                          style: TextStyle(color: AppColors.primary),
                         ),
                       ),
                     ],
@@ -89,7 +89,7 @@ class SiteDetailScreen extends ConsumerWidget {
                   child: Container(
                     height: 200,
                     decoration: BoxDecoration(
-                      color: colors.surfaceAlt,
+                      color: AppColors.surfaceAlt,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Center(

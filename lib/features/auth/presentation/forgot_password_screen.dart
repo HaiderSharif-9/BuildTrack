@@ -75,7 +75,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colors = AppColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
@@ -115,9 +115,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                     controller: _emailController,
                     label: l10n.email,
                     hint: l10n.enterEmail,
-                    enabled: !_isLoading,
+                    
                     keyboardType: TextInputType.emailAddress,
-                    icon: Icons.email,
+                    
                   ),
                   const SizedBox(height: 20),
                   if (_errorMessage != null)

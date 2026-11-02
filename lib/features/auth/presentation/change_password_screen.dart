@@ -88,7 +88,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colors = AppColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return WillPopScope(
       onWillPop: () async => !widget.isForced,
@@ -135,12 +135,12 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                       controller: _newPasswordController,
                       label: l10n.newPassword,
                       hint: l10n.enterNewPassword,
-                      enabled: !_isLoading,
+                      
                       obscure: !_showPassword,
                       suffixIcon: _showPassword
                           ? Icons.visibility_off
                           : Icons.visibility,
-                      onSuffixIconTap: () {
+                      onSuffixTap: () {
                         setState(() => _showPassword = !_showPassword);
                       },
                     ),
@@ -149,12 +149,12 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                       controller: _confirmPasswordController,
                       label: l10n.confirmPassword,
                       hint: l10n.confirmPasswordHint,
-                      enabled: !_isLoading,
+                      
                       obscure: !_showConfirmPassword,
                       suffixIcon: _showConfirmPassword
                           ? Icons.visibility_off
                           : Icons.visibility,
-                      onSuffixIconTap: () {
+                      onSuffixTap: () {
                         setState(
                             () => _showConfirmPassword = !_showConfirmPassword);
                       },

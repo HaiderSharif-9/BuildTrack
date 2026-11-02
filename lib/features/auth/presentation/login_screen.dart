@@ -71,7 +71,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colors = AppColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -82,8 +82,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                colors.charcoal900,
-                colors.charcoal700,
+                AppColors.charcoal900,
+                AppColors.charcoal700,
               ],
             ),
           ),
@@ -105,7 +105,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       '◆',
                       style: TextStyle(
                         fontSize: 40,
-                        color: colors.charcoal900,
+                        color: AppColors.charcoal900,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -144,9 +144,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         controller: _loginIdController,
                         label: l10n.phoneOrEmail,
                         hint: l10n.enterPhoneOrEmail,
-                        enabled: !_isLoading,
+                        
                         keyboardType: TextInputType.text,
-                        icon: Icons.person,
+                        
                       ),
                       const SizedBox(height: 16),
 
@@ -155,12 +155,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         controller: _passwordController,
                         label: l10n.password,
                         hint: l10n.enterPassword,
-                        enabled: !_isLoading,
+                        
                         obscure: !_showPassword,
                         suffixIcon: _showPassword
                             ? Icons.visibility_off
                             : Icons.visibility,
-                        onSuffixIconTap: () {
+                        onSuffixTap: () {
                           setState(() {
                             _showPassword = !_showPassword;
                           });

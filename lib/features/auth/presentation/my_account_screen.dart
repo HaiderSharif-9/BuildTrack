@@ -30,7 +30,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
     final themeMode = ref.watch(themeModeProvider);
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colors = AppColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
@@ -58,7 +58,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                         child: Text(
                           _getInitials(userProfile?.fullName ?? ''),
                           style: theme.textTheme.headlineLarge?.copyWith(
-                            color: colors.charcoal900,
+                            color: AppColors.charcoal900,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -330,9 +330,9 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
       case 'accountant':
         return AppColors.incomeLight.withOpacity(0.1);
       case 'manager':
-        return colors.info.withOpacity(0.1);
+        return AppColors.info.withOpacity(0.1);
       default:
-        return colors.border;
+        return AppColors.border;
     }
   }
 
@@ -343,7 +343,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
       case 'accountant':
         return AppColors.incomeLight;
       case 'manager':
-        return colors.info;
+        return AppColors.info;
       default:
         return AppColors.lightTextSecondary;
     }

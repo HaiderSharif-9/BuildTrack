@@ -12,7 +12,7 @@ class LabourScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colors = AppColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final labour = ref.watch(labourListProvider);
     final searchQuery = ref.watch(labourSearchProvider);
 
@@ -46,7 +46,7 @@ class LabourScreen extends ConsumerWidget {
               controller: TextEditingController(text: searchQuery),
               label: l10n.search ?? 'Search',
               hint: 'Name or trade',
-              icon: Icons.search,
+              
               onChanged: (value) {
                 ref.read(labourSearchProvider.notifier).state = value;
               },
@@ -57,7 +57,7 @@ class LabourScreen extends ConsumerWidget {
             child: labour.when(
               data: (labourList) => labourList.isEmpty
                   ? EmptyState(
-                      icon: Icons.people_outline,
+                      
                       title: l10n.noData,
                       description: 'No labour found',
                       action: 'Add Labour',
@@ -124,14 +124,14 @@ class _LabourTile extends StatelessWidget {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: colors.primary,
+                  color: AppColors.primary,
                   shape: BoxShape.circle,
                 ),
                 child: Center(
                   child: Text(
                     labour.name.substring(0, 1).toUpperCase(),
                     style: TextStyle(
-                      color: colors.charcoal900,
+                      color: AppColors.charcoal900,
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
                     ),
@@ -154,7 +154,7 @@ class _LabourTile extends StatelessWidget {
                     Text(
                       labour.trade,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: colors.textSecondary,
+                        color: AppColors.textSecondary,
                       ),
                     ),
                   ],
@@ -167,13 +167,13 @@ class _LabourTile extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: colors.success.withOpacity(0.1),
+                  color: AppColors.success.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   'Active',
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: colors.success,
+                    color: AppColors.success,
                   ),
                 ),
               ),

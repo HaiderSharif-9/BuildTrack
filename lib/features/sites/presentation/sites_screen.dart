@@ -31,7 +31,7 @@ class SitesScreen extends ConsumerWidget {
       body: sites.when(
         data: (siteList) => siteList.isEmpty
             ? EmptyState(
-                icon: Icons.location_off,
+                
                 title: l10n.noData,
                 subtitle: 'No sites created yet',
               )
