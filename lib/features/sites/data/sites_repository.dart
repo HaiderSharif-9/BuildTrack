@@ -1,6 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../core/models/project.dart';
-import '../../core/models/money.dart';
+import 'package:buildtrack/core/models/project.dart';
+import 'package:buildtrack/core/models/money.dart';
 
 class SitesRepository {
   final _supabase = Supabase.instance.client;
@@ -15,7 +15,7 @@ class SitesRepository {
             created_at, updated_at, deleted_at,
             project_finance(budget)
           ''')
-          .eq('deleted_at', null)
+          .isFilter('deleted_at', null)
           .order('name');
 
       return (response as List)
@@ -64,7 +64,7 @@ class SitesRepository {
             clients(id, name, phone, address)
           ''')
           .eq('id', siteId)
-          .eq('deleted_at', null)
+          .isFilter('deleted_at', null)
           .maybeSingle();
 
       return response as Map<String, dynamic>?;

@@ -7,3 +7,4 @@ export 'attendance_repository.dart';
 export 'transaction_repository.dart';
 export 'purchase_repository.dart';
 export 'supplier_repository.dart';
+export 'client_repository.dart';

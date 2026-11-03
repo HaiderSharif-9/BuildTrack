@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/models/money.dart';
-import '../../core/theme/app_theme.dart';
-import '../../core/widgets/index.dart';
-import '../../l10n/app_localizations.dart';
+import 'package:buildtrack/core/models/money.dart';
+import 'package:buildtrack/core/theme/app_theme.dart';
+import 'package:buildtrack/core/widgets/index.dart';
+import 'package:buildtrack/l10n/app_localizations.dart';
 import '../data/dashboard_providers.dart';
 
 class DashboardScreen extends ConsumerWidget {

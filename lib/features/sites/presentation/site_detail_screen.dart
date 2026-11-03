@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/theme/app_theme.dart';
-import '../../core/widgets/index.dart';
-import '../../l10n/app_localizations.dart';
+import 'package:buildtrack/core/theme/app_theme.dart';
+import 'package:buildtrack/core/widgets/index.dart';
+import 'package:buildtrack/l10n/app_localizations.dart';
 import '../data/sites_providers.dart';
 
 class SiteDetailScreen extends ConsumerWidget {
@@ -83,7 +83,7 @@ class SiteDetailScreen extends ConsumerWidget {
                 const SizedBox(height: 24),
 
                 // Tabs placeholder
-                SectionHeader(title: l10n.overview ?? 'Overview'),
+                const SectionHeader(title: 'Overview'),
                 const SizedBox(height: 16),
                 AppCard(
                   child: Container(

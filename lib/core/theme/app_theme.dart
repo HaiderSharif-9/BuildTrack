@@ -4,6 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 /// BuildTrack Color Palette - Charcoal + Gold (FIXED)
 /// Light mode and Dark mode with semantic colors (income, expense, profit, warning)
 abstract class AppColors {
+  static AppColorsValue of(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return AppColorsValue(isDark: isDark);
+  }
+
   // Light mode
   static const Color lightBg = Color(0xFFF7F5F2);
   static const Color lightSurface = Color(0xFFFFFFFF);
@@ -163,7 +168,7 @@ ThemeData buildLightTheme() {
         color: AppColors.lightTextPrimary,
       ),
     ),
-    cardTheme: CardThemeData(
+    cardTheme: CardTheme(
       color: AppColors.lightSurface,
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -213,7 +218,7 @@ ThemeData buildDarkTheme() {
         color: AppColors.darkTextPrimary,
       ),
     ),
-    cardTheme: CardThemeData(
+    cardTheme: CardTheme(
       color: AppColors.darkSurface,
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -288,12 +293,4 @@ class AppColorsValue {
 
   Color get warning => isDark ? AppColors.warningDark : AppColors.warningLight;
   Color get warningBg => isDark ? AppColors.warningBgDark : AppColors.warningBgLight;
-}
-
-/// Compatibility accessor for AppColors
-extension AppColorsAccessor on AppColors {
-  static AppColorsValue of(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return AppColorsValue(isDark: isDark);
-  }
 }

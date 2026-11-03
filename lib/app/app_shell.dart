@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/theme/app_theme.dart';
-import '../../l10n/app_localizations.dart';
-import '../data/auth_providers.dart';
+import 'package:buildtrack/core/theme/app_theme.dart';
+import 'package:buildtrack/l10n/app_localizations.dart';
+import 'package:buildtrack/features/auth/data/auth_providers.dart';
 
 class AppShell extends ConsumerWidget {
   final StatefulNavigationShell navigationShell;

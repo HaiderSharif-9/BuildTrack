@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/theme/app_theme.dart';
-import '../../core/widgets/index.dart';
-import '../../l10n/app_localizations.dart';
+import 'package:buildtrack/core/theme/app_theme.dart';
+import 'package:buildtrack/core/widgets/index.dart';
+import 'package:buildtrack/core/models/labour.dart';
+import 'package:buildtrack/l10n/app_localizations.dart';
 import '../data/labour_providers.dart';
 
 class LabourScreen extends ConsumerWidget {
@@ -18,7 +19,7 @@ class LabourScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.labour ?? 'Labour'),
+        title: Text(l10n.labour),
         elevation: 0,
         backgroundColor: Colors.transparent,
         actions: [
@@ -44,7 +45,7 @@ class LabourScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(16),
             child: AppTextField(
               controller: TextEditingController(text: searchQuery),
-              label: l10n.search ?? 'Search',
+              label: 'Search',
               hint: 'Name or trade',
               icon: Icons.search,
               onChanged: (value) {
@@ -184,6 +185,3 @@ class _LabourTile extends StatelessWidget {
     );
   }
 }
-
-// Re-export Labour for convenience
-export '../../core/models/labour.dart';

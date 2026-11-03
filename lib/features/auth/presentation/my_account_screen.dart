@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/theme/app_theme.dart';
-import '../../core/widgets/index.dart';
-import '../../l10n/app_localizations.dart';
+import 'package:buildtrack/core/theme/app_theme.dart';
+import 'package:buildtrack/core/widgets/index.dart';
+import 'package:buildtrack/l10n/app_localizations.dart';
 import '../data/auth_service.dart';
 import '../data/auth_providers.dart';
 
@@ -323,7 +323,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
     }
   }
 
-  Color _getRoleBgColor(String? role, AppColors colors) {
+  Color _getRoleBgColor(String? role, AppColorsValue colors) {
     switch (role) {
       case 'admin':
         return colors.primary.withOpacity(0.1);
@@ -336,7 +336,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
     }
   }
 
-  Color _getRoleTextColor(String? role, AppColors colors) {
+  Color _getRoleTextColor(String? role, AppColorsValue colors) {
     switch (role) {
       case 'admin':
         return colors.primary;

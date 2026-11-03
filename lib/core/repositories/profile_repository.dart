@@ -2,7 +2,7 @@ import '../models/profile.dart';
 import 'base_repository.dart';
 
 class ProfileRepository extends BaseRepository {
-  ProfileRepository(super.supabase);
+  ProfileRepository([super.supabase]);
 
   /// Get current user profile
   Future<Profile?> getCurrentProfile() async {

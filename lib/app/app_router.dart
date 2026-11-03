@@ -138,18 +138,6 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class SitesScreen extends StatelessWidget {
-  const SitesScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('Sites - Placeholder'),
-      ),
-    );
-  }
-}
 
 class AttendanceScreen extends StatelessWidget {
   const AttendanceScreen({super.key});

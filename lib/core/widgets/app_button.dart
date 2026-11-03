@@ -3,7 +3,7 @@ import '../theme/app_theme.dart';
 
 class AppButton extends StatelessWidget {
   final String label;
-  final VoidCallback onPressed;
+  final dynamic Function()? onPressed;
   final bool isLoading;
   final bool isSecondary;
   final bool isSmall;
@@ -55,7 +55,7 @@ class AppButton extends StatelessWidget {
           );
 
     return FilledButton(
-      onPressed: isLoading ? null : onPressed,
+      onPressed: (isLoading || onPressed == null) ? null : () => onPressed!(),
       style: FilledButton.styleFrom(
         backgroundColor: backgroundColor,
         foregroundColor: foregroundColor,
