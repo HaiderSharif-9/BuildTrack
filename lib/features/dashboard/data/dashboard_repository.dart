@@ -103,6 +103,7 @@ class DashboardRepository {
           .from('project_members')
           .select('project_id, projects(id, name, status)')
           .eq('user_id', userId)
+          .isFilter('projects.deleted_at', null)
           .order('projects(name)');
 
       return (response as List)
