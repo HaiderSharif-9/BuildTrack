@@ -67,7 +67,7 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
                         style: theme.textTheme.bodyMedium?.copyWith(color: colors.textSecondary),
                       ),
                       Text(
-                        'Rs. ${balance.netBalance.toDisplayString()}',
+                        '${balance.netBalance.toDisplayString()}',
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: balance.netBalance.isPositive ? colors.success : colors.error,
@@ -92,7 +92,7 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Rs. ${balance.totalIncome.toDisplayString()}',
+                            '${balance.totalIncome.toDisplayString()}',
                             style: TextStyle(fontWeight: FontWeight.bold, color: colors.success, fontSize: 14),
                           ),
                         ],
@@ -109,7 +109,7 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Rs. ${balance.totalExpense.toDisplayString()}',
+                            '${balance.totalExpense.toDisplayString()}',
                             style: TextStyle(fontWeight: FontWeight.bold, color: colors.error, fontSize: 14),
                           ),
                         ],
@@ -214,7 +214,7 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Text(
-                                  '${isIncome ? '+' : '-'} Rs. ${tx.amount.toDisplayString()}',
+                                  '${isIncome ? '+' : '-'} ${tx.amount.toDisplayString()}',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 14,
@@ -280,7 +280,7 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Delete Entry?'),
-        content: Text('Delete "${tx.description}" of Rs. ${tx.amount.toDisplayString()}?'),
+        content: Text('Delete "${tx.description}" of ${tx.amount.toDisplayString()}?'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
           TextButton(
