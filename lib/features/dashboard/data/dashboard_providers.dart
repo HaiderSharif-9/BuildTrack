@@ -74,5 +74,6 @@ final availableProjectsProvider = FutureProvider<List<Map<String, dynamic>>>((re
 /// Recent activity
 final recentActivityProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
   final repo = ref.watch(dashboardRepositoryProvider);
-  return repo.getRecentActivity(limit: 10);
+  final siteId = ref.watch(selectedSiteProvider);
+  return repo.getRecentActivity(limit: 10, projectId: siteId);
 });
