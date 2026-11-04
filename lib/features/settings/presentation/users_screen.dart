@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/models/profile.dart';
@@ -155,6 +156,7 @@ class UsersScreen extends ConsumerWidget {
   }
 
   void _showAddUserDialog(BuildContext context, WidgetRef ref) {
+    final pageContext = context;
     final nameController = TextEditingController();
     final emailController = TextEditingController();
     final phoneController = TextEditingController();
@@ -231,26 +233,72 @@ class UsersScreen extends ConsumerWidget {
                         setSheetState(() => isSaving = true);
                         try {
                           final supabase = Supabase.instance.client;
-                          // Insert profile record
-                          await supabase.from('profiles').insert({
-                            'full_name': name,
-                            'login_id': email,
-                            'phone': phone.isNotEmpty ? phone : null,
-                            'role': selectedRole,
-                            'active': true,
-                          });
+                          final response = await supabase.functions.invoke(
+                            'admin-create-user',
+                            body: {
+                              'fullName': name,
+                              'email': email,
+                              'phone': phone,
+                              'role': selectedRole,
+                            },
+                          );
+                          final result = Map<String, dynamic>.from(response.data as Map);
+                          final temporaryPassword = result['temporaryPassword'] as String;
 
-                          if (context.mounted) {
-                            Navigator.pop(ctx);
-                            ref.invalidate(usersListProvider);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('User "$name" created successfully!'), backgroundColor: Colors.green),
-                            );
-                          }
+                          if (!pageContext.mounted) return;
+                          Navigator.pop(ctx);
+                          ref.invalidate(usersListProvider);
+
+                          await showDialog<void>(
+                            context: pageContext,
+                            builder: (dialogContext) => AlertDialog(
+                              title: const Text('Team account created'),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Login email: $email'),
+                                  const SizedBox(height: 12),
+                                  const Text(
+                                    'Temporary password (share securely):',
+                                    style: TextStyle(fontWeight: FontWeight.w600),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  SelectableText(
+                                    temporaryPassword,
+                                    style: const TextStyle(fontFamily: 'monospace', fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  const Text(
+                                    'The user must change this password after signing in. It expires in 7 days.',
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                ],
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () async {
+                                    await Clipboard.setData(ClipboardData(text: temporaryPassword));
+                                    if (dialogContext.mounted) Navigator.pop(dialogContext);
+                                    if (pageContext.mounted) {
+                                      ScaffoldMessenger.of(pageContext).showSnackBar(
+                                        const SnackBar(content: Text('Temporary password copied')),
+                                      );
+                                    }
+                                  },
+                                  child: const Text('Copy password'),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(dialogContext),
+                                  child: const Text('Done'),
+                                ),
+                              ],
+                            ),
+                          );
                         } catch (e) {
-                          setSheetState(() => isSaving = false);
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
+                          if (context.mounted) setSheetState(() => isSaving = false);
+                          if (pageContext.mounted) {
+                            ScaffoldMessenger.of(pageContext).showSnackBar(
                               SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
                             );
                           }
