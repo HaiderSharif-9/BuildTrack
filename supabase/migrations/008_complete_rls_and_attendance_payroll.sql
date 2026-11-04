@@ -261,7 +261,11 @@ BEGIN
     SELECT id INTO v_wages_cat_id
     FROM categories WHERE name = 'Labour Wages' LIMIT 1;
 
-    IF NEW.net > 0 AND v_wages_cat_id IS NOT NULL THEN
+    IF NEW.net > 0 THEN
+      IF v_wages_cat_id IS NULL THEN
+        RAISE EXCEPTION 'Labour Wages transaction category is missing';
+      END IF;
+
       INSERT INTO transactions (
         project_id, date, type, category_id, description, amount, source, source_id, created_by
       )
