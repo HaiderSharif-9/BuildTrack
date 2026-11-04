@@ -127,7 +127,7 @@ class _PurchasesScreenState extends ConsumerState<PurchasesScreen> {
                       Text('Total Purchases', style: theme.textTheme.bodySmall?.copyWith(color: colors.textSecondary)),
                       const SizedBox(height: 2),
                       Text(
-                        'Rs. ${totalAmount.toDisplayString()}',
+                        '${totalAmount.toDisplayString()}',
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: colors.error,
@@ -191,7 +191,7 @@ class _PurchasesScreenState extends ConsumerState<PurchasesScreen> {
                                   ),
                                   const SizedBox(height: 2),
                                   Text(
-                                    '${item.qty.toStringAsFixed(1)} ${item.unit} @ Rs. ${item.rate.toDisplayString()}',
+                                    '${item.qty.toStringAsFixed(1)} ${item.unit} @ ${item.rate.toDisplayString()}',
                                     style: theme.textTheme.bodySmall?.copyWith(color: colors.textSecondary),
                                   ),
                                   const SizedBox(height: 2),
@@ -206,7 +206,7 @@ class _PurchasesScreenState extends ConsumerState<PurchasesScreen> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Text(
-                                  'Rs. ${item.amount.toDisplayString()}',
+                                  '${item.amount.toDisplayString()}',
                                   style: theme.textTheme.titleSmall?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: colors.error,
@@ -259,7 +259,7 @@ class _PurchasesScreenState extends ConsumerState<PurchasesScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Delete Purchase?'),
-        content: Text('Are you sure you want to delete "${item.item}" (Rs. ${item.amount.toDisplayString()})?'),
+        content: Text('Are you sure you want to delete "${item.item}" (${item.amount.toDisplayString()})?'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
           TextButton(
@@ -397,7 +397,7 @@ class _PurchasesScreenState extends ConsumerState<PurchasesScreen> {
                         children: [
                           const Text('Total Amount:', style: TextStyle(fontWeight: FontWeight.bold)),
                           Text(
-                            'Rs. ${computedTotal.toStringAsFixed(0)}',
+                            '${computedTotal.toStringAsFixed(0)}',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
