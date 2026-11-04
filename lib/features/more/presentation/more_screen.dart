@@ -77,7 +77,7 @@ class MoreScreen extends ConsumerWidget {
           _buildMenuTile(
             icon: Icons.engineering_outlined,
             title: l10n.labour,
-            subtitle: 'Workers list, default daily rates & trade categories',
+            subtitle: 'Worker roster and trade categories',
             onTap: () => context.push('/more/labour'),
             colors: colors,
             theme: theme,
