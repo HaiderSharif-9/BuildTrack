@@ -203,21 +203,17 @@ class LabourRepository {
         query += 'cnic.eq.$cnic';
       }
 
-      final response = await _supabase
+      var duplicateQuery = _supabase
           .from('labour_private')
           .select('labour_id')
-          .or(query)
-          .limit(1);
+          .or(query);
 
-      if ((response as List).isEmpty) return false;
-
-      // If excluding a labour ID, check if it's a different one
       if (excludeLabourId != null) {
-        final existingId = (response[0] as Map)['labour_id'];
-        return existingId != excludeLabourId;
+        duplicateQuery = duplicateQuery.neq('labour_id', excludeLabourId);
       }
 
-      return true;
+      final response = await duplicateQuery.limit(1);
+      return (response as List).isNotEmpty;
     } catch (e) {
       throw Exception('Error checking duplicates: $e');
     }
