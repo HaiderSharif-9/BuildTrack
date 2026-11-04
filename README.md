@@ -45,7 +45,19 @@ The newest dashboard, payroll, security and labour changes still need a local pu
 
    The function uses Supabase's server-side environment variables. Keep the service-role key inside the Supabase Edge Function environment only; never commit it or expose it to the client.
 
-6. Confirm that at least one active administrator profile exists before using Team & Users.
+6. If this is a fresh Supabase project, create the first account from Supabase Dashboard → Authentication → Users, then promote that account's profile from the SQL Editor (replace the email):
+
+   ```sql
+   UPDATE public.profiles
+   SET role = 'admin', active = TRUE, must_change_password = FALSE
+   WHERE id = (
+     SELECT id FROM auth.users WHERE email = 'your-admin-email@example.com'
+   );
+   ```
+
+   Confirm that exactly one profile was updated. After the first administrator is ready, disable public sign-ups in Supabase Auth settings if this is a private company app.
+
+7. Confirm that at least one active administrator profile exists before using Team & Users.
 
 ## Local development
 
