@@ -1,10 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/models/project.dart';
+import '../../../core/repositories/project_repository.dart';
 import '../../../core/models/labour.dart';
 import '../../../core/repositories/labour_repository.dart';
 
 /// Labour repository provider
 final labourRepositoryProvider = Provider<LabourRepository>((ref) {
   return LabourRepository();
+});
+
+final labourProjectsProvider = FutureProvider<List<Project>>((ref) async {
+  final repository = ProjectRepository(Supabase.instance.client);
+  return repository.listProjects();
 });
 
 /// Labour search query provider
