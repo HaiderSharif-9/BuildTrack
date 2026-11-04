@@ -240,16 +240,16 @@ class UsersScreen extends ConsumerWidget {
                             'active': true,
                           });
 
-                          if (mounted) {
+                          if (context.mounted) {
                             Navigator.pop(ctx);
-                            ref.refresh(usersListProvider);
+                            ref.invalidate(usersListProvider);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('User "$name" created successfully!'), backgroundColor: Colors.green),
                             );
                           }
                         } catch (e) {
                           setSheetState(() => isSaving = false);
-                          if (mounted) {
+                          if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
                             );
