@@ -336,7 +336,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '${item.labour.trade}${canViewWages ? " • Rs. ${item.defaultRate.toDisplayString()}/day" : ""}',
+                          '${item.labour.trade}${canViewWages ? " • ${item.defaultRate.toDisplayString()}/day" : ""}',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: colors.textSecondary,
                           ),
@@ -350,7 +350,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                     children: [
                       if (canViewWages)
                         Text(
-                        'Rs. ${item.wageResult.wageAmount.toDisplayString()}',
+                        '${item.wageResult.wageAmount.toDisplayString()}',
                         style: theme.textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: isPresent ? colors.success : colors.textPrimary,
@@ -671,7 +671,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                 _buildCounter('Absent', summary.absentCount.toString(), colors.error),
                 _buildCounter('OT', '${summary.totalOvertimeHours.toStringAsFixed(1)}h', AppColors.goldTextLight),
                 if (canViewWages)
-                  _buildCounter('Total Wages', 'Rs. ${summary.totalWages.toDisplayString()}', colors.textPrimary),
+                  _buildCounter('Total Wages', '${summary.totalWages.toDisplayString()}', colors.textPrimary),
               ],
             ),
             const SizedBox(height: 12),
