@@ -296,6 +296,7 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
   }
 
   void _showAddTransactionDialog(BuildContext context) {
+    final pageContext = context;
     String selectedType = 'expense';
     String? selectedCategoryId;
     String? selectedSiteId;
@@ -381,7 +382,7 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
                           selectedCategoryId = filtered.first.id;
                         }
                         return DropdownButtonFormField<String>(
-                          value: selectedCategoryId,
+                          initialValue: selectedCategoryId,
                           decoration: InputDecoration(
                             labelText: 'Category',
                             filled: true,
@@ -437,19 +438,17 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
                                 projectId: selectedSiteId,
                                 date: DateTime.now(),
                               );
-                          if (mounted) {
-                            Navigator.pop(ctx);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Transaction saved to ledger!'), backgroundColor: Colors.green),
-                            );
-                          }
+                          if (!pageContext.mounted) return;
+                          Navigator.pop(ctx);
+                          ScaffoldMessenger.of(pageContext).showSnackBar(
+                            const SnackBar(content: Text('Transaction saved to ledger!'), backgroundColor: Colors.green),
+                          );
                         } catch (e) {
+                          if (!pageContext.mounted) return;
                           setSheetState(() => isSaving = false);
-                          if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
-                            );
-                          }
+                          ScaffoldMessenger.of(pageContext).showSnackBar(
+                            SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+                          );
                         }
                       },
                     ),
