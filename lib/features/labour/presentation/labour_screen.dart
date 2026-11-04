@@ -70,6 +70,9 @@ class LabourScreen extends ConsumerWidget {
                           labour: person,
                           colors: colors,
                           theme: theme,
+                          canManage: canManage,
+                          onEdit: () => _showEditLabourDialog(context, ref, person),
+                          onArchive: () => _confirmArchiveLabour(context, ref, person),
                         );
                       },
                     ),
@@ -80,6 +83,98 @@ class LabourScreen extends ConsumerWidget {
                 onRetry: () => ref.invalidate(labourListProvider),
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditLabourDialog(BuildContext context, WidgetRef ref, Labour labour) {
+    final pageContext = context;
+    final nameController = TextEditingController(text: labour.name);
+    final tradeController = TextEditingController(text: labour.trade);
+
+    showDialog<void>(
+      context: pageContext,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Edit Labourer'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AppTextField(controller: nameController, label: 'Full Name'),
+            const SizedBox(height: 12),
+            AppTextField(controller: tradeController, label: 'Trade'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              final name = nameController.text.trim();
+              final trade = tradeController.text.trim();
+              if (name.isEmpty || trade.isEmpty) return;
+              try {
+                await ref.read(labourRepositoryProvider).updateLabour(
+                      id: labour.id,
+                      name: name,
+                      trade: trade,
+                    );
+                if (!pageContext.mounted) return;
+                Navigator.pop(dialogContext);
+                ref.invalidate(labourListProvider);
+                ScaffoldMessenger.of(pageContext).showSnackBar(
+                  const SnackBar(content: Text('Labourer details updated')),
+                );
+              } catch (error) {
+                if (!pageContext.mounted) return;
+                ScaffoldMessenger.of(pageContext).showSnackBar(
+                  SnackBar(content: Text('Unable to update labourer: $error')),
+                );
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    ).whenComplete(() {
+      nameController.dispose();
+      tradeController.dispose();
+    });
+  }
+
+  void _confirmArchiveLabour(BuildContext context, WidgetRef ref, Labour labour) {
+    final pageContext = context;
+    showDialog<void>(
+      context: pageContext,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Archive Labourer?'),
+        content: Text('Archive ${labour.name}? Existing attendance and payroll history will be kept.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              try {
+                await ref.read(labourRepositoryProvider).deleteLabour(labour.id);
+                if (!pageContext.mounted) return;
+                Navigator.pop(dialogContext);
+                ref.invalidate(labourListProvider);
+                ScaffoldMessenger.of(pageContext).showSnackBar(
+                  const SnackBar(content: Text('Labourer archived')),
+                );
+              } catch (error) {
+                if (!pageContext.mounted) return;
+                ScaffoldMessenger.of(pageContext).showSnackBar(
+                  SnackBar(content: Text('Unable to archive labourer: $error')),
+                );
+              }
+            },
+            child: const Text('Archive', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -286,11 +381,17 @@ class _LabourTile extends StatelessWidget {
   final Labour labour;
   final AppColorsValue colors;
   final ThemeData theme;
+  final bool canManage;
+  final VoidCallback onEdit;
+  final VoidCallback onArchive;
 
   const _LabourTile({
     required this.labour,
     required this.colors,
     required this.theme,
+    required this.canManage,
+    required this.onEdit,
+    required this.onArchive,
   });
 
   @override
@@ -353,6 +454,20 @@ class _LabourTile extends StatelessWidget {
                 ),
               ),
             ),
+            if (canManage)
+              PopupMenuButton<String>(
+                onSelected: (value) {
+                  if (value == 'edit') onEdit();
+                  if (value == 'archive') onArchive();
+                },
+                itemBuilder: (context) => const [
+                  PopupMenuItem(value: 'edit', child: Text('Edit')),
+                  PopupMenuItem(
+                    value: 'archive',
+                    child: Text('Archive', style: TextStyle(color: Colors.red)),
+                  ),
+                ],
+              ),
           ],
         ),
       ),
