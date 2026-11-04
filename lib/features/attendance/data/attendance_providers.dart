@@ -221,8 +221,8 @@ class AttendanceSheetNotifier extends StateNotifier<AsyncValue<List<LabourAttend
       final updated = items.map((item) {
         if (item.isLocked) return item;
         final calculator = WageCalculator(rate: item.defaultRate);
-        final inT = '08:00';
-        final outT = '18:00';
+        const inT = '08:00';
+        const outT = '18:00';
         final wage = calculator.calculateDay(
           status: 'present',
           inTime: inT,
