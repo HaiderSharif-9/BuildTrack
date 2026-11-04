@@ -171,6 +171,7 @@ class LabourRepository {
           .from('labour')
           .select()
           .eq('active', true)
+          .isFilter('deleted_at', null)
           .or('name.ilike.%$query%,trade.ilike.%$query%')
           .order('name');
 
