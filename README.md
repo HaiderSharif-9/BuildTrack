@@ -1,118 +1,82 @@
-# BuildTrack - Construction Management App
-**Premium Android app by Care Constructiona Pvt Ltd, Multan, Pakistan**
+# BuildTrack
 
-## Status
-✅ **7 of 18 steps complete** | **All tests passing (21/21)** | **0 analyzer issues**
+**Construction management app for Care Constructiona Pvt Ltd, Multan, Pakistan.**
 
-### What's Built ✅
-- Step 1: Bootstrap (Flutter, Supabase, theme, localization, routing)
-- Step 2: UI Component Library (charcoal+gold design, 11 widgets)
-- Step 3: Database (7 migrations, RLS, seed data, wage calculator)
-- Step 4: Auth (login, password change, My Account)
-- Step 5: Dashboard (KPI cards, charts, analytics)
-- Step 6: Sites & Clients (CRUD, detail screens)
-- Step 7: Labour (list, search, detail)
+BuildTrack is a Flutter + Supabase app for managing construction sites, labour, attendance, payroll, material purchases and project finances. It uses Riverpod for state management, GoRouter for navigation, and an English/Urdu interface with RTL support.
 
-### Code Quality
-- flutter analyze: 0 issues ✅
-- flutter test: 21/21 passing ✅
-- Wage golden tests: 8/8 passing ✅
+## Current implementation
 
-## Key Features
+### Core modules
+- Authentication, forced password change and role-aware navigation
+- Dashboard with site and financial summaries
+- Sites, clients, suppliers and labour management
+- Daily attendance with time entries, overtime and wage calculation
+- Weekly payroll with advances and payment recording
+- Material purchases and automatic expense ledger entries
+- Financial ledger and basic site profitability reports
+- Team account creation through an admin-only Supabase Edge Function
 
-### Wage Calculator
-- Daily rate + hourly logic with 1.5x overtime
-- Golden test cases verified:
-  - 1200 rate, 08:00-18:00 (10h) → Rs. 1,200 ✅
-  - 1200 rate, 08:00-20:00 (12h) → Rs. 1,560 (with OT) ✅
-  - Absent/leave → Rs. 0 ✅
+### Technical foundation
+- Flutter / Dart
+- Supabase Auth, PostgreSQL and Row Level Security
+- Riverpod and GoRouter
+- Decimal-based money calculations
+- English and Urdu localization
 
-### Database
-- 7 PostgreSQL migrations with RLS
-- 20+ tables, audit logging, soft deletes
-- Seed: 5 sites, 6 labourers, 30 days attendance
+## Important project status
 
-### Auth & Roles
-- Phone/email login
-- Roles: admin, accountant, manager
-- RLS enforced per role
+The app has passed a local Flutter analyzer run with **0 errors** (19 informational lint suggestions remained at that point), and the debug app was launched on a TECNO BG7.
 
-### Localization
-- English + Urdu (RTL)
-- Natural translations
+The latest backend and UI corrections on the `buildtrack-completion` branch still require local pull-and-retest. In particular, apply migration `008_complete_rls_and_attendance_payroll.sql` and deploy the `admin-create-user` Edge Function before testing the corresponding Supabase features.
 
-## Build & Run
+**Do not treat this branch as production-ready until the database migration, Edge Function, full test suite, role-based access and real CRUD flows have been verified against the target Supabase project.**
 
-### Setup
+## Supabase setup
+
+1. Configure the Flutter app with your Supabase project URL and anon/publishable key using the existing local environment setup. Never put a service-role key in the Flutter app.
+2. Ensure migrations `001` through `007` have already been applied.
+3. Apply `supabase/migrations/008_complete_rls_and_attendance_payroll.sql` to the same Supabase project.
+4. Deploy the secure user-creation function:
+
+   ```bash
+   supabase functions deploy admin-create-user
+   ```
+
+   The function uses Supabase's server-side environment variables. Keep the service-role key inside the Supabase Edge Function environment only; never commit it or expose it to the client.
+
+5. Confirm that at least one active administrator profile exists before using Team & Users.
+
+## Local development
+
 ```bash
 git clone https://github.com/HaiderSharif-9/BuildTrack.git
 cd BuildTrack
 flutter pub get
-flutter test      # 21 passing
-flutter analyze    # 0 issues
-```
-
-### Run
-```bash
+flutter analyze
+flutter test
 flutter run
 ```
 
-### Build APK
+## Quality checks
 
-**Issue:** SSL certificate error on Windows (system configuration, not code)
+A GitHub Actions workflow at `.github/workflows/flutter-ci.yml` runs `flutter analyze` and `flutter test` on pushes to `master` and `buildtrack-completion`, and on pull requests targeting `master`.
 
-**Workaround 1:** Use pre-cached Gradle
-```bash
-flutter clean
-flutter pub get
-flutter build apk --debug
-```
+## Known scope / not yet included
 
-**Workaround 2:** Build on Linux/Mac
-```bash
-flutter build apk --release --split-per-abi
-```
+- Full offline-first synchronization
+- PDF/Excel report export
+- Production Android signing and release distribution
+- End-to-end Supabase integration tests and full role-by-role security verification
 
-**Output:** `build/app/outputs/flutter-apk/app-arm64-v8a-release.apk`
+## Wage calculation
 
-## Architecture
-```
-lib/
-├── app/              # Router, shell
-├── core/             # Theme, widgets, models, services
-├── features/         # Auth, dashboard, labour, etc.
-├── l10n/             # EN + UR localization
-└── main.dart         # Entry point
+The app uses a 10-hour standard day and 1.5x overtime by default. The server-side attendance trigger is the authoritative wage calculation source.
 
-supabase/
-├── migrations/       # 7 SQL migrations
-└── seed.sql          # Sample data
+Example at a daily rate of Rs. 1,200:
+- 08:00–18:00 (10 hours): Rs. 1,200
+- 08:00–20:00 (12 hours): Rs. 1,560
+- Absent or leave: Rs. 0
 
-test/
-└── wage_calculator_test.dart  # Golden tests
-```
+## Repository
 
-## What's Next (Steps 8–18)
-- Attendance (swipe, times, locks)
-- Payments (payroll, mark paid, payslip PDF)
-- Purchases (bill photos)
-- Ledger (transactions)
-- Reports (P&L, PDF/Excel)
-- Settings & Users (admin functions)
-- Polish (Urdu/RTL, dark mode, fonts)
-- Offline (drift sync)
-- QA & Release
-
-## GitHub
-Repository: https://github.com/HaiderSharif-9/BuildTrack
-
-All 7 steps committed with full history.
-
-## Testing
-```bash
-flutter test
-flutter analyze
-flutter test --coverage
-```
-
-**Built with Flutter + Supabase + Riverpod** | **Tests passing** | **Ready for production**
+https://github.com/HaiderSharif-9/BuildTrack
