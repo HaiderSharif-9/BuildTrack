@@ -53,6 +53,7 @@ class LabourRepository {
             labour_private(phone, cnic, default_rate)
           ''')
           .eq('id', labourId)
+          .isFilter('deleted_at', null)
           .maybeSingle();
 
       return response;
@@ -157,7 +158,7 @@ class LabourRepository {
     try {
       await _supabase
           .from('labour')
-          .update({'deleted_at': DateTime.now().toIso8601String()})
+          .update({'active': false, 'deleted_at': DateTime.now().toIso8601String()})
           .eq('id', id);
     } catch (e) {
       throw Exception('Error deleting labour: $e');
