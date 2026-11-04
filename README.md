@@ -27,7 +27,7 @@ BuildTrack is a Flutter + Supabase app for managing construction sites, labour, 
 
 ## Current quality status
 
-The `buildtrack-completion` branch has a GitHub Actions workflow that runs `flutter analyze` and `flutter test`. Recent runs have passed after the analyzer cleanup. The developer also reported a successful debug launch on a TECNO BG7.
+The `buildtrack-completion` branch has a GitHub Actions workflow that runs `flutter analyze`, `flutter test` and a Deno type-check of the admin Edge Function. Recent runs have passed after the analyzer cleanup. The developer also reported a successful debug launch on a TECNO BG7.
 
 The newest dashboard, payroll, security and labour changes still need a local pull-and-retest and live Supabase verification. **Do not treat this branch as production-ready until migrations 008 and 009 are applied, the `admin-create-user` Edge Function is deployed, and the real CRUD and role checks below pass.**
 
