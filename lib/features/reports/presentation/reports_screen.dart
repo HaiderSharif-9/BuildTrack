@@ -103,7 +103,7 @@ final reportsDataProvider = FutureProvider<FinancialReportData>((ref) async {
   final gross = totalIncome > siteExpenses ? totalIncome - siteExpenses : Money.zero;
   final totalExp = siteExpenses + otherExpenses;
   final net = totalIncome - totalExp;
-  final margin = totalIncome.cents > 0 ? (net.cents / totalIncome.cents) * 100 : 0.0;
+  final margin = totalIncome.isPositive ? (net.toDouble() / totalIncome.toDouble()) * 100 : 0.0;
 
   final List<SiteProfitItem> siteProfits = [];
   siteMap.forEach((name, data) {
