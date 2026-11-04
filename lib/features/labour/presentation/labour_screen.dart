@@ -423,7 +423,7 @@ class LabourScreen extends ConsumerWidget {
                           ),
                         );
                       } catch (error) {
-                        if (!pageContext.mounted) return;
+                        if (!pageContext.mounted || !sheetContext.mounted) return;
                         setSheetState(() => isSaving = false);
                         ScaffoldMessenger.of(pageContext).showSnackBar(
                           SnackBar(
