@@ -206,36 +206,39 @@ class PayrollNotifier extends StateNotifier<AsyncValue<List<WorkerPayrollItem>>>
         int daysPresent = 0;
         double otHours = 0;
         Money gross = Money.zero;
+        Money? firstAppliedRate;
 
         for (var a in workerAtt) {
           final status = a['status'] as String?;
           if (status == 'present') {
-            final projectId = a['project_id'] as String;
-            final rate = projectRates['${labour.id}_$projectId'] ?? defaultRate;
-            if (rate == null) {
-              throw StateError('No wage rate configured for ${labour.name} at this site.');
+            final payRaw = a['attendance_pay'];
+            final payData = payRaw is List
+                ? (payRaw.isEmpty ? null : payRaw.first)
+                : payRaw;
+            if (payData is! Map) {
+              throw StateError(
+                'Server wage calculation is missing for ${labour.name}. '
+                'Re-save attendance after applying database migration 008.',
+              );
             }
 
             daysPresent++;
-            final inT = a['in_time'] as String?;
-            final outT = a['out_time'] as String?;
-            final ot = (a['overtime_hours'] as num?)?.toDouble() ?? 0.0;
-            otHours += ot;
-
-            final calc = WageCalculator(rate: rate);
-            final result = calc.calculateDay(
-              status: 'present',
-              inTime: inT,
-              outTime: outT,
-              manualOvertimeHours: ot,
-            );
-            gross = gross + result.wageAmount;
+            final wageAmount = Money.fromString(payData['wage_amount'].toString());
+            gross = gross + wageAmount;
+            otHours += (payData['overtime_hours'] as num?)?.toDouble() ?? 0.0;
+            final appliedRate = payData['rate'];
+            if (firstAppliedRate == null && appliedRate != null) {
+              firstAppliedRate = Money.fromString(appliedRate.toString());
+            }
           }
         }
 
         final displayRate = siteId == null
-            ? (defaultRate ?? Money.zero)
-            : (projectRates['${labour.id}_$siteId'] ?? defaultRate ?? Money.zero);
+            ? (defaultRate ?? firstAppliedRate ?? Money.zero)
+            : (projectRates['${labour.id}_$siteId'] ??
+                defaultRate ??
+                firstAppliedRate ??
+                Money.zero);
         final advance = advancesMap[labour.id] ?? Money.zero;
         final net = gross > advance ? gross - advance : Money.zero;
         final paymentRecord = paymentsMap[labour.id];
