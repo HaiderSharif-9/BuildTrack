@@ -238,7 +238,7 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '${item.daysWorked} days • ${item.overtimeHours.toStringAsFixed(1)}h OT • Rate: Rs. ${item.defaultRate.toDisplayString()}',
+                        '${item.daysWorked} days • ${item.overtimeHours.toStringAsFixed(1)}h OT • Rate: ${item.defaultRate.toDisplayString()}',
                         style: theme.textTheme.bodySmall?.copyWith(color: colors.textSecondary),
                       ),
                       if (item.advancesDeducted > Money.zero) ...[
@@ -366,9 +366,9 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Gross Wages: Rs. ${item.grossWage.toDisplayString()}'),
+                  Text('Gross Wages: ${item.grossWage.toDisplayString()}'),
                   if (item.advancesDeducted > Money.zero)
-                    Text('Advance Deducted: -Rs. ${item.advancesDeducted.toDisplayString()}'),
+                    Text('Advance Deducted: -${item.advancesDeducted.toDisplayString()}'),
                   const SizedBox(height: 8),
                   Text(
                     'Net Payable: ${item.netPayable.toDisplayString()}',
@@ -463,7 +463,7 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
                   style: theme.textTheme.bodySmall?.copyWith(color: colors.textSecondary),
                 ),
                 Text(
-                  'Rs. ${summary.totalNetPayable.toDisplayString()}',
+                  '${summary.totalNetPayable.toDisplayString()}',
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: colors.textPrimary,
