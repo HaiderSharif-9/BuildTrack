@@ -186,7 +186,7 @@ class LabourScreen extends ConsumerWidget {
                     defaultRate: Money.fromDouble(rate),
                   );
 
-                  if (!pageContext.mounted) return;
+                  if (!pageContext.mounted || !dialogContext.mounted) return;
                   Navigator.pop(dialogContext);
                   ref.invalidate(labourListProvider);
                   ScaffoldMessenger.of(pageContext).showSnackBar(
@@ -234,7 +234,7 @@ class LabourScreen extends ConsumerWidget {
             onPressed: () async {
               try {
                 await ref.read(labourRepositoryProvider).deleteLabour(labour.id);
-                if (!pageContext.mounted) return;
+                if (!pageContext.mounted || !dialogContext.mounted) return;
                 Navigator.pop(dialogContext);
                 ref.invalidate(labourListProvider);
                 ScaffoldMessenger.of(pageContext).showSnackBar(
@@ -413,7 +413,7 @@ class LabourScreen extends ConsumerWidget {
                           projectId: selectedProjectId,
                         );
 
-                        if (!pageContext.mounted) return;
+                        if (!pageContext.mounted || !sheetContext.mounted) return;
                         Navigator.pop(sheetContext);
                         ref.invalidate(labourListProvider);
                         ScaffoldMessenger.of(pageContext).showSnackBar(
