@@ -65,10 +65,10 @@ class PurchasesNotifier extends StateNotifier<AsyncValue<List<Purchase>>> {
   }) async {
     final supabase = Supabase.instance.client;
     final dateStr = date.toIso8601String().split('T')[0];
-    final amount = rate * qty;
 
-    // 1. Insert into purchases table
-    final purchaseRes = await supabase.from('purchases').insert({
+    // The database trigger creates and maintains the linked Materials
+    // transaction atomically with the purchase row.
+    await supabase.from('purchases').insert({
       'project_id': projectId,
       'date': dateStr,
       'item': item,
@@ -76,32 +76,7 @@ class PurchasesNotifier extends StateNotifier<AsyncValue<List<Purchase>>> {
       'unit': unit,
       'rate': rate.toDbString(),
       'supplier_id': supplierId,
-    }).select().single();
-
-    final purchaseId = purchaseRes['id'] as String;
-
-    // 2. Automatically log expense in transactions (Ledger)
-    try {
-      final catRes = await supabase
-          .from('categories')
-          .select('id')
-          .eq('name', 'Materials')
-          .maybeSingle();
-
-      if (catRes != null) {
-        final catId = catRes['id'] as String;
-        await supabase.from('transactions').insert({
-          'project_id': projectId,
-          'date': dateStr,
-          'type': 'expense',
-          'category_id': catId,
-          'description': 'Purchase: $item ($qty $unit @ ${rate.toDisplayString()})',
-          'amount': amount.toDbString(),
-          'source': 'purchase',
-          'source_id': purchaseId,
-        });
-      }
-    } catch (_) {}
+    });
 
     await loadPurchases();
   }
@@ -136,14 +111,6 @@ class PurchasesNotifier extends StateNotifier<AsyncValue<List<Purchase>>> {
     await supabase.from('purchases').update({
       'deleted_at': DateTime.now().toIso8601String(),
     }).eq('id', id);
-
-    // Also soft-delete related transaction if exists
-    try {
-      await supabase
-          .from('transactions')
-          .update({'deleted_at': DateTime.now().toIso8601String()})
-          .eq('source_id', id);
-    } catch (_) {}
 
     await loadPurchases();
   }
