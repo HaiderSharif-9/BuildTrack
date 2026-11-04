@@ -355,3 +355,22 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+-- Allow a signed-in user to clear only their own forced-password-change flag.
+-- This avoids granting general UPDATE access to the profiles table.
+CREATE OR REPLACE FUNCTION clear_own_must_change_password()
+RETURNS VOID AS $$
+BEGIN
+  IF auth.uid() IS NULL THEN
+    RAISE EXCEPTION 'Authentication required';
+  END IF;
+
+  UPDATE profiles
+  SET must_change_password = FALSE,
+      temp_password_expires_at = NULL
+  WHERE id = auth.uid();
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+REVOKE ALL ON FUNCTION clear_own_must_change_password() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION clear_own_must_change_password() TO authenticated;
