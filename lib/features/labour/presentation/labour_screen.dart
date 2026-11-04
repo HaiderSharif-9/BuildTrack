@@ -93,10 +93,8 @@ class LabourScreen extends ConsumerWidget {
     final phoneController = TextEditingController();
     final cnicController = TextEditingController();
     final rateController = TextEditingController();
-    final projectsAsync = ref.read(labourProjectsProvider);
-    String? selectedProjectId = projectsAsync.asData?.value.isNotEmpty == true
-        ? projectsAsync.asData!.value.first.id
-        : null;
+    final projectsFuture = ref.read(labourProjectsProvider.future);
+    String? selectedProjectId;
     bool isSaving = false;
 
     showModalBottomSheet<void>(
@@ -160,8 +158,16 @@ class LabourScreen extends ConsumerWidget {
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   ),
                   const SizedBox(height: 12),
-                  projectsAsync.when(
-                    data: (projects) {
+                  FutureBuilder(
+                    future: projectsFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const LinearProgressIndicator();
+                      }
+                      if (snapshot.hasError) {
+                        return Text('Unable to load sites: ${snapshot.error}');
+                      }
+                      final projects = snapshot.data ?? [];
                       if (projects.isEmpty) {
                         return const Text('Create a site before adding labourers.');
                       }
@@ -194,8 +200,6 @@ class LabourScreen extends ConsumerWidget {
                         },
                       );
                     },
-                    loading: () => const LinearProgressIndicator(),
-                    error: (error, _) => Text('Unable to load sites: $error'),
                   ),
                   const SizedBox(height: 20),
                   AppButton(
