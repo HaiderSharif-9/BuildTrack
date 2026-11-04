@@ -4,52 +4,39 @@
 
 BuildTrack is a Flutter + Supabase app for managing construction sites, labour, attendance, payroll, material purchases and project finances. It uses Riverpod for state management, GoRouter for navigation, and an English/Urdu interface with RTL support.
 
-## Current implementation
+## Implemented modules
 
-### Core modules
 - Authentication, forced password change and role-aware navigation
-- Dashboard with site and financial summaries
-- Sites, clients, suppliers and labour management
-- Daily attendance with time entries, overtime and wage calculation
-- Weekly payroll with advances and payment recording
-- Material purchases and automatic expense ledger entries
+- Live dashboard totals, date/site filters, income/expense chart, site summaries and recent ledger activity
+- Sites, clients and suppliers
+- Labour roster with create, edit, archive and site assignment
+- Daily attendance with time entries, saved overtime and server-side wage calculation
+- Weekly payroll with site selection, advances and payment recording
+- Material purchases with database-generated Materials ledger entries
 - Financial ledger and basic site profitability reports
-- Team account creation through an admin-only Supabase Edge Function
+- Admin-only team account creation with manager-to-site assignment
 
-### Technical foundation
+## Technical foundation
+
 - Flutter / Dart
 - Supabase Auth, PostgreSQL and Row Level Security
+- Supabase Edge Functions for privileged account creation
 - Riverpod and GoRouter
 - Decimal-based money calculations
 - English and Urdu localization
 
-## Important project status
+## Current quality status
 
-The app has passed a local Flutter analyzer run with **0 errors** (19 informational lint suggestions remained at that point), and the debug app was launched on a TECNO BG7.
+The `buildtrack-completion` branch has a GitHub Actions workflow that runs `flutter analyze` and `flutter test`. Recent runs have passed after the analyzer cleanup. The developer also reported a successful debug launch on a TECNO BG7.
 
-The latest backend and UI corrections on the `buildtrack-completion` branch still require local pull-and-retest. In particular, apply migration `008_complete_rls_and_attendance_payroll.sql` and deploy the `admin-create-user` Edge Function before testing the corresponding Supabase features.
-
-**Do not treat this branch as production-ready until the database migration, Edge Function, full test suite, role-based access and real CRUD flows have been verified against the target Supabase project.**
+The newest dashboard, payroll, security and labour changes still need a local pull-and-retest and live Supabase verification. **Do not treat this branch as production-ready until migrations 008 and 009 are applied, the `admin-create-user` Edge Function is deployed, and the real CRUD and role checks below pass.**
 
 ## Supabase setup
 
 1. Configure the Flutter app with your Supabase project URL and anon/publishable key using the existing local environment setup. Never put a service-role key in the Flutter app.
 2. Ensure migrations `001` through `007` have already been applied.
-3. Apply migrations `008_complete_rls_and_attendance_payroll.sql` and `009_dashboard_reporting_functions.sql`, in that order, to the same Supabase project. If using the Supabase CLI with the project linked, run `supabase db push`; otherwise run each pending migration in order through the Supabase SQL Editor.
-4. Bootstrap the first administrator once. First create the intended admin account through the app's initial sign-up flow, then run this in the Supabase SQL Editor, replacing the email with that exact account:
-
-   ```sql
-   UPDATE public.profiles
-   SET role = 'admin'::user_role,
-       active = TRUE
-   WHERE id = (
-     SELECT id FROM auth.users
-     WHERE lower(email) = lower('your-admin-email@example.com')
-   )
-   AND deleted_at IS NULL;
-   ```
-
-   Verify that the account is now an active administrator before creating other team accounts. Do not use this query to promote an account supplied by someone else.
+3. Apply `supabase/migrations/008_complete_rls_and_attendance_payroll.sql`.
+4. Apply `supabase/migrations/009_dashboard_reporting_functions.sql`.
 5. Deploy the secure user-creation function:
 
    ```bash
@@ -71,20 +58,25 @@ flutter test
 flutter run
 ```
 
-## Quality checks
+## Automated checks
 
-A GitHub Actions workflow at `.github/workflows/flutter-ci.yml` runs `flutter analyze` and `flutter test` on pushes to `master` and `buildtrack-completion`, and on pull requests targeting `master`.
+The workflow at `.github/workflows/flutter-ci.yml` runs `flutter analyze` and `flutter test` on pushes to `master` and `buildtrack-completion`, and on pull requests targeting `master`.
 
-## Known scope / not yet included
+APK builds are deliberately manual or version-tag triggered through `.github/workflows/build-apk.yml`; release signing and distribution remain separate final tasks.
 
-- Full offline-first synchronization
-- PDF/Excel report export
-- Production Android signing and release distribution
-- End-to-end Supabase integration tests and full role-by-role security verification
+## Known remaining work
+
+- Apply migrations 008 and 009 to the live Supabase project and deploy the Edge Function.
+- Complete live end-to-end testing for each role and every CRUD flow.
+- Persist language/theme preferences between app launches.
+- Add user deactivation/role-edit screens and multi-site manager assignment UI.
+- Full offline-first synchronization.
+- PDF/Excel report export.
+- Production Android signing and release distribution.
 
 ## Wage calculation
 
-The app uses a 10-hour standard day and 1.5x overtime by default. The server-side attendance trigger is the authoritative wage calculation source.
+The default standard day is 10 hours and overtime is 1.5x. The server-side attendance trigger is the authoritative wage calculation source.
 
 Example at a daily rate of Rs. 1,200:
 - 08:00–18:00 (10 hours): Rs. 1,200
