@@ -336,7 +336,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '${item.labour.trade}${canViewWages ? ' • Rs. ${item.defaultRate.toDisplayString()}/day' : ''}',
+                          '${item.labour.trade}${canViewWages ? " • Rs. ${item.defaultRate.toDisplayString()}/day" : ""}',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: colors.textSecondary,
                           ),
