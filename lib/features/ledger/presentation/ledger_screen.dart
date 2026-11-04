@@ -434,7 +434,7 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
                                 type: selectedType,
                                 categoryId: selectedCategoryId!,
                                 description: desc.isNotEmpty ? desc : selectedType.toUpperCase(),
-                                amount: Money.fromInt(amt.round()),
+                                amount: Money.fromDouble(amt),
                                 projectId: selectedSiteId,
                                 date: DateTime.now(),
                               );
