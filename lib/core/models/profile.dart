@@ -6,7 +6,6 @@ class Profile {
   final String loginId; // phone or email
   final bool active;
   final bool mustChangePassword;
-  final DateTime? tempPasswordExpiresAt;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -18,7 +17,6 @@ class Profile {
     required this.loginId,
     required this.active,
     required this.mustChangePassword,
-    this.tempPasswordExpiresAt,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -32,9 +30,6 @@ class Profile {
       loginId: json['login_id'] as String,
       active: json['active'] as bool,
       mustChangePassword: json['must_change_password'] as bool,
-      tempPasswordExpiresAt: json['temp_password_expires_at'] != null
-          ? DateTime.parse(json['temp_password_expires_at'] as String)
-          : null,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
     );
@@ -48,7 +43,6 @@ class Profile {
         'login_id': loginId,
         'active': active,
         'must_change_password': mustChangePassword,
-        'temp_password_expires_at': tempPasswordExpiresAt?.toIso8601String(),
         'created_at': createdAt.toIso8601String(),
         'updated_at': updatedAt.toIso8601String(),
       };
@@ -61,7 +55,6 @@ class Profile {
     String? loginId,
     bool? active,
     bool? mustChangePassword,
-    DateTime? tempPasswordExpiresAt,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -73,7 +66,6 @@ class Profile {
       loginId: loginId ?? this.loginId,
       active: active ?? this.active,
       mustChangePassword: mustChangePassword ?? this.mustChangePassword,
-      tempPasswordExpiresAt: tempPasswordExpiresAt ?? this.tempPasswordExpiresAt,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
