@@ -51,11 +51,13 @@ final dailyTrendProvider = FutureProvider<List<DailySummary>>((ref) async {
 final siteTotalsProvider = FutureProvider<List<SiteTotals>>((ref) async {
   final repo = ref.watch(dashboardRepositoryProvider);
   final dateRange = ref.watch(selectedDateRangeProvider);
+  final siteId = ref.watch(selectedSiteProvider);
 
   final params = dateRange.apiParams;
   return repo.getSiteTotals(
     from: params['from']!,
     to: params['to']!,
+    projectId: siteId,
   );
 });
 
