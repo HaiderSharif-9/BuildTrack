@@ -20,7 +20,7 @@ The latest branch head still needs its own CI result and a local device retest a
 - Added an admin-only `admin-create-user` Edge Function that creates a real Auth account and assigns manager accounts to a selected site.
 - Added labour creation, editing, archiving and site assignment.
 - Added site-specific wage-rate calculations, site-required payroll recording and role-based finance visibility.
-- Added GitHub Actions for Flutter analyze and unit tests; made APK builds manual or version-tag triggered.
+- Added GitHub Actions for Flutter analyze, unit tests and Edge Function type-checking; made APK builds manual or version-tag triggered.
 
 ## Required live Supabase verification
 
