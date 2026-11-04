@@ -41,16 +41,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     // User is logged in, check if they must change password
     try {
       final profile = await ref.read(currentProfileProvider.future);
-      if (profile?.mustChangePassword ?? false) {
-        final expiresAt = profile?.tempPasswordExpiresAt;
-        if (expiresAt != null && !expiresAt.isAfter(DateTime.now())) {
-          await authService.signOut();
-          if (mounted) context.go('/login');
-        } else if (mounted) {
+      if (mounted) {
+        if (profile?.mustChangePassword ?? false) {
           context.go('/change-password');
+        } else {
+          context.go('/home');
         }
-      } else if (mounted) {
-        context.go('/home');
       }
     } catch (e) {
       if (mounted) {
