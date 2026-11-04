@@ -244,7 +244,7 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
                       if (item.advancesDeducted > Money.zero) ...[
                         const SizedBox(height: 2),
                         Text(
-                          'Advance deducted: -Rs. ${item.advancesDeducted.toDisplayString()}',
+                          'Advance deducted: -${item.advancesDeducted.toDisplayString()}',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: colors.error,
                             fontWeight: FontWeight.bold,
@@ -259,7 +259,7 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      'Rs. ${item.netPayable.toDisplayString()}',
+                      item.netPayable.toDisplayString(),
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: colors.textPrimary,
@@ -270,6 +270,12 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
                       'Gross: ${item.grossWage.toDisplayString()}',
                       style: theme.textTheme.bodySmall?.copyWith(color: colors.textMuted, fontSize: 11),
                     ),
+                    if (item.advancesDeducted > item.grossWage)
+                      Text(
+                        'Advance exceeds this period wages; review before settling.',
+                        style: theme.textTheme.labelSmall?.copyWith(color: colors.error),
+                        textAlign: TextAlign.end,
+                      ),
                   ],
                 ),
               ],
@@ -320,7 +326,7 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
                           ),
                         ),
                       ),
-                if (canRecordPayment && !item.isPaid && item.netPayable > Money.zero)
+                if (canRecordPayment && !item.isPaid && item.daysPresent > 0 && item.advancesDeducted <= item.grossWage)
                   OutlinedButton.icon(
                     icon: const Icon(Icons.payment, size: 16, color: AppColors.goldTextLight),
                     label: const Text(
@@ -365,7 +371,7 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
                     Text('Advance Deducted: -Rs. ${item.advancesDeducted.toDisplayString()}'),
                   const SizedBox(height: 8),
                   Text(
-                    'Net Payable: Rs. ${item.netPayable.toDisplayString()}',
+                    'Net Payable: ${item.netPayable.toDisplayString()}',
                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   const SizedBox(height: 16),
@@ -408,7 +414,7 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
                       Navigator.pop(dialogCtx);
                       ScaffoldMessenger.of(pageContext).showSnackBar(
                         SnackBar(
-                          content: Text('Payment of Rs. ${item.netPayable.toDisplayString()} recorded!'),
+                          content: Text('Payment of ${item.netPayable.toDisplayString()} recorded!'),
                           backgroundColor: Colors.green,
                         ),
                       );
