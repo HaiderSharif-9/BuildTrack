@@ -264,6 +264,7 @@ class AttendanceSheetNotifier extends StateNotifier<AsyncValue<List<LabourAttend
         'status': item.status,
         'in_time': item.status == 'present' ? item.inTime : null,
         'out_time': item.status == 'present' ? item.outTime : null,
+        'overtime_hours': item.status == 'present' ? item.overtimeHours : 0,
         'remarks': item.attendance?.remarks,
       };
     }).toList();
