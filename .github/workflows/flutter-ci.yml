@@ -34,3 +34,17 @@ jobs:
 
       - name: Run unit tests
         run: flutter test
+
+  edge-function-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Type-check admin user function
+        run: deno check supabase/functions/admin-create-user/index.ts
