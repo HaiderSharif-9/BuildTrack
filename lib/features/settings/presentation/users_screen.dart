@@ -270,7 +270,7 @@ class UsersScreen extends ConsumerWidget {
                                   ),
                                   const SizedBox(height: 8),
                                   const Text(
-                                    'The user must change this password after signing in. It expires in 7 days.',
+                                    'The user must change this password after signing in.',
                                     style: TextStyle(fontSize: 12),
                                   ),
                                 ],
