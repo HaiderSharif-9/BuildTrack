@@ -144,7 +144,8 @@ class PayrollNotifier extends StateNotifier<AsyncValue<List<WorkerPayrollItem>>>
           .from('labour_advances')
           .select('labour_id, amount')
           .gte('date', startStr)
-          .lte('date', endStr);
+          .lte('date', endStr)
+          .isFilter('deleted_at', null);
 
       if (siteId != null) {
         advQuery = advQuery.eq('project_id', siteId);
