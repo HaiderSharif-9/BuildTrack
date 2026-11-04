@@ -289,7 +289,7 @@ class UsersScreen extends ConsumerWidget {
                               'email': email,
                               'phone': phone,
                               'role': selectedRole,
-                              'projectId': selectedProjectId,
+                              'projectId': selectedRole == 'manager' ? selectedProjectId : null,
                             },
                           );
                           final result = Map<String, dynamic>.from(response.data as Map);
