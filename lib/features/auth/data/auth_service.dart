@@ -141,6 +141,8 @@ final authStateProvider = StreamProvider<AuthState>((ref) {
 
 /// Current user provider
 final currentUserProvider = Provider<User?>((ref) {
+  // Recompute the current user whenever Supabase emits a sign-in/sign-out event.
+  ref.watch(authStateProvider);
   final authService = ref.watch(authServiceProvider);
   return authService.currentUser;
 });
