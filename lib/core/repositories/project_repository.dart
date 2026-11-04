@@ -26,7 +26,8 @@ class ProjectRepository extends BaseRepository {
     try {
       var query = supabase
           .from('projects')
-          .select();
+          .select()
+          .isFilter('deleted_at', null);
 
       if (status != null) {
         query = query.eq('status', status);
