@@ -67,7 +67,7 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
                         style: theme.textTheme.bodyMedium?.copyWith(color: colors.textSecondary),
                       ),
                       Text(
-                        '${balance.netBalance.toDisplayString()}',
+                        balance.netBalance.toDisplayString(),
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: balance.netBalance.isPositive ? colors.success : colors.error,
@@ -92,7 +92,7 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '${balance.totalIncome.toDisplayString()}',
+                            balance.totalIncome.toDisplayString(),
                             style: TextStyle(fontWeight: FontWeight.bold, color: colors.success, fontSize: 14),
                           ),
                         ],
@@ -109,7 +109,7 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '${balance.totalExpense.toDisplayString()}',
+                            balance.totalExpense.toDisplayString(),
                             style: TextStyle(fontWeight: FontWeight.bold, color: colors.error, fontSize: 14),
                           ),
                         ],
