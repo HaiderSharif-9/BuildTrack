@@ -109,6 +109,7 @@ class PayrollNotifier extends StateNotifier<AsyncValue<List<WorkerPayrollItem>>>
           .from('labour')
           .select('id, name, trade, active')
           .eq('active', true)
+          .isFilter('deleted_at', null)
           .order('name');
       final labourList = (labourRes as List<dynamic>)
           .map((e) => Labour.fromJson(e as Map<String, dynamic>))
@@ -128,7 +129,8 @@ class PayrollNotifier extends StateNotifier<AsyncValue<List<WorkerPayrollItem>>>
           .from('attendance')
           .select('labour_id, date, status, in_time, out_time, hours_worked, overtime_hours, project_id')
           .gte('date', startStr)
-          .lte('date', endStr);
+          .lte('date', endStr)
+          .isFilter('deleted_at', null);
 
       if (siteId != null) {
         attQuery = attQuery.eq('project_id', siteId);
@@ -163,7 +165,8 @@ class PayrollNotifier extends StateNotifier<AsyncValue<List<WorkerPayrollItem>>>
           .from('wage_payments')
           .select()
           .gte('period_start', startStr)
-          .lte('period_end', endStr);
+          .lte('period_end', endStr)
+          .isFilter('deleted_at', null);
 
       if (siteId != null) {
         payQuery = payQuery.eq('project_id', siteId);
