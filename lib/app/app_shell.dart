@@ -142,7 +142,7 @@ class AppShell extends ConsumerWidget {
     );
     return tabs;
   }
-}}
+}
 
 class _NavTab {
   final int branchIndex;
