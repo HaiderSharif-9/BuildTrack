@@ -130,7 +130,22 @@ class AttendanceSheetNotifier extends StateNotifier<AsyncValue<List<LabourAttend
           ratesMap[lId] = Money.fromString(rateVal);
         }
       } catch (_) {
-        // Fallback default rate if private table is restricted for user role
+        // Managers cannot read private wage data; the server still calculates
+        // and stores the authoritative wage through the attendance trigger.
+      }
+
+      // Apply a site-specific rate when one is configured.
+      try {
+        final overrides = await supabase
+            .from('project_labour_rate')
+            .select('labour_id, rate_override')
+            .eq('project_id', siteId);
+        for (final entry in overrides as List<dynamic>) {
+          ratesMap[entry['labour_id'] as String] =
+              Money.fromString(entry['rate_override'].toString());
+        }
+      } catch (_) {
+        // Project rate overrides are restricted for manager accounts.
       }
 
       // 3. Get existing attendance for this site and date
