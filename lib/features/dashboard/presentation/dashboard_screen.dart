@@ -363,13 +363,13 @@ class _ChartsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SectionHeader(title: 'Income vs Expenses'),
+        const SectionHeader(title: 'Income vs Expenses'),
         const SizedBox(height: 12),
         trendAsync.when(
           data: (items) {
             if (items.isEmpty) {
-              return AppCard(
-                child: const SizedBox(
+              return const AppCard(
+                child: SizedBox(
                   height: 120,
                   child: Center(child: Text('No transactions in this period')),
                 ),
@@ -503,8 +503,8 @@ class _SiteCardsSection extends StatelessWidget {
         siteTotalsAsync.when(
           data: (sites) {
             if (sites.isEmpty) {
-              return AppCard(
-                child: const Padding(
+              return const AppCard(
+                child: Padding(
                   padding: EdgeInsets.all(20),
                   child: Center(child: Text('No active sites found')),
                 ),
