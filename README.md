@@ -35,8 +35,22 @@ The latest backend and UI corrections on the `buildtrack-completion` branch stil
 
 1. Configure the Flutter app with your Supabase project URL and anon/publishable key using the existing local environment setup. Never put a service-role key in the Flutter app.
 2. Ensure migrations `001` through `007` have already been applied.
-3. Apply `supabase/migrations/008_complete_rls_and_attendance_payroll.sql` to the same Supabase project.
-4. Deploy the secure user-creation function:
+3. Apply migrations `008_complete_rls_and_attendance_payroll.sql` and `009_dashboard_reporting_functions.sql`, in that order, to the same Supabase project. If using the Supabase CLI with the project linked, run `supabase db push`; otherwise run each pending migration in order through the Supabase SQL Editor.
+4. Bootstrap the first administrator once. First create the intended admin account through the app's initial sign-up flow, then run this in the Supabase SQL Editor, replacing the email with that exact account:
+
+   ```sql
+   UPDATE public.profiles
+   SET role = 'admin'::user_role,
+       active = TRUE
+   WHERE id = (
+     SELECT id FROM auth.users
+     WHERE lower(email) = lower('your-admin-email@example.com')
+   )
+   AND deleted_at IS NULL;
+   ```
+
+   Verify that the account is now an active administrator before creating other team accounts. Do not use this query to promote an account supplied by someone else.
+5. Deploy the secure user-creation function:
 
    ```bash
    supabase functions deploy admin-create-user
@@ -44,7 +58,7 @@ The latest backend and UI corrections on the `buildtrack-completion` branch stil
 
    The function uses Supabase's server-side environment variables. Keep the service-role key inside the Supabase Edge Function environment only; never commit it or expose it to the client.
 
-5. Confirm that at least one active administrator profile exists before using Team & Users.
+6. Confirm that at least one active administrator profile exists before using Team & Users.
 
 ## Local development
 
