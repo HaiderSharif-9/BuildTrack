@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/models/labour.dart';
 import '../../../core/models/money.dart';
-import '../../../core/models/project.dart';
 import '../../../core/models/wage_payment.dart';
 import '../../../core/repositories/project_repository.dart';
 import '../../../core/services/wage_calculator.dart';
