@@ -16,7 +16,7 @@ class MoreScreen extends ConsumerWidget {
     final colors = context.appColors;
     final l10n = AppLocalizations.of(context)!;
     final userProfile = ref.watch(currentProfileProvider).valueOrNull;
-    final isAdmin = userProfile?.role == 'admin' || userProfile?.role == 'accountant';
+    final isAdmin = userProfile?.role == 'admin';
 
     return Scaffold(
       backgroundColor: colors.bg,
@@ -94,12 +94,12 @@ class MoreScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 10),
 
-          // Team & Users (Admin/Accountant only)
+          // Team & Users (Admin only)
           if (isAdmin) ...[
             _buildMenuTile(
               icon: Icons.manage_accounts_outlined,
               title: 'Team & Users',
-              subtitle: 'Manage managers, roles & access permissions',
+              subtitle: 'View team members and create accounts',
               onTap: () => context.push('/more/users'),
               colors: colors,
               theme: theme,
