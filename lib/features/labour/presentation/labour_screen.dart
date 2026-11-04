@@ -1,3 +1,4 @@
+import '../../../core/models/labour.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
@@ -12,13 +13,13 @@ class LabourScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final labour = ref.watch(labourListProvider);
     final searchQuery = ref.watch(labourSearchProvider);
+    final colors = context.appColors;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.labour ?? 'Labour'),
+        title: Text(l10n.labour),
         elevation: 0,
         backgroundColor: Colors.transparent,
         actions: [
@@ -44,7 +45,7 @@ class LabourScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(16),
             child: AppTextField(
               controller: TextEditingController(text: searchQuery),
-              label: l10n.search ?? 'Search',
+              label: l10n.search,
               hint: 'Name or trade',
               
               onChanged: (value) {
@@ -57,13 +58,8 @@ class LabourScreen extends ConsumerWidget {
             child: labour.when(
               data: (labourList) => labourList.isEmpty
                   ? EmptyState(
-                      
                       title: l10n.noData,
-                      description: 'No labour found',
-                      action: 'Add Labour',
-                      onAction: () {
-                        // TODO: Show add labour sheet
-                      },
+                      subtitle: 'No labour found',
                     )
                   : ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -84,7 +80,8 @@ class LabourScreen extends ConsumerWidget {
                 child: CircularProgressIndicator(),
               ),
               error: (err, stack) => ErrorState(
-                error: err.toString(),
+                title: l10n.error,
+                message: err.toString(),
                 onRetry: () {
                   ref.invalidate(labourListProvider);
                 },
@@ -124,14 +121,14 @@ class _LabourTile extends StatelessWidget {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: AppColors.primary,
+                  color: colors.primary,
                   shape: BoxShape.circle,
                 ),
                 child: Center(
                   child: Text(
                     labour.name.substring(0, 1).toUpperCase(),
                     style: TextStyle(
-                      color: AppColors.charcoal900,
+                      color: colors.charcoal900,
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
                     ),
@@ -154,7 +151,7 @@ class _LabourTile extends StatelessWidget {
                     Text(
                       labour.trade,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
+                        color: colors.textSecondary,
                       ),
                     ),
                   ],
@@ -167,13 +164,13 @@ class _LabourTile extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.success.withOpacity(0.1),
+                  color: colors.success.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   'Active',
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: AppColors.success,
+                    color: colors.success,
                   ),
                 ),
               ),
@@ -185,5 +182,3 @@ class _LabourTile extends StatelessWidget {
   }
 }
 
-// Re-export Labour for convenience
-export '../../core/models/labour.dart';

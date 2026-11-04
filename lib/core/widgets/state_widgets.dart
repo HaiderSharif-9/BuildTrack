@@ -22,7 +22,7 @@ class EmptyState extends StatelessWidget {
 
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(AppSpacing.xxl),
+        padding: const EdgeInsets.all(AppSpacing.xxl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -31,7 +31,7 @@ class EmptyState extends StatelessWidget {
               size: 64,
               color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
             ),
-            SizedBox(height: AppSpacing.lg),
+            const SizedBox(height: AppSpacing.lg),
             Text(
               title,
               style: AppTypography.subtitleLight.copyWith(
@@ -40,7 +40,7 @@ class EmptyState extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             if (subtitle != null) ...[
-              SizedBox(height: AppSpacing.sm),
+              const SizedBox(height: AppSpacing.sm),
               Text(
                 subtitle!,
                 style: AppTypography.bodyLight.copyWith(
@@ -50,7 +50,7 @@ class EmptyState extends StatelessWidget {
               ),
             ],
             if (onRetry != null) ...[
-              SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: AppSpacing.lg),
               AppButton(
                 label: 'Try Again',
                 onPressed: onRetry!,

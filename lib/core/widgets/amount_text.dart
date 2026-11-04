@@ -41,7 +41,7 @@ class AmountText extends StatelessWidget {
       _formatAmount(),
       style: (style ?? AppTypography.bodyLight).copyWith(
         color: color,
-        fontFeatures: [FontFeature.tabularFigures()],
+        fontFeatures: [const FontFeature.tabularFigures()],
       ),
     );
   }

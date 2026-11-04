@@ -20,7 +20,7 @@ class SectionHeader extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(
-      padding: EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.lg,
         vertical: AppSpacing.md,
       ),
@@ -37,7 +37,7 @@ class SectionHeader extends StatelessWidget {
                 ),
               ),
               if (subtitle != null) ...[
-                SizedBox(height: AppSpacing.xs),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   subtitle!,
                   style: AppTypography.captionLight.copyWith(
@@ -84,7 +84,7 @@ class AppScaffold extends StatelessWidget {
         AppBar(
           title: title != null ? Text(title!) : null,
           leading: showBackButton && Navigator.of(context).canPop()
-              ? BackButton()
+              ? const BackButton()
               : null,
           actions: actions,
         );
@@ -171,7 +171,7 @@ class BottomSheetScaffold extends StatelessWidget {
       builder: (context, scrollController) => Container(
         decoration: BoxDecoration(
           color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-          borderRadius: BorderRadius.only(
+          borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(AppRadius.bottomSheet),
             topRight: Radius.circular(AppRadius.bottomSheet),
           ),
@@ -185,7 +185,7 @@ class BottomSheetScaffold extends StatelessWidget {
               elevation: 0,
               actions: [
                 IconButton(
-                  icon: Icon(Icons.close),
+                  icon: const Icon(Icons.close),
                   onPressed: () {
                     Navigator.pop(context);
                     onClose?.call();
@@ -195,7 +195,7 @@ class BottomSheetScaffold extends StatelessWidget {
             ),
             SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.all(AppSpacing.lg),
+                padding: const EdgeInsets.all(AppSpacing.lg),
                 child: child,
               ),
             ),

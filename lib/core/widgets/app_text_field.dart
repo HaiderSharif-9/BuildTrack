@@ -55,7 +55,7 @@ class _AppTextFieldState extends State<AppTextField> {
             color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
           ),
         ),
-        SizedBox(height: AppSpacing.sm),
+        const SizedBox(height: AppSpacing.sm),
         TextFormField(
           controller: widget.controller,
           keyboardType: widget.keyboardType,

@@ -61,6 +61,27 @@ abstract class AppColors {
   static const Color warningBgLight = Color(0xFFFFF4DC);
   static const Color warningDark = Color(0xFFFFC456);
   static const Color warningBgDark = Color(0xFF2B2310);
+
+  // Common aliases and fallbacks for static access
+  static const Color success = incomeLight;
+  static const Color income = incomeLight;
+  static const Color error = expenseLight;
+  static const Color expense = expenseLight;
+  static const Color info = profitLight;
+  static const Color profit = profitLight;
+  static const Color warning = warningLight;
+  static const Color border = lightBorder;
+  static const Color surface = lightSurface;
+  static const Color surfaceAlt = lightSurfaceAlt;
+  static const Color textPrimary = lightTextPrimary;
+  static const Color textSecondary = lightTextSecondary;
+  static const Color textMuted = lightTextMuted;
+
+  /// Compatibility accessor to get brightness-aware AppColorsValue
+  static AppColorsValue of(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return AppColorsValue(isDark: isDark);
+  }
 }
 
 /// Typography tokens (Plus Jakarta Sans headings, Inter body, Noto Nastaliq Urdu)
@@ -275,6 +296,9 @@ class AppColorsValue {
   Color get goldText => isDark ? AppColors.goldTextDark : AppColors.goldTextLight;
 
   // Semantic
+  Color get income => success;
+  Color get expense => error;
+  Color get profit => info;
   Color get success => isDark ? AppColors.incomeDark : AppColors.incomeLight;
   Color get successText => isDark ? AppColors.incomeDark : AppColors.incomeTextLight;
   Color get successBg => isDark ? AppColors.incomeBgDark : AppColors.incomeBgLight;

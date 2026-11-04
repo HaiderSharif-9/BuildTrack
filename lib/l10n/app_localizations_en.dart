@@ -340,4 +340,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recentActivity => 'Recent Activity';
+
+  @override
+  String get overview => 'Overview';
+
+  @override
+  String get search => 'Search';
+
+  @override
+  String get confirmPasswordHint => 'Confirm your password';
 }

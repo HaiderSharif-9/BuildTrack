@@ -17,7 +17,6 @@ class SiteDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final siteDetail = ref.watch(siteDetailProvider(siteId));
 
     return Scaffold(
@@ -30,7 +29,8 @@ class SiteDetailScreen extends ConsumerWidget {
         data: (detail) {
           if (detail == null) {
             return ErrorState(
-              error: 'Site not found',
+              title: l10n.error,
+              message: 'Site not found',
               onRetry: () {
                 ref.invalidate(siteDetailProvider(siteId));
               },
@@ -54,7 +54,7 @@ class SiteDetailScreen extends ConsumerWidget {
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          Icon(Icons.location_on, color: AppColors.primary, size: 16),
+                          const Icon(Icons.location_on, color: AppColors.primary, size: 16),
                           const SizedBox(width: 8),
                           Text(
                             detail['location'] as String,
@@ -69,12 +69,12 @@ class SiteDetailScreen extends ConsumerWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
+                          color: AppColors.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           (detail['status'] as String).replaceAll('_', ' '),
-                          style: TextStyle(color: AppColors.primary),
+                          style: const TextStyle(color: AppColors.primary),
                         ),
                       ),
                     ],
@@ -83,7 +83,7 @@ class SiteDetailScreen extends ConsumerWidget {
                 const SizedBox(height: 24),
 
                 // Tabs placeholder
-                SectionHeader(title: l10n.overview ?? 'Overview'),
+                SectionHeader(title: l10n.overview),
                 const SizedBox(height: 16),
                 AppCard(
                   child: Container(
@@ -108,7 +108,8 @@ class SiteDetailScreen extends ConsumerWidget {
           child: CircularProgressIndicator(),
         ),
         error: (err, stack) => ErrorState(
-          error: err.toString(),
+          title: l10n.error,
+          message: err.toString(),
           onRetry: () {
             ref.invalidate(siteDetailProvider(siteId));
           },

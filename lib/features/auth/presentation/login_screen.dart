@@ -71,13 +71,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
           height: MediaQuery.of(context).size.height,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -100,7 +99,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     color: AppColors.primary,
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Center(
+                  child: const Center(
                     child: Text(
                       '◆',
                       style: TextStyle(
@@ -179,7 +178,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 },
                           child: Text(
                             l10n.forgotPassword,
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: AppColors.goldTextLight,
                               fontSize: 12,
                             ),
@@ -193,7 +192,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: AppColors.expenseLight.withOpacity(0.1),
+                            color: AppColors.expenseLight.withValues(alpha: 0.1),
                             border: Border.all(
                               color: AppColors.expenseLight,
                             ),
@@ -201,7 +200,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                           child: Text(
                             _errorMessage!,
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: AppColors.expenseLight,
                               fontSize: 13,
                             ),
@@ -211,9 +210,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                       // Login button
                       AppButton(
-                        onPressed: _isLoading
-                            ? null
-                            : () {
+                        onPressed: () {
+                                if (_isLoading) return;
                                 if (_loginIdController.text.isEmpty ||
                                     _passwordController.text.isEmpty) {
                                   setState(() {
@@ -239,7 +237,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   },
                   child: Text(
                     l10n.signUpAsFirstAdmin,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppColors.goldTextLight,
                       fontSize: 13,
                     ),

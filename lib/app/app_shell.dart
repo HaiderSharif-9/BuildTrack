@@ -24,19 +24,20 @@ class AppShell extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userRole = ref.watch(currentUserRoleProvider);
     final l10n = AppLocalizations.of(context)!;
+    final colors = context.appColors;
 
     return userRole.when(
       data: (role) {
-        // Define visible tabs based on role
         final tabs = _getVisibleTabs(role, l10n);
 
         return Scaffold(
           body: navigationShell,
           bottomNavigationBar: Container(
             decoration: BoxDecoration(
+              color: colors.surface,
               border: Border(
                 top: BorderSide(
-                  color: AppColors.lightBorder,
+                  color: colors.border,
                   width: 1,
                 ),
               ),
@@ -44,16 +45,37 @@ class AppShell extends ConsumerWidget {
             child: NavigationBar(
               selectedIndex: navigationShell.currentIndex,
               onDestinationSelected: _goBranch,
-              backgroundColor: AppColors.lightSurface,
-              indicatorColor: AppColors.primary.withOpacity(0.1),
+              backgroundColor: colors.surface,
+              indicatorColor: AppColors.primary.withValues(alpha: 0.15),
               height: 64,
-              destinations: tabs
-                  .map((tab) => NavigationDestination(
-                        icon: Icon(tab.icon),
-                        selectedIcon: Icon(tab.selectedIcon),
-                        label: tab.label,
-                      ))
-                  .toList(),
+              destinations: tabs.map((tab) {
+                if (tab.route == '/attendance') {
+                  return NavigationDestination(
+                    icon: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: const BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.check, color: AppColors.textOnGold, size: 20),
+                    ),
+                    selectedIcon: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: const BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.check, color: AppColors.textOnGold, size: 20),
+                    ),
+                    label: tab.label,
+                  );
+                }
+                return NavigationDestination(
+                  icon: Icon(tab.icon),
+                  selectedIcon: Icon(tab.selectedIcon),
+                  label: tab.label,
+                );
+              }).toList(),
             ),
           ),
         );
@@ -63,7 +85,7 @@ class AppShell extends ConsumerWidget {
           child: CircularProgressIndicator(),
         ),
       ),
-      error: (err, stack) => Scaffold(
+      error: (err, stack) => const Scaffold(
         body: Center(
           child: Text('Error loading role'),
         ),
@@ -72,7 +94,7 @@ class AppShell extends ConsumerWidget {
   }
 
   List<_NavTab> _getVisibleTabs(String? role, AppLocalizations l10n) {
-    final allTabs = [
+    return [
       _NavTab(
         label: l10n.home,
         icon: Icons.home_outlined,
@@ -104,14 +126,6 @@ class AppShell extends ConsumerWidget {
         route: '/more',
       ),
     ];
-
-    // Managers see all tabs
-    if (role == 'manager') {
-      return allTabs;
-    }
-
-    // Admin and accountant see all tabs
-    return allTabs;
   }
 }
 

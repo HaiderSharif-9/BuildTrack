@@ -108,7 +108,9 @@
   "manager": "منیجر",
   "info": "معلومات",
   "allSites": "تمام سائٹس",
-  "sites": "سائٹس",
   "trend": "روزانہ کا رجحان",
-  "recentActivity": "حالیہ سرگرمی"
+  "recentActivity": "حالیہ سرگرمی",
+  "overview": "جائزہ",
+  "search": "تلاش",
+  "confirmPasswordHint": "اپنے پاس ورڈ کی تصدیق کریں"
 }

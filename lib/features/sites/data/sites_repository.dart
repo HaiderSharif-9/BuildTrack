@@ -15,7 +15,6 @@ class SitesRepository {
             created_at, updated_at, deleted_at,
             project_finance(budget)
           ''')
-          .eq('deleted_at', null)
           .order('name');
 
       return (response as List)
@@ -64,10 +63,9 @@ class SitesRepository {
             clients(id, name, phone, address)
           ''')
           .eq('id', siteId)
-          .eq('deleted_at', null)
           .maybeSingle();
 
-      return response as Map<String, dynamic>?;
+      return response;
     } catch (e) {
       throw Exception('Error fetching site detail: $e');
     }
@@ -106,7 +104,7 @@ class SitesRepository {
         'budget': budget.toDbString(),
       });
 
-      return Project.fromJson(projectResponse as Map<String, dynamic>);
+      return Project.fromJson(projectResponse);
     } catch (e) {
       throw Exception('Error creating site: $e');
     }
@@ -137,7 +135,7 @@ class SitesRepository {
           .select()
           .single();
 
-      return Project.fromJson(response as Map<String, dynamic>);
+      return Project.fromJson(response);
     } catch (e) {
       throw Exception('Error updating site: $e');
     }

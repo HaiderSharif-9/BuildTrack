@@ -102,11 +102,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(color: AppColors.lightTextPrimary),
+        leading: const BackButton(color: AppColors.lightTextPrimary),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -167,7 +166,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   AppTextField(
                     controller: _confirmPasswordController,
                     label: l10n.confirmPassword,
-                    hint: l10n.confirmPasswordHint,
+                    hint: l10n.confirmPassword,
                     
                     obscure: !_showConfirmPassword,
                     suffixIcon: _showConfirmPassword
@@ -183,13 +182,13 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppColors.expenseLight.withOpacity(0.1),
+                        color: AppColors.expenseLight.withValues(alpha: 0.1),
                         border: Border.all(color: AppColors.expenseLight),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         _errorMessage!,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: AppColors.expenseLight,
                           fontSize: 13,
                         ),
@@ -199,7 +198,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     const SizedBox(height: 16),
                   AppButton(
                     onPressed:
-                        _isLoading ? null : _handleSignUp,
+                        _isLoading ? () {} : _handleSignUp,
                     isLoading: _isLoading,
                     label: l10n.createAccount,
                   ),

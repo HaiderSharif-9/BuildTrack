@@ -30,7 +30,7 @@ class ClientRepository {
           .maybeSingle();
 
       if (response == null) return null;
-      return Client.fromJson(response as Map<String, dynamic>);
+      return Client.fromJson(response);
     } catch (e) {
       throw Exception('Error fetching client: $e');
     }
@@ -51,7 +51,7 @@ class ClientRepository {
         'notes': notes,
       }).select().single();
 
-      return Client.fromJson(response as Map<String, dynamic>);
+      return Client.fromJson(response);
     } catch (e) {
       throw Exception('Error creating client: $e');
     }
@@ -78,7 +78,7 @@ class ClientRepository {
           .select()
           .single();
 
-      return Client.fromJson(response as Map<String, dynamic>);
+      return Client.fromJson(response);
     } catch (e) {
       throw Exception('Error updating client: $e');
     }

@@ -54,7 +54,7 @@ class LabourRepository {
           .eq('id', labourId)
           .maybeSingle();
 
-      return response as Map<String, dynamic>?;
+      return response;
     } catch (e) {
       throw Exception('Error fetching labour detail: $e');
     }
@@ -92,7 +92,7 @@ class LabourRepository {
         });
       }
 
-      return Labour.fromJson(labourResponse as Map<String, dynamic>);
+      return Labour.fromJson(labourResponse);
     } catch (e) {
       throw Exception('Error creating labour: $e');
     }
@@ -115,7 +115,7 @@ class LabourRepository {
           .select()
           .single();
 
-      return Labour.fromJson(response as Map<String, dynamic>);
+      return Labour.fromJson(response);
     } catch (e) {
       throw Exception('Error updating labour: $e');
     }

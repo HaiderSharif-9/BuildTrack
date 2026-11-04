@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../l10n/app_localizations.dart';
 import '../data/auth_service.dart';
 import '../data/auth_providers.dart';
 
@@ -59,11 +58,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -85,7 +83,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                   color: AppColors.primary,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Center(
+                child: const Center(
                   child: Text(
                     '◆',
                     style: TextStyle(
@@ -108,7 +106,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               Text(
                 'by Care Constructiona Pvt Ltd',
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: AppColors.lightTextSecondary.withOpacity(0.8),
+                  color: AppColors.lightTextSecondary.withValues(alpha: 0.8),
                 ),
               ),
               const SizedBox(height: 8),
@@ -120,7 +118,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 ),
               ),
               const SizedBox(height: 48),
-              SizedBox(
+              const SizedBox(
                 width: 24,
                 height: 24,
                 child: CircularProgressIndicator(

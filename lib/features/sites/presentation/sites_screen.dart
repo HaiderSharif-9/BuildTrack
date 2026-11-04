@@ -16,7 +16,7 @@ class SitesScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.sites ?? 'Sites'),
+        title: Text(l10n.sites),
         elevation: 0,
         backgroundColor: Colors.transparent,
         actions: [
@@ -52,7 +52,8 @@ class SitesScreen extends ConsumerWidget {
           child: CircularProgressIndicator(),
         ),
         error: (err, stack) => ErrorState(
-          error: err.toString(),
+          title: l10n.error,
+          message: err.toString(),
           onRetry: () {
             ref.invalidate(sitesListProvider);
           },

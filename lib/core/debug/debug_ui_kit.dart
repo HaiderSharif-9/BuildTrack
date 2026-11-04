@@ -28,13 +28,13 @@ class _DebugUiKitScreenState extends State<DebugUiKitScreen> {
             ],
           ),
           body: SingleChildScrollView(
-            padding: EdgeInsets.all(AppSpacing.lg),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Buttons
-                SectionHeader(title: 'Buttons', subtitle: 'Primary, Secondary, Small'),
-                SizedBox(height: AppSpacing.md),
+                const SectionHeader(title: 'Buttons', subtitle: 'Primary, Secondary, Small'),
+                const SizedBox(height: AppSpacing.md),
                 Wrap(
                   spacing: AppSpacing.md,
                   runSpacing: AppSpacing.md,
@@ -45,17 +45,17 @@ class _DebugUiKitScreenState extends State<DebugUiKitScreen> {
                     AppButton(label: 'Loading', onPressed: () {}, isLoading: true),
                   ],
                 ),
-                SizedBox(height: AppSpacing.xxl),
+                const SizedBox(height: AppSpacing.xxl),
 
                 // Cards
-                SectionHeader(title: 'Cards', subtitle: 'Container component'),
-                SizedBox(height: AppSpacing.md),
+                const SectionHeader(title: 'Cards', subtitle: 'Container component'),
+                const SizedBox(height: AppSpacing.md),
                 AppCard(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Card Title', style: AppTypography.subtitleLight),
-                      SizedBox(height: AppSpacing.sm),
+                      const SizedBox(height: AppSpacing.sm),
                       Text(
                         'This is a content card with padding and border.',
                         style: AppTypography.bodyLight,
@@ -63,12 +63,12 @@ class _DebugUiKitScreenState extends State<DebugUiKitScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: AppSpacing.xxl),
+                const SizedBox(height: AppSpacing.xxl),
 
                 // KPI Cards
-                SectionHeader(title: 'KPI Cards', subtitle: 'Data display cards'),
-                SizedBox(height: AppSpacing.md),
-                Column(
+                const SectionHeader(title: 'KPI Cards', subtitle: 'Data display cards'),
+                const SizedBox(height: AppSpacing.md),
+                const Column(
                   children: [
                     KpiCard(
                       label: 'Total Income',
@@ -92,11 +92,11 @@ class _DebugUiKitScreenState extends State<DebugUiKitScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: AppSpacing.xxl),
+                const SizedBox(height: AppSpacing.xxl),
 
                 // Amount Text
-                SectionHeader(title: 'Amount Text', subtitle: 'Money formatting'),
-                SizedBox(height: AppSpacing.md),
+                const SectionHeader(title: 'Amount Text', subtitle: 'Money formatting'),
+                const SizedBox(height: AppSpacing.md),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -105,7 +105,7 @@ class _DebugUiKitScreenState extends State<DebugUiKitScreen> {
                       type: 'income',
                       style: AppTypography.kpiLight,
                     ),
-                    SizedBox(height: AppSpacing.sm),
+                    const SizedBox(height: AppSpacing.sm),
                     AmountText(
                       amount: '850.50',
                       type: 'expense',
@@ -113,12 +113,12 @@ class _DebugUiKitScreenState extends State<DebugUiKitScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: AppSpacing.xxl),
+                const SizedBox(height: AppSpacing.xxl),
 
                 // Status Chips
-                SectionHeader(title: 'Status Chips', subtitle: 'Semantic colors'),
-                SizedBox(height: AppSpacing.md),
-                Wrap(
+                const SectionHeader(title: 'Status Chips', subtitle: 'Semantic colors'),
+                const SizedBox(height: AppSpacing.md),
+                const Wrap(
                   spacing: AppSpacing.md,
                   runSpacing: AppSpacing.md,
                   children: [
@@ -128,30 +128,30 @@ class _DebugUiKitScreenState extends State<DebugUiKitScreen> {
                     StatusChip(label: 'Selected', type: 'default', selected: true),
                   ],
                 ),
-                SizedBox(height: AppSpacing.xxl),
+                const SizedBox(height: AppSpacing.xxl),
 
                 // Text Input
-                SectionHeader(title: 'Text Input', subtitle: 'Form fields'),
-                SizedBox(height: AppSpacing.md),
-                AppTextField(
+                const SectionHeader(title: 'Text Input', subtitle: 'Form fields'),
+                const SizedBox(height: AppSpacing.md),
+                const AppTextField(
                   label: 'Email',
                   hint: 'Enter your email',
                   prefixIcon: Icons.email,
                   keyboardType: TextInputType.emailAddress,
                 ),
-                SizedBox(height: AppSpacing.lg),
-                AppTextField(
+                const SizedBox(height: AppSpacing.lg),
+                const AppTextField(
                   label: 'Password',
                   hint: 'Enter your password',
                   obscure: true,
                   prefixIcon: Icons.lock,
                 ),
-                SizedBox(height: AppSpacing.xxl),
+                const SizedBox(height: AppSpacing.xxl),
 
                 // Skeleton Loaders
-                SectionHeader(title: 'Skeleton Loaders', subtitle: 'Loading states'),
-                SizedBox(height: AppSpacing.md),
-                Column(
+                const SectionHeader(title: 'Skeleton Loaders', subtitle: 'Loading states'),
+                const SizedBox(height: AppSpacing.md),
+                const Column(
                   children: [
                     ShimmerSkeleton(height: 60),
                     SizedBox(height: AppSpacing.md),
@@ -160,23 +160,23 @@ class _DebugUiKitScreenState extends State<DebugUiKitScreen> {
                     ShimmerSkeleton(height: 80),
                   ],
                 ),
-                SizedBox(height: AppSpacing.xxl),
+                const SizedBox(height: AppSpacing.xxl),
 
                 // Empty States
-                SectionHeader(title: 'States', subtitle: 'Empty, Error, Loading'),
-                SizedBox(height: AppSpacing.md),
-                AppCard(
+                const SectionHeader(title: 'States', subtitle: 'Empty, Error, Loading'),
+                const SizedBox(height: AppSpacing.md),
+                const AppCard(
                   child: EmptyState(
                     title: 'No Data Found',
                     subtitle: 'Check back later',
                     icon: Icons.inbox_outlined,
                   ),
                 ),
-                SizedBox(height: AppSpacing.xxl),
+                const SizedBox(height: AppSpacing.xxl),
 
                 // Color Palette
-                SectionHeader(title: 'Color Palette', subtitle: 'Fixed charcoal + gold'),
-                SizedBox(height: AppSpacing.md),
+                const SectionHeader(title: 'Color Palette', subtitle: 'Fixed charcoal + gold'),
+                const SizedBox(height: AppSpacing.md),
                 _buildColorGrid(),
               ],
             ),
@@ -190,7 +190,7 @@ class _DebugUiKitScreenState extends State<DebugUiKitScreen> {
     return GridView.count(
       crossAxisCount: 3,
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       crossAxisSpacing: AppSpacing.md,
       mainAxisSpacing: AppSpacing.md,
       children: [

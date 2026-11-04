@@ -36,7 +36,7 @@ class KpiCard extends StatelessWidget {
     final color = _getColor(isDark);
 
     return AppCard(
-      padding: EdgeInsets.all(AppSpacing.lg),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -53,13 +53,13 @@ class KpiCard extends StatelessWidget {
                 Icon(icon, color: color, size: 24),
             ],
           ),
-          SizedBox(height: AppSpacing.md),
+          const SizedBox(height: AppSpacing.md),
           Text(
             value,
             style: AppTypography.kpiLight.copyWith(color: color),
           ),
           if (subtitle != null) ...[
-            SizedBox(height: AppSpacing.xs),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               subtitle!,
               style: AppTypography.captionLight.copyWith(

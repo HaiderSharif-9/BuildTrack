@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/models/money.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/index.dart';
 import '../../../l10n/app_localizations.dart';
@@ -13,7 +12,7 @@ class DashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colors = context.appColors;
 
     return Scaffold(
       appBar: AppBar(
@@ -161,17 +160,17 @@ class _SiteFilter extends ConsumerWidget {
       data: (sites) => AppCard(
         child: Row(
           children: [
-            Icon(Icons.location_on, color: AppColors.primary, size: 20),
+            const Icon(Icons.location_on, color: AppColors.primary, size: 20),
             const SizedBox(width: 12),
             Expanded(
               child: DropdownButton<String?>(
                 value: selectedSite,
-                underline: SizedBox.shrink(),
+                underline: const SizedBox.shrink(),
                 isExpanded: true,
                 items: [
                   DropdownMenuItem<String?>(
                     value: null,
-                    child: Text(l10n.allSites ?? 'All Sites'),
+                    child: Text(l10n.allSites),
                   ),
                   ...sites.map((site) => DropdownMenuItem<String?>(
                         value: site['id'] as String,
@@ -239,7 +238,7 @@ class _KPISection extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: KpiCard(
-                label: l10n.sites ?? 'Sites',
+                label: l10n.sites,
                 value: '5',
                 type: 'info',
               ),
@@ -285,7 +284,7 @@ class _ChartsSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
-        SectionHeader(title: l10n.trend ?? 'Daily Trend'),
+        SectionHeader(title: l10n.trend),
         const SizedBox(height: 16),
         AppCard(
           child: Container(
@@ -323,7 +322,7 @@ class _SiteCardsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SectionHeader(title: l10n.sites ?? 'Sites'),
+        SectionHeader(title: l10n.sites),
         const SizedBox(height: 16),
         // Placeholder site cards
         AppCard(
@@ -362,7 +361,7 @@ class _RecentActivitySection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SectionHeader(title: l10n.recentActivity ?? 'Recent Activity'),
+        SectionHeader(title: l10n.recentActivity),
         const SizedBox(height: 16),
         AppCard(
           child: Container(

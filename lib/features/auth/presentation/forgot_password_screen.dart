@@ -75,11 +75,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(color: AppColors.lightTextPrimary),
+        leading: const BackButton(color: AppColors.lightTextPrimary),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -88,7 +87,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         child: Column(
           children: [
             const SizedBox(height: 32),
-            Icon(
+            const Icon(
               Icons.mail_outline,
               size: 48,
               color: AppColors.primary,
@@ -124,13 +123,13 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppColors.expenseLight.withOpacity(0.1),
+                        color: AppColors.expenseLight.withValues(alpha: 0.1),
                         border: Border.all(color: AppColors.expenseLight),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         _errorMessage!,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: AppColors.expenseLight,
                           fontSize: 13,
                         ),
@@ -140,13 +139,13 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppColors.incomeLight.withOpacity(0.1),
+                        color: AppColors.incomeLight.withValues(alpha: 0.1),
                         border: Border.all(color: AppColors.incomeLight),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.check_circle,
                             color: AppColors.incomeLight,
                             size: 20,
@@ -155,7 +154,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                           Expanded(
                             child: Text(
                               _successMessage!,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: AppColors.incomeLight,
                                 fontSize: 13,
                               ),
@@ -167,7 +166,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   if (_errorMessage != null || _successMessage != null)
                     const SizedBox(height: 16),
                   AppButton(
-                    onPressed: _isLoading ? null : _handleResetPassword,
+                    onPressed: _isLoading ? () {} : _handleResetPassword,
                     isLoading: _isLoading,
                     label: l10n.sendResetEmail,
                   ),

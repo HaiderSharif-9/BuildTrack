@@ -30,7 +30,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
     final themeMode = ref.watch(themeModeProvider);
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colors = context.appColors;
 
     return Scaffold(
       appBar: AppBar(
@@ -50,7 +50,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                     Container(
                       width: 80,
                       height: 80,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: AppColors.primary,
                         shape: BoxShape.circle,
                       ),
@@ -76,19 +76,13 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: _getRoleBgColor(
-                          userProfile?.role,
-                          colors,
-                        ),
+                        color: _getRoleBgColor(userProfile?.role, colors),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Text(
                         _getRoleLabel(userProfile?.role, l10n),
                         style: theme.textTheme.labelSmall?.copyWith(
-                          color: _getRoleTextColor(
-                            userProfile?.role,
-                            colors,
-                          ),
+                          color: _getRoleTextColor(userProfile?.role, colors),
                         ),
                       ),
                     ),
@@ -109,7 +103,6 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
               // Settings section
               SectionHeader(
                 title: l10n.settings,
-                action: null,
               ),
               const SizedBox(height: 12),
 
@@ -120,7 +113,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.language, color: AppColors.primary),
+                        const Icon(Icons.language, color: AppColors.primary),
                         const SizedBox(width: 12),
                         Text(
                           l10n.language,
@@ -130,8 +123,8 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                     ),
                     DropdownButton<String>(
                       value: language,
-                      underline: SizedBox.shrink(),
-                      items: [
+                      underline: const SizedBox.shrink(),
+                      items: const [
                         DropdownMenuItem(
                           value: 'en',
                           child: Text('English'),
@@ -174,7 +167,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                     ),
                     DropdownButton<ThemeMode>(
                       value: themeMode,
-                      underline: SizedBox.shrink(),
+                      underline: const SizedBox.shrink(),
                       items: [
                         DropdownMenuItem(
                           value: ThemeMode.light,
@@ -203,7 +196,6 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
               // Actions
               SectionHeader(
                 title: l10n.actions,
-                action: null,
               ),
               const SizedBox(height: 12),
 
@@ -217,7 +209,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.lock_outline, color: AppColors.primary),
+                        const Icon(Icons.lock_outline, color: AppColors.primary),
                         const SizedBox(width: 12),
                         Text(
                           l10n.changePassword,
@@ -225,7 +217,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                         ),
                       ],
                     ),
-                    Icon(Icons.arrow_forward, color: AppColors.lightTextSecondary),
+                    const Icon(Icons.arrow_forward, color: AppColors.lightTextSecondary),
                   ],
                 ),
               ),
@@ -241,7 +233,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.info_outline, color: AppColors.primary),
+                        const Icon(Icons.info_outline, color: AppColors.primary),
                         const SizedBox(width: 12),
                         Text(
                           l10n.about,
@@ -249,7 +241,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                         ),
                       ],
                     ),
-                    Icon(Icons.arrow_forward, color: AppColors.lightTextSecondary),
+                    const Icon(Icons.arrow_forward, color: AppColors.lightTextSecondary),
                   ],
                 ),
               ),
@@ -279,7 +271,8 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                   if (confirmed ?? false) {
                     final authService = ref.read(authServiceProvider);
                     await authService.signOut();
-                    if (mounted) {
+                    if (!mounted) return;
+                    if (context.mounted) {
                       context.go('/login');
                     }
                   }
@@ -293,7 +286,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
         loading: () => const Center(
           child: CircularProgressIndicator(),
         ),
-        error: (err, stack) => Center(
+        error: (err, stack) => const Center(
           child: Text('Error loading profile'),
         ),
       ),
@@ -323,29 +316,29 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
     }
   }
 
-  Color _getRoleBgColor(String? role, AppColors colors) {
+  Color _getRoleBgColor(String? role, AppColorsValue colors) {
     switch (role) {
       case 'admin':
-        return AppColors.primary.withOpacity(0.1);
+        return colors.primary.withValues(alpha: 0.1);
       case 'accountant':
-        return AppColors.incomeLight.withOpacity(0.1);
+        return colors.success.withValues(alpha: 0.1);
       case 'manager':
-        return AppColors.info.withOpacity(0.1);
+        return colors.info.withValues(alpha: 0.1);
       default:
-        return AppColors.border;
+        return colors.border.withValues(alpha: 0.1);
     }
   }
 
-  Color _getRoleTextColor(String? role, AppColors colors) {
+  Color _getRoleTextColor(String? role, AppColorsValue colors) {
     switch (role) {
       case 'admin':
-        return AppColors.primary;
+        return colors.primary;
       case 'accountant':
-        return AppColors.incomeLight;
+        return colors.success;
       case 'manager':
-        return AppColors.info;
+        return colors.info;
       default:
-        return AppColors.lightTextSecondary;
+        return colors.textSecondary;
     }
   }
 }

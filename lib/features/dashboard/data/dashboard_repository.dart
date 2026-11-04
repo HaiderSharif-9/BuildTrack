@@ -1,5 +1,4 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../core/models/date_range.dart';
 import '../../../core/models/dashboard_summary.dart';
 
 class DashboardRepository {
@@ -83,7 +82,6 @@ class DashboardRepository {
       final response = await _supabase
           .from('projects')
           .select('id, name, status')
-          .eq('deleted_at', null)
           .order('name');
 
       return (response as List)
@@ -123,7 +121,6 @@ class DashboardRepository {
           .from('transactions')
           .select(
               'id, date, type, category_id, description, amount, categories(name)')
-          .eq('deleted_at', null)
           .order('date', ascending: false)
           .limit(limit);
 

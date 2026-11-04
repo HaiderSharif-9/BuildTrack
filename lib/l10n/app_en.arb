@@ -108,7 +108,9 @@
   "manager": "Manager",
   "info": "Info",
   "allSites": "All Sites",
-  "sites": "Sites",
   "trend": "Daily Trend",
-  "recentActivity": "Recent Activity"
+  "recentActivity": "Recent Activity",
+  "overview": "Overview",
+  "search": "Search",
+  "confirmPasswordHint": "Confirm your password"
 }

@@ -340,4 +340,13 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get recentActivity => 'حالیہ سرگرمی';
+
+  @override
+  String get overview => 'جائزہ';
+
+  @override
+  String get search => 'تلاش';
+
+  @override
+  String get confirmPasswordHint => 'اپنے پاس ورڈ کی تصدیق کریں';
 }
