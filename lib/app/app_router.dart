@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../core/debug/debug_ui_kit.dart';
 import '../core/theme/app_theme.dart';
 import '../features/attendance/presentation/attendance_screen.dart';
+import '../features/auth/data/auth_providers.dart';
 import '../features/auth/presentation/change_password_screen.dart';
 import '../features/auth/presentation/forgot_password_screen.dart';
 import '../features/auth/presentation/login_screen.dart';
@@ -24,6 +25,18 @@ import 'app_shell.dart';
 final goRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/',
+    redirect: (context, state) async {
+      final location = state.matchedLocation;
+      final needsFinanceAccess = location.startsWith('/money') || location == '/more/reports';
+      final needsAdminAccess = location == '/more/users';
+      if (!needsFinanceAccess && !needsAdminAccess) return null;
+
+      final role = await ref.read(currentUserRoleProvider.future);
+      if (role == null) return '/login';
+      if (needsAdminAccess && role != 'admin') return '/more';
+      if (needsFinanceAccess && role != 'admin' && role != 'accountant') return '/more';
+      return null;
+    },
     routes: [
       // Splash screen
       GoRoute(
