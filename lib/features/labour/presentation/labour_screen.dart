@@ -89,60 +89,133 @@ class LabourScreen extends ConsumerWidget {
     );
   }
 
-  void _showEditLabourDialog(BuildContext context, WidgetRef ref, Labour labour) {
+  Future<void> _showEditLabourDialog(BuildContext context, WidgetRef ref, Labour labour) async {
     final pageContext = context;
-    final nameController = TextEditingController(text: labour.name);
-    final tradeController = TextEditingController(text: labour.trade);
+    final repository = ref.read(labourRepositoryProvider);
 
-    showDialog<void>(
-      context: pageContext,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Edit Labourer'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AppTextField(controller: nameController, label: 'Full Name'),
-            const SizedBox(height: 12),
-            AppTextField(controller: tradeController, label: 'Trade'),
+    try {
+      final detail = await repository.getLabourDetail(labour.id);
+      if (!pageContext.mounted || detail == null) return;
+
+      final privateRaw = detail['labour_private'];
+      final privateData = privateRaw is List
+          ? (privateRaw.isEmpty ? null : privateRaw.first)
+          : privateRaw;
+      final nameController = TextEditingController(text: labour.name);
+      final tradeController = TextEditingController(text: labour.trade);
+      final phoneController = TextEditingController(
+        text: privateData is Map ? privateData['phone']?.toString() ?? '' : '',
+      );
+      final cnicController = TextEditingController(
+        text: privateData is Map ? privateData['cnic']?.toString() ?? '' : '',
+      );
+      final rateController = TextEditingController(
+        text: privateData is Map ? privateData['default_rate']?.toString() ?? '' : '',
+      );
+
+      showDialog<void>(
+        context: pageContext,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('Edit Labourer'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AppTextField(controller: nameController, label: 'Full Name'),
+                const SizedBox(height: 10),
+                AppTextField(controller: tradeController, label: 'Trade'),
+                const SizedBox(height: 10),
+                AppTextField(
+                  controller: phoneController,
+                  label: 'Phone (optional)',
+                  keyboardType: TextInputType.phone,
+                ),
+                const SizedBox(height: 10),
+                AppTextField(
+                  controller: cnicController,
+                  label: 'CNIC (optional)',
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 10),
+                AppTextField(
+                  controller: rateController,
+                  label: 'Default Daily Rate (Rs.)',
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                final name = nameController.text.trim();
+                final trade = tradeController.text.trim();
+                final phone = phoneController.text.trim();
+                final cnic = cnicController.text.trim();
+                final rate = double.tryParse(rateController.text.trim());
+                if (name.isEmpty || trade.isEmpty || rate == null || rate <= 0) {
+                  ScaffoldMessenger.of(dialogContext).showSnackBar(
+                    const SnackBar(content: Text('Name, trade and a valid daily rate are required.')),
+                  );
+                  return;
+                }
+
+                try {
+                  final duplicate = await repository.hasDuplicateByPhoneOrCnic(
+                    phone: phone.isEmpty ? null : phone,
+                    cnic: cnic.isEmpty ? null : cnic,
+                    excludeLabourId: labour.id,
+                  );
+                  if (duplicate) {
+                    throw StateError('Another labourer already uses this phone or CNIC.');
+                  }
+
+                  await repository.updateLabour(
+                    id: labour.id,
+                    name: name,
+                    trade: trade,
+                  );
+                  await repository.updateLabourPrivate(
+                    labourId: labour.id,
+                    phone: phone.isEmpty ? null : phone,
+                    cnic: cnic.isEmpty ? null : cnic,
+                    defaultRate: Money.fromDouble(rate),
+                  );
+
+                  if (!pageContext.mounted) return;
+                  Navigator.pop(dialogContext);
+                  ref.invalidate(labourListProvider);
+                  ScaffoldMessenger.of(pageContext).showSnackBar(
+                    const SnackBar(content: Text('Labourer details and wage rate updated')),
+                  );
+                } catch (error) {
+                  if (!dialogContext.mounted) return;
+                  ScaffoldMessenger.of(dialogContext).showSnackBar(
+                    SnackBar(content: Text('Unable to update labourer: $error')),
+                  );
+                }
+              },
+              child: const Text('Save'),
+            ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              final name = nameController.text.trim();
-              final trade = tradeController.text.trim();
-              if (name.isEmpty || trade.isEmpty) return;
-              try {
-                await ref.read(labourRepositoryProvider).updateLabour(
-                      id: labour.id,
-                      name: name,
-                      trade: trade,
-                    );
-                if (!pageContext.mounted) return;
-                Navigator.pop(dialogContext);
-                ref.invalidate(labourListProvider);
-                ScaffoldMessenger.of(pageContext).showSnackBar(
-                  const SnackBar(content: Text('Labourer details updated')),
-                );
-              } catch (error) {
-                if (!pageContext.mounted) return;
-                ScaffoldMessenger.of(pageContext).showSnackBar(
-                  SnackBar(content: Text('Unable to update labourer: $error')),
-                );
-              }
-            },
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    ).whenComplete(() {
-      nameController.dispose();
-      tradeController.dispose();
-    });
+      ).whenComplete(() {
+        nameController.dispose();
+        tradeController.dispose();
+        phoneController.dispose();
+        cnicController.dispose();
+        rateController.dispose();
+      });
+    } catch (error) {
+      if (!pageContext.mounted) return;
+      ScaffoldMessenger.of(pageContext).showSnackBar(
+        SnackBar(content: Text('Unable to load labourer details: $error')),
+      );
+    }
   }
 
   void _confirmArchiveLabour(BuildContext context, WidgetRef ref, Labour labour) {
