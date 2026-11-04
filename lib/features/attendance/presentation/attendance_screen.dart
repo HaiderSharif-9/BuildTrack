@@ -6,6 +6,7 @@ import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/state_widgets.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../auth/data/auth_providers.dart';
 import '../data/attendance_providers.dart';
 
 class AttendanceScreen extends ConsumerStatefulWidget {
@@ -24,6 +25,8 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final colors = context.appColors;
+    final role = ref.watch(currentUserRoleProvider).asData?.value;
+    final canViewWages = role == 'admin' || role == 'accountant';
 
     final projectsAsync = ref.watch(attendanceProjectsProvider);
     final selectedSite = ref.watch(attendanceSelectedSiteProvider);
@@ -133,7 +136,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                   itemCount: items.length,
                   itemBuilder: (context, index) {
                     final item = items[index];
-                    return _buildLabourAttendanceCard(item, colors, theme);
+                    return _buildLabourAttendanceCard(item, colors, theme, canViewWages: canViewWages);
                   },
                 );
               },
@@ -149,7 +152,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           ),
 
           // 5. Bottom Sticky Summary & Action Bar
-          _buildSummaryBar(summary, colors, theme),
+          _buildSummaryBar(summary, colors, theme, canViewWages: canViewWages),
         ],
       ),
     );
@@ -222,8 +225,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
   Widget _buildLabourAttendanceCard(
     LabourAttendanceItem item,
     AppColorsValue colors,
-    ThemeData theme,
-  ) {
+    ThemeData theme, {
+    required bool canViewWages,
+  }) {
     final isPresent = item.status == 'present';
     final isAbsent = item.status == 'absent';
     final isLeave = item.status == 'leave';
@@ -332,7 +336,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '${item.labour.trade} • Rs. ${item.defaultRate.toDisplayString()}/day',
+                          '${item.labour.trade}${canViewWages ? ' • Rs. ${item.defaultRate.toDisplayString()}/day' : ''}',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: colors.textSecondary,
                           ),
@@ -340,18 +344,19 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                       ],
                     ),
                   ),
-                  // Calculated wage amount
+                  // Calculated wage amount (hidden from manager accounts)
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(
+                      if (canViewWages)
+                        Text(
                         'Rs. ${item.wageResult.wageAmount.toDisplayString()}',
                         style: theme.textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: isPresent ? colors.success : colors.textPrimary,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      if (canViewWages) const SizedBox(height: 4),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
@@ -640,7 +645,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
   }
 
   /// Sticky bottom summary and Save button bar
-  Widget _buildSummaryBar(AttendanceSummary summary, AppColorsValue colors, ThemeData theme) {
+  Widget _buildSummaryBar(AttendanceSummary summary, AppColorsValue colors, ThemeData theme, {required bool canViewWages}) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -665,7 +670,8 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                 _buildCounter('Present', summary.presentCount.toString(), colors.success),
                 _buildCounter('Absent', summary.absentCount.toString(), colors.error),
                 _buildCounter('OT', '${summary.totalOvertimeHours.toStringAsFixed(1)}h', AppColors.goldTextLight),
-                _buildCounter('Total Wages', 'Rs. ${summary.totalWages.toDisplayString()}', colors.textPrimary),
+                if (canViewWages)
+                  _buildCounter('Total Wages', 'Rs. ${summary.totalWages.toDisplayString()}', colors.textPrimary),
               ],
             ),
             const SizedBox(height: 12),
