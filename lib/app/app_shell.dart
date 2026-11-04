@@ -13,10 +13,10 @@ class AppShell extends ConsumerWidget {
     required this.navigationShell,
   });
 
-  void _goBranch(int index) {
+  void _goBranch(int branchIndex) {
     navigationShell.goBranch(
-      index,
-      initialLocation: index == navigationShell.currentIndex,
+      branchIndex,
+      initialLocation: branchIndex == navigationShell.currentIndex,
     );
   }
 
@@ -29,6 +29,7 @@ class AppShell extends ConsumerWidget {
     return userRole.when(
       data: (role) {
         final tabs = _getVisibleTabs(role, l10n);
+        final selectedTabIndex = tabs.indexWhere((tab) => tab.branchIndex == navigationShell.currentIndex);
 
         return Scaffold(
           body: navigationShell,
@@ -43,8 +44,8 @@ class AppShell extends ConsumerWidget {
               ),
             ),
             child: NavigationBar(
-              selectedIndex: navigationShell.currentIndex,
-              onDestinationSelected: _goBranch,
+              selectedIndex: selectedTabIndex < 0 ? 0 : selectedTabIndex,
+              onDestinationSelected: (index) => _goBranch(tabs[index].branchIndex),
               backgroundColor: colors.surface,
               indicatorColor: AppColors.primary.withValues(alpha: 0.15),
               height: 64,
@@ -94,48 +95,64 @@ class AppShell extends ConsumerWidget {
   }
 
   List<_NavTab> _getVisibleTabs(String? role, AppLocalizations l10n) {
-    return [
+    final tabs = <_NavTab>[
       _NavTab(
+        branchIndex: 0,
         label: l10n.home,
         icon: Icons.home_outlined,
         selectedIcon: Icons.home_filled,
         route: '/home',
       ),
       _NavTab(
+        branchIndex: 1,
         label: l10n.sites,
         icon: Icons.business_outlined,
         selectedIcon: Icons.business,
         route: '/sites',
       ),
       _NavTab(
+        branchIndex: 2,
         label: l10n.attendance,
         icon: Icons.check_circle_outline,
         selectedIcon: Icons.check_circle,
         route: '/attendance',
       ),
+    ];
+
+    if (role == 'admin' || role == 'accountant') {
+      tabs.add(
+        _NavTab(
+          branchIndex: 3,
+          label: l10n.money,
+          icon: Icons.account_balance_wallet_outlined,
+          selectedIcon: Icons.account_balance_wallet,
+          route: '/money',
+        ),
+      );
+    }
+
+    tabs.add(
       _NavTab(
-        label: l10n.money,
-        icon: Icons.account_balance_wallet_outlined,
-        selectedIcon: Icons.account_balance_wallet,
-        route: '/money',
-      ),
-      _NavTab(
+        branchIndex: 4,
         label: l10n.more,
         icon: Icons.more_horiz,
         selectedIcon: Icons.more_horiz,
         route: '/more',
       ),
-    ];
+    );
+    return tabs;
   }
-}
+}}
 
 class _NavTab {
+  final int branchIndex;
   final String label;
   final IconData icon;
   final IconData selectedIcon;
   final String route;
 
   _NavTab({
+    required this.branchIndex,
     required this.label,
     required this.icon,
     required this.selectedIcon,
