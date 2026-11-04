@@ -12,6 +12,7 @@ class LabourRepository {
           .from('labour')
           .select()
           .eq('active', true)
+          .isFilter('deleted_at', null)
           .order('name');
 
       return (response as List)
@@ -67,6 +68,7 @@ class LabourRepository {
     String? phone,
     String? cnic,
     required Money defaultRate,
+    String? projectId,
   }) async {
     try {
       // Create labour record
@@ -82,13 +84,20 @@ class LabourRepository {
 
       final labourId = labourResponse['id'] as String;
 
-      // Create labour_private record
-      if (phone != null || cnic != null) {
-        await _supabase.from('labour_private').insert({
+      // Always create the private rate row: the server-side attendance
+      // wage trigger requires a valid default rate for every labourer.
+      await _supabase.from('labour_private').insert({
+        'labour_id': labourId,
+        'phone': phone,
+        'cnic': cnic,
+        'default_rate': defaultRate.toDbString(),
+      });
+
+      // A labourer must be assigned to a site to appear in that site's sheet.
+      if (projectId != null) {
+        await _supabase.from('project_labour').insert({
+          'project_id': projectId,
           'labour_id': labourId,
-          'phone': phone,
-          'cnic': cnic,
-          'default_rate': defaultRate.toDbString(),
         });
       }
 
