@@ -326,7 +326,7 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
                           ),
                         ),
                       ),
-                if (canRecordPayment && !item.isPaid && item.daysPresent > 0 && item.advancesDeducted <= item.grossWage)
+                if (canRecordPayment && !item.isPaid && item.daysWorked > 0 && item.advancesDeducted <= item.grossWage)
                   OutlinedButton.icon(
                     icon: const Icon(Icons.payment, size: 16, color: AppColors.goldTextLight),
                     label: const Text(
