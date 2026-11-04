@@ -164,33 +164,33 @@ class AboutScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('About BuildTrack')),
       body: const Center(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const CircleAvatar(
+              CircleAvatar(
                 radius: 36,
                 backgroundColor: AppColors.primary,
                 child: Icon(Icons.apartment, size: 40, color: AppColors.textOnGold),
               ),
-              const SizedBox(height: 16),
-              const Text(
+              SizedBox(height: 16),
+              Text(
                 'BuildTrack',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
               ),
-              const SizedBox(height: 4),
-              const Text(
+              SizedBox(height: 4),
+              Text(
                 'Care Constructiona Pvt Ltd, Multan',
                 style: TextStyle(fontSize: 14, color: Colors.grey),
               ),
-              const SizedBox(height: 16),
-              const Text(
+              SizedBox(height: 16),
+              Text(
                 'BUILDING TODAY | FOR A BETTER TOMORROW',
                 style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12, letterSpacing: 1),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 24),
-              const Text('Version 1.0.0+1', style: TextStyle(fontSize: 12, color: Colors.grey)),
+              SizedBox(height: 24),
+              Text('Version 1.0.0+1', style: TextStyle(fontSize: 12, color: Colors.grey)),
             ],
           ),
         ),
