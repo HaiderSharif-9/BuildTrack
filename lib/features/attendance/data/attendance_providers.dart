@@ -113,6 +113,7 @@ class AttendanceSheetNotifier extends StateNotifier<AsyncValue<List<LabourAttend
           .from('labour')
           .select('id, name, trade, active')
           .eq('active', true)
+          .isFilter('deleted_at', null)
           .order('name');
 
       final List<dynamic> labourList = labourResponse as List<dynamic>;
@@ -137,7 +138,8 @@ class AttendanceSheetNotifier extends StateNotifier<AsyncValue<List<LabourAttend
           .from('attendance')
           .select()
           .eq('project_id', siteId)
-          .eq('date', dateStr);
+          .eq('date', dateStr)
+          .isFilter('deleted_at', null);
 
       Map<String, Attendance> existingAttendance = {};
       for (var a in attendanceResponse as List<dynamic>) {
@@ -188,7 +190,7 @@ class AttendanceSheetNotifier extends StateNotifier<AsyncValue<List<LabourAttend
   void setStatus(String labourId, String newStatus, {String? inTime, String? outTime, double? overtime}) {
     state.whenData((items) {
       final updated = items.map((item) {
-        if (item.labour.id != labourId) return item;
+        if (item.labour.id != labourId || item.isLocked) return item;
 
         final effectiveInTime = newStatus == 'present' ? (inTime ?? item.inTime ?? '08:00') : null;
         final effectiveOutTime = newStatus == 'present' ? (outTime ?? item.outTime ?? '18:00') : null;
