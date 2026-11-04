@@ -306,3 +306,52 @@ DROP TRIGGER IF EXISTS mark_period_paid_update_trigger ON wage_payments;
 CREATE TRIGGER mark_period_paid_update_trigger
 AFTER UPDATE OF deleted_at ON wage_payments
 FOR EACH ROW EXECUTE FUNCTION mark_period_paid();
+
+-- Keep purchase-generated ledger entries synchronized on insert, edit,
+-- soft-delete and restore. This avoids requiring a second client-side write
+-- (which managers are intentionally not allowed to perform on transactions).
+CREATE OR REPLACE FUNCTION sync_purchase_transaction()
+RETURNS TRIGGER AS $$
+DECLARE
+  v_materials_cat_id UUID;
+BEGIN
+  IF TG_OP = 'DELETE' THEN
+    UPDATE transactions
+      SET deleted_at = COALESCE(deleted_at, NOW())
+    WHERE source = 'purchase' AND source_id = OLD.id;
+    RETURN OLD;
+  END IF;
+
+  IF NEW.deleted_at IS NOT NULL THEN
+    UPDATE transactions
+      SET deleted_at = COALESCE(NEW.deleted_at, NOW())
+    WHERE source = 'purchase' AND source_id = NEW.id;
+    RETURN NEW;
+  END IF;
+
+  SELECT id INTO v_materials_cat_id
+  FROM categories WHERE name = 'Materials' LIMIT 1;
+
+  IF v_materials_cat_id IS NULL THEN
+    RAISE EXCEPTION 'Materials transaction category is missing';
+  END IF;
+
+  INSERT INTO transactions (
+    project_id, date, type, category_id, description, amount, source, source_id, created_by
+  )
+  VALUES (
+    NEW.project_id, NEW.date, 'expense', v_materials_cat_id,
+    NEW.item, NEW.amount, 'purchase', NEW.id, NEW.created_by
+  )
+  ON CONFLICT (source, source_id) DO UPDATE SET
+    project_id = EXCLUDED.project_id,
+    date = EXCLUDED.date,
+    category_id = EXCLUDED.category_id,
+    description = EXCLUDED.description,
+    amount = EXCLUDED.amount,
+    deleted_at = NULL,
+    updated_at = NOW();
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
