@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/models/profile.dart';
+import '../../../core/repositories/project_repository.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_card.dart';
@@ -160,7 +161,9 @@ class UsersScreen extends ConsumerWidget {
     final nameController = TextEditingController();
     final emailController = TextEditingController();
     final phoneController = TextEditingController();
+    final projectsFuture = ProjectRepository(Supabase.instance.client).listProjects();
     String selectedRole = 'manager';
+    String? selectedProjectId;
     bool isSaving = false;
 
     showModalBottomSheet(
@@ -202,6 +205,52 @@ class UsersScreen extends ConsumerWidget {
                         );
                       }).toList(),
                     ),
+                    if (selectedRole == 'manager') ...[
+                      const SizedBox(height: 12),
+                      FutureBuilder(
+                        future: projectsFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const LinearProgressIndicator();
+                          }
+                          if (snapshot.hasError) {
+                            return Text('Unable to load sites: ${snapshot.error}');
+                          }
+                          final projects = snapshot.data ?? [];
+                          if (projects.isEmpty) {
+                            return const Text('Create a site before adding a manager.');
+                          }
+                          if (selectedProjectId == null ||
+                              !projects.any((project) => project.id == selectedProjectId)) {
+                            selectedProjectId = projects.first.id;
+                          }
+                          return DropdownButtonFormField<String>(
+                            initialValue: selectedProjectId,
+                            decoration: InputDecoration(
+                              labelText: 'Assign Manager to Site',
+                              filled: true,
+                              fillColor: context.appColors.surfaceAlt,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            items: projects
+                                .map(
+                                  (project) => DropdownMenuItem<String>(
+                                    value: project.id,
+                                    child: Text(project.name),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (value) {
+                              if (value != null) {
+                                setSheetState(() => selectedProjectId = value);
+                              }
+                            },
+                          );
+                        },
+                      ),
+                    ],
                     const SizedBox(height: 16),
                     Container(
                       padding: const EdgeInsets.all(12),
@@ -223,9 +272,9 @@ class UsersScreen extends ConsumerWidget {
                         final email = emailController.text.trim();
                         final phone = phoneController.text.trim();
 
-                        if (name.isEmpty || email.isEmpty) {
+                        if (name.isEmpty || email.isEmpty || (selectedRole == 'manager' && selectedProjectId == null)) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Name and Email are required')),
+                            const SnackBar(content: Text('Enter name and email, and assign a site to manager accounts.')),
                           );
                           return;
                         }
@@ -240,6 +289,7 @@ class UsersScreen extends ConsumerWidget {
                               'email': email,
                               'phone': phone,
                               'role': selectedRole,
+                              'projectId': selectedProjectId,
                             },
                           );
                           final result = Map<String, dynamic>.from(response.data as Map);
