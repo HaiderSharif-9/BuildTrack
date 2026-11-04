@@ -149,7 +149,7 @@ class AboutScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('About BuildTrack')),
-      body: Center(
+      body: const Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
