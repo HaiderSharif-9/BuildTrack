@@ -275,6 +275,7 @@ class _PurchasesScreenState extends ConsumerState<PurchasesScreen> {
   }
 
   void _showAddEditPurchaseDialog(BuildContext context, Purchase? existing) {
+    final pageContext = context;
     final isEditing = existing != null;
     final itemController = TextEditingController(text: existing?.item ?? '');
     final qtyController = TextEditingController(text: existing != null ? existing.qty.toString() : '');
@@ -319,7 +320,7 @@ class _PurchasesScreenState extends ConsumerState<PurchasesScreen> {
                           selectedSiteId = projects.first.id;
                         }
                         return DropdownButtonFormField<String>(
-                          value: selectedSiteId,
+                          initialValue: selectedSiteId,
                           decoration: InputDecoration(
                             labelText: 'Site / Project',
                             filled: true,
@@ -356,7 +357,7 @@ class _PurchasesScreenState extends ConsumerState<PurchasesScreen> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: DropdownButtonFormField<String>(
-                            value: selectedUnit,
+                            initialValue: selectedUnit,
                             decoration: InputDecoration(
                               labelText: 'Unit',
                               filled: true,
@@ -443,22 +444,20 @@ class _PurchasesScreenState extends ConsumerState<PurchasesScreen> {
                                   date: selectedDate,
                                 );
                           }
-                          if (mounted) {
-                            Navigator.pop(ctx);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Purchase of "$item" saved successfully!'),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
-                          }
+                          if (!pageContext.mounted) return;
+                          Navigator.pop(ctx);
+                          ScaffoldMessenger.of(pageContext).showSnackBar(
+                            SnackBar(
+                              content: Text('Purchase of "$item" saved successfully!'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
                         } catch (e) {
+                          if (!pageContext.mounted) return;
                           setSheetState(() => isSaving = false);
-                          if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
-                            );
-                          }
+                          ScaffoldMessenger.of(pageContext).showSnackBar(
+                            SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+                          );
                         }
                       },
                     ),
