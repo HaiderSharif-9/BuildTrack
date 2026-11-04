@@ -77,7 +77,8 @@ $$;
 
 CREATE OR REPLACE FUNCTION site_totals(
   "from" DATE,
-  "to" DATE
+  "to" DATE,
+  "project" UUID DEFAULT NULL
 )
 RETURNS TABLE (
   site_id UUID,
@@ -107,13 +108,14 @@ AS $$
     AND t.date BETWEEN "from" AND "to"
     AND t.deleted_at IS NULL
   WHERE p.deleted_at IS NULL
+    AND ("project" IS NULL OR p.id = "project")
   GROUP BY p.id, p.name, pf.budget
   ORDER BY p.name;
 $$;
 
 REVOKE ALL ON FUNCTION dashboard_summary(DATE, DATE, UUID) FROM PUBLIC;
 REVOKE ALL ON FUNCTION daily_trend(DATE, DATE, UUID) FROM PUBLIC;
-REVOKE ALL ON FUNCTION site_totals(DATE, DATE) FROM PUBLIC;
+REVOKE ALL ON FUNCTION site_totals(DATE, DATE, UUID) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION dashboard_summary(DATE, DATE, UUID) TO authenticated;
 GRANT EXECUTE ON FUNCTION daily_trend(DATE, DATE, UUID) TO authenticated;
-GRANT EXECUTE ON FUNCTION site_totals(DATE, DATE) TO authenticated;
+GRANT EXECUTE ON FUNCTION site_totals(DATE, DATE, UUID) TO authenticated;
