@@ -53,6 +53,7 @@ class ProjectRepository extends BaseRepository {
             project_members!inner(user_id)
           ''')
           .eq('project_members.user_id', userId)
+          .isFilter('deleted_at', null)
           .order('name');
 
       return (response as List).map((e) => Project.fromJson(e)).toList();
