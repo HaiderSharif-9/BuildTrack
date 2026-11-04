@@ -594,8 +594,8 @@ class _RecentActivitySection extends StatelessWidget {
         activityAsync.when(
           data: (items) {
             if (items.isEmpty) {
-              return AppCard(
-                child: const Padding(
+              return const AppCard(
+                child: Padding(
                   padding: EdgeInsets.all(20),
                   child: Center(child: Text('No recent transactions')),
                 ),
