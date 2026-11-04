@@ -5,6 +5,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../auth/data/auth_providers.dart';
+import '../../auth/data/auth_service.dart';
 
 class MoreScreen extends ConsumerWidget {
   const MoreScreen({super.key});
@@ -14,7 +15,7 @@ class MoreScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final colors = context.appColors;
     final l10n = AppLocalizations.of(context)!;
-    final userProfile = ref.watch(currentUserProfileProvider).valueOrNull;
+    final userProfile = ref.watch(currentProfileProvider).valueOrNull;
     final isAdmin = userProfile?.role == 'admin' || userProfile?.role == 'accountant';
 
     return Scaffold(
