@@ -115,14 +115,28 @@ class PayrollNotifier extends StateNotifier<AsyncValue<List<WorkerPayrollItem>>>
           .map((e) => Labour.fromJson(e as Map<String, dynamic>))
           .toList();
 
-      // 2. Fetch default rates
-      Map<String, Money> rates = {};
-      try {
-        final ratesRes = await supabase.from('labour_private').select('labour_id, default_rate');
-        for (var r in ratesRes as List<dynamic>) {
-          rates[r['labour_id'] as String] = Money.fromString(r['default_rate']?.toString() ?? '1000');
+      // 2. Fetch default and site-specific wage rates
+      final Map<String, Money> rates = {};
+      final Map<String, Money> projectRates = {};
+      final ratesRes = await supabase.from('labour_private').select('labour_id, default_rate');
+      for (final row in ratesRes as List<dynamic>) {
+        final value = row['default_rate'];
+        if (value != null) {
+          rates[row['labour_id'] as String] = Money.fromString(value.toString());
         }
-      } catch (_) {}
+      }
+
+      var projectRateQuery = supabase
+          .from('project_labour_rate')
+          .select('labour_id, project_id, rate_override');
+      if (siteId != null) {
+        projectRateQuery = projectRateQuery.eq('project_id', siteId);
+      }
+      final projectRateRows = await projectRateQuery;
+      for (final row in projectRateRows as List<dynamic>) {
+        final key = '${row['labour_id']}_${row['project_id']}';
+        projectRates[key] = Money.fromString(row['rate_override'].toString());
+      }
 
       // 3. Fetch attendance in this period
       var attQuery = supabase
@@ -186,24 +200,29 @@ class PayrollNotifier extends StateNotifier<AsyncValue<List<WorkerPayrollItem>>>
       final List<WorkerPayrollItem> items = [];
 
       for (var labour in labourList) {
-        final rate = rates[labour.id] ?? Money.fromInt(1000);
+        final defaultRate = rates[labour.id];
         final workerAtt = attList.where((a) => a['labour_id'] == labour.id).toList();
 
         int daysPresent = 0;
         double otHours = 0;
         Money gross = Money.zero;
 
-        final calc = WageCalculator(rate: rate);
-
         for (var a in workerAtt) {
           final status = a['status'] as String?;
           if (status == 'present') {
+            final projectId = a['project_id'] as String;
+            final rate = projectRates['${labour.id}_$projectId'] ?? defaultRate;
+            if (rate == null) {
+              throw StateError('No wage rate configured for ${labour.name} at this site.');
+            }
+
             daysPresent++;
             final inT = a['in_time'] as String?;
             final outT = a['out_time'] as String?;
             final ot = (a['overtime_hours'] as num?)?.toDouble() ?? 0.0;
             otHours += ot;
 
+            final calc = WageCalculator(rate: rate);
             final result = calc.calculateDay(
               status: 'present',
               inTime: inT,
@@ -214,13 +233,16 @@ class PayrollNotifier extends StateNotifier<AsyncValue<List<WorkerPayrollItem>>>
           }
         }
 
+        final displayRate = siteId == null
+            ? (defaultRate ?? Money.zero)
+            : (projectRates['${labour.id}_$siteId'] ?? defaultRate ?? Money.zero);
         final advance = advancesMap[labour.id] ?? Money.zero;
         final net = gross > advance ? gross - advance : Money.zero;
         final paymentRecord = paymentsMap[labour.id];
 
         items.add(WorkerPayrollItem(
           labour: labour,
-          defaultRate: rate,
+          defaultRate: displayRate,
           daysWorked: daysPresent,
           overtimeHours: otHours,
           grossWage: gross,
