@@ -141,7 +141,7 @@ class _PeriodSelector extends ConsumerWidget {
                   final picked = await showDateRangePicker(
                     context: context,
                     firstDate: DateTime(2020),
-                    lastDate: DateTime.now(),
+                    lastDate: DateTime(2100),
                     initialDateRange: DateTimeRange(start: selected.start, end: selected.end),
                   );
                   if (picked != null) {
