@@ -17,6 +17,7 @@ class MoreScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final userProfile = ref.watch(currentProfileProvider).valueOrNull;
     final isAdmin = userProfile?.role == 'admin';
+    final canViewFinance = isAdmin || userProfile?.role == 'accountant';
 
     return Scaffold(
       backgroundColor: colors.bg,
@@ -83,16 +84,18 @@ class MoreScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 10),
 
-          // Reports
-          _buildMenuTile(
-            icon: Icons.bar_chart_outlined,
-            title: l10n.reports,
-            subtitle: 'Profit & Loss, Site margins & attendance analytics',
-            onTap: () => context.push('/more/reports'),
-            colors: colors,
-            theme: theme,
-          ),
-          const SizedBox(height: 10),
+          // Financial reports are restricted to admin/accountant roles.
+          if (canViewFinance) ...[
+            _buildMenuTile(
+              icon: Icons.bar_chart_outlined,
+              title: l10n.reports,
+              subtitle: 'Profit & Loss, Site margins & attendance analytics',
+              onTap: () => context.push('/more/reports'),
+              colors: colors,
+              theme: theme,
+            ),
+            const SizedBox(height: 10),
+          ],
 
           // Team & Users (Admin only)
           if (isAdmin) ...[
