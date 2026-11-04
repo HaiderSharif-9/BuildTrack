@@ -344,6 +344,7 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
 
   /// Dialog to select payment method and record payment
   void _showMarkPaidDialog(WorkerPayrollItem item) {
+    final pageContext = context;
     String selectedMethod = 'Cash';
     bool isSubmitting = false;
 
@@ -371,7 +372,7 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
                   const Text('Payment Method:', style: TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   DropdownButtonFormField<String>(
-                    value: selectedMethod,
+                    initialValue: selectedMethod,
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: context.appColors.surfaceAlt,
@@ -403,22 +404,20 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
                             advance: item.advancesDeducted,
                             method: selectedMethod,
                           );
-                      if (mounted) {
-                        Navigator.pop(dialogCtx);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Payment of Rs. ${item.netPayable.toDisplayString()} recorded!'),
-                            backgroundColor: Colors.green,
-                          ),
-                        );
-                      }
+                      if (!pageContext.mounted) return;
+                      Navigator.pop(dialogCtx);
+                      ScaffoldMessenger.of(pageContext).showSnackBar(
+                        SnackBar(
+                          content: Text('Payment of Rs. ${item.netPayable.toDisplayString()} recorded!'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
                     } catch (e) {
+                      if (!pageContext.mounted) return;
                       setDialogState(() => isSubmitting = false);
-                      if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
-                        );
-                      }
+                      ScaffoldMessenger.of(pageContext).showSnackBar(
+                        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+                      );
                     }
                   },
                 ),
