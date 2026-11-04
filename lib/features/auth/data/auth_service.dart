@@ -93,6 +93,7 @@ class AuthService {
       await _supabase.auth.updateUser(
         UserAttributes(password: newPassword),
       );
+      await _supabase.rpc('clear_own_must_change_password');
     } catch (e) {
       throw AuthException('Password update error: ${e.toString()}');
     }
