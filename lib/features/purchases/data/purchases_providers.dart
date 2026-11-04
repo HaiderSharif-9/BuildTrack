@@ -66,7 +66,7 @@ class PurchasesNotifier extends StateNotifier<AsyncValue<List<Purchase>>> {
   }) async {
     final supabase = Supabase.instance.client;
     final dateStr = date.toIso8601String().split('T')[0];
-    final amount = Money.fromDecimal(rate.amount * (qty.toString().contains('.') ? num.parse(qty.toString()) : qty));
+    final amount = rate * qty;
 
     // 1. Insert into purchases table
     final purchaseRes = await supabase.from('purchases').insert({
