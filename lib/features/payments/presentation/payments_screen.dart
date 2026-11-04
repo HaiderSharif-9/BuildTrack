@@ -23,6 +23,8 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
 
     final period = ref.watch(payrollPeriodProvider);
     final periodFilter = ref.watch(paymentsPeriodFilterProvider);
+    final selectedSite = ref.watch(paymentsSelectedSiteProvider);
+    final projectsAsync = ref.watch(paymentsProjectsProvider);
     final payrollAsync = ref.watch(payrollProvider);
     final summary = ref.watch(payrollSummaryProvider);
 
@@ -46,6 +48,47 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
       ),
       body: Column(
         children: [
+          // Payroll totals can be viewed across all sites, but a payment
+          // must always be assigned to one explicit site.
+          Container(
+            color: colors.surface,
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+            child: projectsAsync.when(
+              data: (projects) => DropdownButtonHideUnderline(
+                child: DropdownButton<String?>(
+                  isExpanded: true,
+                  value: selectedSite,
+                  hint: const Text('Select site'),
+                  items: [
+                    const DropdownMenuItem<String?>(
+                      value: null,
+                      child: Text('All Sites (view only)'),
+                    ),
+                    ...projects.map(
+                      (project) => DropdownMenuItem<String?>(
+                        value: project.id,
+                        child: Text(project.name),
+                      ),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    ref.read(paymentsSelectedSiteProvider.notifier).state = value;
+                  },
+                ),
+              ),
+              loading: () => const LinearProgressIndicator(),
+              error: (error, _) => Text('Unable to load sites: $error'),
+            ),
+          ),
+          if (selectedSite == null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              child: Text(
+                'Select a specific site to enable wage payments.',
+                style: theme.textTheme.bodySmall?.copyWith(color: colors.textSecondary),
+              ),
+            ),
           // 1. Period Selector & Date Range Banner
           Container(
             color: colors.surface,
@@ -111,7 +154,7 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
                   itemCount: items.length,
                   itemBuilder: (context, index) {
                     final item = items[index];
-                    return _buildWorkerPayrollCard(item, colors, theme);
+                    return _buildWorkerPayrollCard(item, colors, theme, canRecordPayment: selectedSite != null);
                   },
                 );
               },
@@ -162,8 +205,9 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
   Widget _buildWorkerPayrollCard(
     WorkerPayrollItem item,
     AppColorsValue colors,
-    ThemeData theme,
-  ) {
+    ThemeData theme, {
+    required bool canRecordPayment,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: AppCard(
@@ -276,7 +320,7 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
                           ),
                         ),
                       ),
-                if (!item.isPaid && item.netPayable > Money.zero)
+                if (canRecordPayment && !item.isPaid && item.netPayable > Money.zero)
                   OutlinedButton.icon(
                     icon: const Icon(Icons.payment, size: 16, color: AppColors.goldTextLight),
                     label: const Text(
