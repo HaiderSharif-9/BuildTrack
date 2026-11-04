@@ -116,13 +116,20 @@ class DashboardRepository {
   /// Get recent activity (transactions + wage payments)
   Future<List<Map<String, dynamic>>> getRecentActivity({
     int limit = 10,
+    String? projectId,
   }) async {
     try {
-      final response = await _supabase
+      var query = _supabase
           .from('transactions')
           .select(
               'id, date, type, category_id, description, amount, categories(name)')
-          .isFilter('deleted_at', null)
+          .isFilter('deleted_at', null);
+
+      if (projectId != null) {
+        query = query.eq('project_id', projectId);
+      }
+
+      final response = await query
           .order('date', ascending: false)
           .limit(limit);
 
