@@ -103,7 +103,6 @@ Deno.serve(async (request: Request) => {
       return jsonResponse(400, { error: createError?.message ?? "Unable to create account" });
     }
 
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
     const { error: updateError } = await adminClient
       .from("profiles")
       .update({
@@ -113,7 +112,6 @@ Deno.serve(async (request: Request) => {
         role,
         active: true,
         must_change_password: true,
-        temp_password_expires_at: expiresAt,
         created_by: callerData.user.id,
       })
       .eq("id", created.user.id);
@@ -139,7 +137,6 @@ Deno.serve(async (request: Request) => {
       role,
       projectId: projectId || null,
       temporaryPassword,
-      expiresAt,
     });
   } catch (error) {
     return jsonResponse(500, {
