@@ -59,11 +59,13 @@ class DashboardRepository {
   Future<List<SiteTotals>> getSiteTotals({
     required String from,
     required String to,
+    String? projectId,
   }) async {
     try {
       final params = {
         'from': from,
         'to': to,
+        'project': projectId,
       };
 
       final response = await _supabase.rpc('site_totals', params: params) as List;
