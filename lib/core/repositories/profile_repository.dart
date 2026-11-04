@@ -85,10 +85,10 @@ class ProfileRepository extends BaseRepository {
   /// Clear must_change_password flag
   Future<void> clearMustChangePassword(String userId) async {
     try {
-      await supabase
-          .from('profiles')
-          .update({'must_change_password': false})
-          .eq('id', userId);
+      if (supabase.auth.currentUser?.id != userId) {
+        throw Exception('You can only update your own password-change status');
+      }
+      await supabase.rpc('clear_own_must_change_password');
     } catch (e) {
       throw Exception(handleError(e));
     }
