@@ -125,7 +125,8 @@ final reportsDataProvider = FutureProvider<FinancialReportData>((ref) async {
         .from('attendance')
         .select('status, overtime_hours')
         .gte('date', startStr)
-        .eq('status', 'present');
+        .eq('status', 'present')
+        .isFilter('deleted_at', null);
 
     for (var a in attRes as List<dynamic>) {
       attDays++;
