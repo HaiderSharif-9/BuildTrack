@@ -463,7 +463,7 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
                   style: theme.textTheme.bodySmall?.copyWith(color: colors.textSecondary),
                 ),
                 Text(
-                  '${summary.totalNetPayable.toDisplayString()}',
+                  summary.totalNetPayable.toDisplayString(),
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: colors.textPrimary,
