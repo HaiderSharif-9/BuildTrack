@@ -127,7 +127,7 @@ class _PurchasesScreenState extends ConsumerState<PurchasesScreen> {
                       Text('Total Purchases', style: theme.textTheme.bodySmall?.copyWith(color: colors.textSecondary)),
                       const SizedBox(height: 2),
                       Text(
-                        '${totalAmount.toDisplayString()}',
+                        totalAmount.toDisplayString(),
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: colors.error,
@@ -206,7 +206,7 @@ class _PurchasesScreenState extends ConsumerState<PurchasesScreen> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Text(
-                                  '${item.amount.toDisplayString()}',
+                                  item.amount.toDisplayString(),
                                   style: theme.textTheme.titleSmall?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: colors.error,
@@ -397,7 +397,7 @@ class _PurchasesScreenState extends ConsumerState<PurchasesScreen> {
                         children: [
                           const Text('Total Amount:', style: TextStyle(fontWeight: FontWeight.bold)),
                           Text(
-                            '${computedTotal.toStringAsFixed(0)}',
+                            computedTotal.toStringAsFixed(0),
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
