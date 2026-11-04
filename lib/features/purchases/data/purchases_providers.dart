@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/models/money.dart';
-import '../../../core/models/project.dart';
 import '../../../core/models/purchase.dart';
 import '../../../core/repositories/project_repository.dart';
 import '../../../core/repositories/purchase_repository.dart';
