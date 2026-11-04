@@ -61,6 +61,7 @@ Deno.serve(async (request: Request) => {
     const email = String(body.email ?? "").trim().toLowerCase();
     const phone = String(body.phone ?? "").trim();
     const role = String(body.role ?? "manager");
+    const projectId = String(body.projectId ?? "").trim();
 
     if (fullName.length < 2 || fullName.length > 100) {
       return jsonResponse(400, { error: "Enter a valid full name" });
@@ -70,6 +71,20 @@ Deno.serve(async (request: Request) => {
     }
     if (!["admin", "accountant", "manager"].includes(role)) {
       return jsonResponse(400, { error: "Invalid user role" });
+    }
+    if (role === "manager" && !projectId) {
+      return jsonResponse(400, { error: "Select a site for this manager" });
+    }
+    if (projectId) {
+      const { data: project, error: projectError } = await adminClient
+        .from("projects")
+        .select("id")
+        .eq("id", projectId)
+        .is("deleted_at", null)
+        .maybeSingle();
+      if (projectError || !project) {
+        return jsonResponse(400, { error: "The selected site does not exist or is archived" });
+      }
     }
 
     const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
@@ -108,10 +123,21 @@ Deno.serve(async (request: Request) => {
       return jsonResponse(500, { error: "Account was rolled back because its profile could not be saved" });
     }
 
+    if (role === "manager") {
+      const { error: assignmentError } = await adminClient
+        .from("project_members")
+        .insert({ project_id: projectId, user_id: created.user.id });
+      if (assignmentError) {
+        await adminClient.auth.admin.deleteUser(created.user.id);
+        return jsonResponse(500, { error: "Account was rolled back because the site assignment failed" });
+      }
+    }
+
     return jsonResponse(200, {
       userId: created.user.id,
       email,
       role,
+      projectId: projectId || null,
       temporaryPassword,
       expiresAt,
     });
