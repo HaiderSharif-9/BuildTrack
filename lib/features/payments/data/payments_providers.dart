@@ -243,19 +243,17 @@ class PayrollNotifier extends StateNotifier<AsyncValue<List<WorkerPayrollItem>>>
     final endStr = period.end.toIso8601String().split('T')[0];
     final todayStr = DateTime.now().toIso8601String().split('T')[0];
 
-    // Pick first project if null
-    String targetProjectId = siteId ?? '';
-    if (targetProjectId.isEmpty) {
-      final projects = await ref.read(paymentsProjectRepositoryProvider).listProjects();
-      if (projects.isNotEmpty) {
-        targetProjectId = projects.first.id;
-      }
+    if (siteId == null) {
+      throw StateError('Select a site before recording a wage payment.');
     }
 
-    final net = gross > advance ? gross - advance : Money.zero;
+    // Payroll is filtered to this site before payment, so never assign an
+    // all-sites total to an arbitrary first project.
+    final targetProjectId = siteId;
 
-    // 1. Insert into wage_payments
-    final paymentRes = await supabase.from('wage_payments').insert({
+    // The database trigger creates the matching ledger expense atomically
+    // from wage_payments.net. Do not insert a second transaction here.
+    await supabase.from('wage_payments').insert({
       'labour_id': labourId,
       'project_id': targetProjectId,
       'period_start': startStr,
@@ -264,37 +262,8 @@ class PayrollNotifier extends StateNotifier<AsyncValue<List<WorkerPayrollItem>>>
       'advances_deducted': advance.toDbString(),
       'paid_on': todayStr,
       'method': method.toLowerCase(),
-    }).select().single();
+    });
 
-    final paymentId = paymentRes['id'] as String;
-
-    // 2. Automatically log expense in transactions (Ledger)
-    try {
-      // Get category id for 'Labour Wages'
-      final catRes = await supabase
-          .from('categories')
-          .select('id')
-          .eq('name', 'Labour Wages')
-          .maybeSingle();
-
-      if (catRes != null) {
-        final catId = catRes['id'] as String;
-        await supabase.from('transactions').insert({
-          'project_id': targetProjectId,
-          'date': todayStr,
-          'type': 'expense',
-          'category_id': catId,
-          'description': 'Wage payment for period $startStr to $endStr ($method)',
-          'amount': net.toDbString(),
-          'source': 'wage',
-          'source_id': paymentId,
-        });
-      }
-    } catch (_) {
-      // Transaction logging fallback
-    }
-
-    // Refresh payroll list
     await loadPayroll();
   }
 }
