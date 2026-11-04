@@ -220,7 +220,7 @@ class ReportsScreen extends ConsumerWidget {
                         Row(
                           children: [
                             Text(
-                              'Rs. ${data.netProfit.toDisplayString()}',
+                              '${data.netProfit.toDisplayString()}',
                               style: theme.textTheme.headlineMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: data.netProfit.isPositive ? colors.success : colors.error,
@@ -296,7 +296,7 @@ class ReportsScreen extends ConsumerWidget {
                             children: [
                               Text('Materials', style: theme.textTheme.labelMedium?.copyWith(color: colors.textSecondary)),
                               const SizedBox(height: 4),
-                              Text('Rs. ${data.totalPurchasesAmount.toDisplayString()}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                              Text('${data.totalPurchasesAmount.toDisplayString()}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                               const Text('Total Purchases', style: TextStyle(color: AppColors.incomeLight, fontSize: 12)),
                             ],
                           ),
@@ -382,7 +382,7 @@ class ReportsScreen extends ConsumerWidget {
           ],
         ),
         Text(
-          'Rs. ${amount.toDisplayString()}',
+          '${amount.toDisplayString()}',
           style: TextStyle(fontWeight: FontWeight.bold, color: color, fontSize: 14),
         ),
       ],
