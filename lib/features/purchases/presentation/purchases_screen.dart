@@ -223,8 +223,8 @@ class _PurchasesScreenState extends ConsumerState<PurchasesScreen> {
                                     }
                                   },
                                   itemBuilder: (context) => [
-                                    const DropdownMenuItem(value: 'edit', child: Text('Edit')),
-                                    const DropdownMenuItem(
+                                    const PopupMenuItem(value: 'edit', child: Text('Edit')),
+                                    const PopupMenuItem(
                                       value: 'delete',
                                       child: Text('Delete', style: TextStyle(color: Colors.red)),
                                     ),
