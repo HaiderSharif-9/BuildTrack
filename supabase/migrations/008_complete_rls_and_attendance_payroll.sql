@@ -67,6 +67,9 @@ CREATE POLICY project_labour_insert_admin ON project_labour
   FOR INSERT WITH CHECK (app_role() IN ('admin', 'accountant'));
 CREATE POLICY project_labour_delete_admin ON project_labour
   FOR DELETE USING (app_role() IN ('admin', 'accountant'));
+CREATE POLICY project_labour_update_admin ON project_labour
+  FOR UPDATE USING (app_role() IN ('admin', 'accountant'))
+  WITH CHECK (app_role() IN ('admin', 'accountant'));
 
 CREATE POLICY project_labour_rate_insert_admin ON project_labour_rate
   FOR INSERT WITH CHECK (app_role() IN ('admin', 'accountant'));
