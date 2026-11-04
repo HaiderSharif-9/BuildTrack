@@ -33,6 +33,8 @@ class LabourRepository {
             project_labour_rate(rate_override)
           ''')
           .eq('project_id', projectId)
+          .eq('labour.active', true)
+          .isFilter('labour.deleted_at', null)
           .order('labour(name)');
 
       return (response as List)
