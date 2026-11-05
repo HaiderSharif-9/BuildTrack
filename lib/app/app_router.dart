@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../core/debug/debug_ui_kit.dart';
 import '../core/theme/app_theme.dart';
+import '../core/widgets/buildtrack_brand.dart';
 import '../features/attendance/presentation/attendance_screen.dart';
 import '../features/auth/data/auth_providers.dart';
 import '../features/auth/data/auth_service.dart';
@@ -193,11 +194,7 @@ class AboutScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircleAvatar(
-                radius: 36,
-                backgroundColor: AppColors.primary,
-                child: Icon(Icons.apartment, size: 40, color: AppColors.textOnGold),
-              ),
+              const BuildTrackBrand(iconSize: 72),
               SizedBox(height: 16),
               Text(
                 'BuildTrack',
