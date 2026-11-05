@@ -97,7 +97,7 @@ class SiteDetailScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-                SectionHeader(title: 'Overview'),
+                const SectionHeader(title: 'Overview'),
                 const SizedBox(height: 12),
                 AppCard(
                   child: Column(
@@ -127,7 +127,7 @@ class SiteDetailScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-                SectionHeader(title: 'Site status'),
+                const SectionHeader(title: 'Site status'),
                 const SizedBox(height: 8),
                 AppCard(
                   child: Column(
