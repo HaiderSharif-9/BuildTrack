@@ -209,6 +209,31 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ],
                   ),
                 ),
+                const SizedBox(height: 20),
+                Text(
+                  'New to BuildTrack?',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.lightTextSecondary,
+                  ),
+                ),
+                TextButton(
+                  onPressed: _isLoading ? null : () => context.push('/signup'),
+                  child: const Text(
+                    'Create New Account',
+                    style: TextStyle(
+                      color: AppColors.goldTextLight,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'For the first Admin account of a new company only.',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: AppColors.lightTextSecondary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
                 const SizedBox(height: 24),
 
               ],
