@@ -106,7 +106,7 @@ class PayrollNotifier extends StateNotifier<AsyncValue<List<WorkerPayrollItem>>>
       // 1. Fetch active labour
       final labourRes = await supabase
           .from('labour')
-          .select('id, name, trade, active')
+          .select()
           .eq('active', true)
           .isFilter('deleted_at', null)
           .order('name');
@@ -140,7 +140,7 @@ class PayrollNotifier extends StateNotifier<AsyncValue<List<WorkerPayrollItem>>>
       // 3. Fetch attendance in this period
       var attQuery = supabase
           .from('attendance')
-          .select('labour_id, date, status, in_time, out_time, hours_worked, overtime_hours, project_id')
+          .select('labour_id, date, status, in_time, out_time, hours_worked, overtime_hours, project_id, attendance_pay(rate, wage_amount, overtime_hours)')
           .gte('date', startStr)
           .lte('date', endStr)
           .isFilter('deleted_at', null);
