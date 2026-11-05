@@ -421,7 +421,7 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
                       builder: (context, snapshot) {
                         final projects = snapshot.data ?? [];
                         return DropdownButtonFormField<String?>(
-                          value: selectedSiteId,
+                          initialValue: selectedSiteId,
                           decoration: InputDecoration(labelText: 'Site / Project (optional)', filled: true, fillColor: context.appColors.surfaceAlt, border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
                           items: [
                             const DropdownMenuItem<String?>(value: null, child: Text('Company-wide')),
