@@ -1,100 +1,174 @@
 # BuildTrack
 
-**Construction management app for Care Constructiona Pvt Ltd, Multan, Pakistan.**
+**A Flutter-based construction project management system**
 
-BuildTrack is a Flutter + Supabase app for managing construction sites, labour, attendance, payroll, material purchases and project finances. It uses Riverpod for state management, GoRouter for navigation, and an English/Urdu interface with RTL support.
+BuildTrack helps construction teams manage sites, workforce, attendance, payroll, purchases and project finances from one application. It is built with Flutter and Supabase, with role-based access for administrators, accountants and site managers.
 
-## Implemented modules
+[![Flutter CI](https://github.com/HaiderSharif-9/BuildTrack/actions/workflows/flutter-ci.yml/badge.svg?branch=buildtrack-completion)](https://github.com/HaiderSharif-9/BuildTrack/actions/workflows/flutter-ci.yml)
 
-- Authentication, forced password change and role-aware navigation
-- Live dashboard totals, date/site filters, income/expense chart, site summaries and recent ledger activity
-- Sites, clients and suppliers
-- Labour roster with create, edit, archive and site assignment
-- Daily attendance with time entries, saved overtime and server-side wage calculation
-- Weekly payroll with site selection, advances and payment recording
-- Material purchases with database-generated Materials ledger entries
-- Financial ledger and basic site profitability reports
-- Admin-only team account creation with manager-to-site assignment
+> **Project status:** Active development. Automated checks are passing on the `buildtrack-completion` branch. Live deployment, role-by-role end-to-end testing and release preparation are still in progress.
 
-## Technical foundation
+## Project overview
 
-- Flutter / Dart
-- Supabase Auth, PostgreSQL and Row Level Security
-- Supabase Edge Functions for privileged account creation
-- Riverpod and GoRouter
-- Decimal-based money calculations
-- English and Urdu localization
+Construction projects involve several connected activities: tracking sites, assigning labour, recording attendance, calculating wages, managing purchases and monitoring expenses. BuildTrack brings these workflows into a single role-aware application backed by a central database.
 
-## Current quality status
+### Main modules
 
-The `buildtrack-completion` branch has a GitHub Actions workflow that runs `flutter analyze`, `flutter test` and a Deno type-check of the admin Edge Function. Recent runs have passed after the analyzer cleanup. The developer also reported a successful debug launch on a TECNO BG7.
+| Module | Purpose |
+| --- | --- |
+| Dashboard | View project summaries, financial totals, trends and recent activity |
+| Sites | Create and manage construction sites, clients, budgets and project status |
+| Labour | Maintain labour records, site assignments and wage-rate information |
+| Attendance | Record daily attendance, work hours and overtime |
+| Payroll | Calculate wages, record payments and track payment periods |
+| Purchases | Record material purchases and link them to project expenses |
+| Ledger | Review income and expenses recorded in the system |
+| Reports | Review financial and site-level summaries |
+| Team & Users | Allow administrators to provision staff accounts and assign managers to sites |
+| Settings | Manage account and application preferences |
 
-The newest dashboard, payroll, security and labour changes still need a local pull-and-retest and live Supabase verification. **Do not treat this branch as production-ready until migrations 008 and 009 are applied, the `admin-create-user` Edge Function is deployed, and the real CRUD and role checks below pass.**
+### User roles
 
-## Supabase setup
+- **Admin:** Manages the organization’s users and has access to administrative and financial workflows.
+- **Accountant:** Handles financial records, purchases, payroll and related reporting.
+- **Manager:** Works with assigned sites and operational information according to role permissions.
 
-1. Configure the Flutter app with your Supabase project URL and anon/publishable key using the existing local environment setup. Never put a service-role key in the Flutter app.
-2. Ensure migrations `001` through `007` have already been applied.
-3. Apply `supabase/migrations/008_complete_rls_and_attendance_payroll.sql`.
-4. Apply `supabase/migrations/009_dashboard_reporting_functions.sql`.
-5. Deploy the secure user-creation function:
+New staff accounts are provisioned by an administrator. Public self-registration is restricted by the database setup. The current app opens on the login screen; the first administrator is provisioned during Supabase project setup rather than through an in-app first-run registration screen.
 
-   ```bash
-   supabase functions deploy admin-create-user
-   ```
+## Technology stack
 
-   The function uses Supabase's server-side environment variables. Keep the service-role key inside the Supabase Edge Function environment only; never commit it or expose it to the client.
+- **Frontend:** Flutter and Dart
+- **Backend:** Supabase
+- **Authentication:** Supabase Auth
+- **Database:** PostgreSQL with Row Level Security (RLS)
+- **State management:** Riverpod
+- **Navigation:** GoRouter
+- **Localization:** Flutter localization (English and Urdu)
+- **Server-side operations:** Supabase Edge Functions (Deno)
+- **Automated checks:** GitHub Actions, Flutter analyzer, Flutter tests and Deno type-checking
 
-6. If this is a fresh Supabase project, create the first account from Supabase Dashboard → Authentication → Users, then promote that account's profile from the SQL Editor (replace the email):
+## Repository structure
 
-   ```sql
-   UPDATE public.profiles
-   SET role = 'admin', active = TRUE, must_change_password = FALSE
-   WHERE id = (
-     SELECT id FROM auth.users WHERE email = 'your-admin-email@example.com'
-   );
-   ```
+```text
+BuildTrack/
+├── .github/
+│   └── workflows/          # CI and APK build workflows
+├── android/                # Android platform configuration
+├── ios/                    # iOS platform configuration
+├── lib/
+│   ├── app/                # App shell and routing
+│   ├── core/               # Shared models, repositories, services and UI
+│   ├── features/           # Feature-based application modules
+│   ├── l10n/               # English and Urdu localization
+│   └── main.dart           # Application entry point
+├── supabase/
+│   ├── functions/           # Server-side Edge Functions
+│   ├── migrations/          # Database schema, policies and functions
+│   └── seed.sql             # Development seed data
+├── test/                    # Automated tests
+├── docs/                    # Project and setup documentation
+├── analysis_options.yaml
+└── pubspec.yaml
+```
 
-   Confirm that exactly one profile was updated. After the first administrator is ready, disable public sign-ups in Supabase Auth settings if this is a private company app.
+## Getting started
 
-7. Confirm that at least one active administrator profile exists before using Team & Users.
+### Requirements
 
-## Local development
+- Flutter SDK (the CI workflow currently uses Flutter **3.47.9**)
+- Dart SDK compatible with the Flutter SDK
+- Android Studio or another supported Flutter development environment
+- A Supabase project
+- Git
+
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/HaiderSharif-9/BuildTrack.git
 cd BuildTrack
-flutter pub get
-flutter analyze
-flutter test
-flutter run
 ```
 
-## Automated checks
+The latest development source is currently on the **`buildtrack-completion`** branch:
 
-The workflow at `.github/workflows/flutter-ci.yml` runs `flutter analyze` and `flutter test` on pushes to `master` and `buildtrack-completion`, and on pull requests targeting `master`.
+```bash
+git checkout buildtrack-completion
+```
 
-APK builds are deliberately manual or version-tag triggered through `.github/workflows/build-apk.yml`; release signing and distribution remain separate final tasks.
+### 2. Install dependencies
 
-## Known remaining work
+```bash
+flutter pub get
+```
 
-- Apply migrations 008 and 009 to the live Supabase project and deploy the Edge Function.
-- Complete live end-to-end testing for each role and every CRUD flow.
-- Persist language/theme preferences between app launches.
-- Add user deactivation/role-edit screens and multi-site manager assignment UI.
-- Full offline-first synchronization.
-- PDF/Excel report export.
-- Production Android signing and release distribution.
+### 3. Configure Supabase
 
-## Wage calculation
+The app reads its Supabase configuration from Dart compile-time environment values. Create a local file named `env.json` in the project root:
 
-The default standard day is 10 hours and overtime is 1.5x. The server-side attendance trigger is the authoritative wage calculation source.
+```json
+{
+  "SUPABASE_URL": "https://YOUR_PROJECT_ID.supabase.co",
+  "SUPABASE_ANON_KEY": "YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY"
+}
+```
 
-Example at a daily rate of Rs. 1,200:
-- 08:00–18:00 (10 hours): Rs. 1,200
-- 08:00–20:00 (12 hours): Rs. 1,560
-- Absent or leave: Rs. 0
+Use your own Supabase project URL and publishable/anon key. The `env.json` file is ignored by Git and must never be committed. **Never place a Supabase service-role key in the Flutter application or this file.**
 
-## Repository
+### 4. Set up the database
 
-https://github.com/HaiderSharif-9/BuildTrack
+Database setup is documented in [Supabase Setup](docs/SUPABASE_SETUP.md). Follow its migration order carefully. In particular, migration `012` is a one-time bootstrap migration that expects exactly one initial Auth user and profile; it must not be run before that first account exists.
+
+### 5. Run the app
+
+Run in Chrome:
+
+```bash
+flutter run -d chrome --dart-define-from-file=env.json
+```
+
+Run on a connected Android device:
+
+```bash
+flutter run --dart-define-from-file=env.json
+```
+
+## Development checks
+
+Run these commands before submitting code changes:
+
+```bash
+flutter analyze
+flutter test
+```
+
+The Flutter CI workflow runs the analyzer and automated tests. It also type-checks the `admin-create-user` Edge Function with Deno. These automated checks do not connect to the live Supabase database and do not replace manual end-to-end testing.
+
+## Security notes
+
+- Supabase Row Level Security policies enforce data access at the database layer.
+- The administrator-only `admin-create-user` Edge Function verifies the caller’s authenticated session and active Admin role before creating staff accounts.
+- The service-role key must remain in the Supabase server-side environment only.
+- Local configuration files, signing keys and environment files are excluded through `.gitignore`.
+- Do not commit real user data, credentials, API keys or production database exports.
+
+## Current limitations and planned improvements
+
+- First-time Admin setup is currently performed during Supabase project initialization; an in-app one-time setup experience is a future enhancement.
+- Full live end-to-end verification for all roles and CRUD workflows remains in progress.
+- User deactivation and role-editing screens need further work.
+- Multi-site manager assignment needs further UI support.
+- Offline-first synchronization is not implemented.
+- PDF and Excel report exports are not implemented.
+- Android release signing and store distribution remain pending.
+
+For a more detailed feature and verification checklist, see [QA Report](QA_REPORT.md). For the high-level design, see [Architecture Overview](docs/ARCHITECTURE.md).
+
+## Author
+
+**Developed by Haider Sharif**
+
+- GitHub: [HaiderSharif-9](https://github.com/HaiderSharif-9)
+- Repository: [BuildTrack](https://github.com/HaiderSharif-9/BuildTrack)
+
+---
+
+*BuildTrack — Construction project operations, organized in one place.*
