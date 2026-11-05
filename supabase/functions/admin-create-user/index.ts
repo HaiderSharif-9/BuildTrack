@@ -69,7 +69,7 @@ Deno.serve(async (request: Request) => {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) {
       return jsonResponse(400, { error: "Enter a valid email address" });
     }
-    if (!["admin", "accountant", "manager"].includes(role)) {
+    if (!["accountant", "manager"].includes(role)) {
       return jsonResponse(400, { error: "Invalid user role" });
     }
     if (role === "manager" && !projectId) {
