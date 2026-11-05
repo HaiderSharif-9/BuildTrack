@@ -6,7 +6,7 @@ BuildTrack helps construction teams manage sites, workforce, attendance, payroll
 
 [![Flutter CI](https://github.com/HaiderSharif-9/BuildTrack/actions/workflows/flutter-ci.yml/badge.svg?branch=master)](https://github.com/HaiderSharif-9/BuildTrack/actions/workflows/flutter-ci.yml)
 
-> **Project status:** Active development. Automated checks run on the repository's default `master` branch. Live deployment, role-by-role end-to-end testing and release preparation are still in progress.
+> **Project status:** Development and testing release. The primary source is the `master` branch. Automated checks cover static analysis, automated tests and Edge Function type-checking. Live role-by-role end-to-end verification and production release preparation remain outstanding.
 
 ## Project overview
 
@@ -33,7 +33,9 @@ Construction projects involve several connected activities: tracking sites, assi
 - **Accountant:** Handles financial records, purchases, payroll and related reporting.
 - **Manager:** Works with assigned sites and operational information according to role permissions.
 
-New staff accounts are provisioned by an administrator. Public self-registration is restricted by the database setup. The current app opens on the login screen; the first administrator is provisioned during Supabase project setup rather than through an in-app first-run registration screen.
+The login screen includes a **Create New Account** option for initial organization setup. The Supabase database trigger grants the Admin role only to the first profile when no profile exists. Once that first profile is created, public registration is blocked; additional staff accounts must be created by an authorized Admin through the server-side user-provisioning function. This restriction is enforced by the database, not only by hiding a UI option.
+
+For a fresh Supabase project, follow the migration and initial-Admin bootstrap sequence in [Supabase Setup](docs/SUPABASE_SETUP.md) before using the app. The in-app first-account flow depends on the signup trigger and migrations being configured correctly.
 
 ## Technology stack
 
@@ -52,7 +54,7 @@ New staff accounts are provisioned by an administrator. Public self-registration
 ```text
 BuildTrack/
 ├── .github/
-│   └── workflows/          # CI and APK build workflows
+│   └── workflows/          # CI workflows
 ├── android/                # Android platform configuration
 ├── ios/                    # iOS platform configuration
 ├── lib/
@@ -88,7 +90,7 @@ git clone https://github.com/HaiderSharif-9/BuildTrack.git
 cd BuildTrack
 ```
 
-The latest source is available directly from the default branch, **`master`**.
+The submission-ready source is maintained on the default **`master`** branch.
 
 ### 2. Install dependencies
 
@@ -111,7 +113,7 @@ Use your own Supabase project URL and publishable/anon key. The `env.json` file 
 
 ### 4. Set up the database
 
-Database setup is documented in [Supabase Setup](docs/SUPABASE_SETUP.md). Follow its migration order carefully. In particular, migration `012` is a one-time bootstrap migration that expects exactly one initial Auth user and profile; it must not be run before that first account exists.
+Database setup is documented in [Supabase Setup](docs/SUPABASE_SETUP.md). Apply migrations in numeric order and follow the documented one-time Admin bootstrap instructions for a fresh project. Do not rerun an already-applied bootstrap migration.
 
 ### 5. Run the app
 
@@ -128,8 +130,6 @@ flutter run --dart-define-from-file=env.json
 ```
 
 ## Build an Android APK
-
-BuildTrack can be run in Chrome during development and packaged as an Android APK when the app is ready for device testing.
 
 ### Requirements
 
@@ -154,7 +154,7 @@ When the build completes, the APK is generated at:
 build/app/outputs/flutter-apk/app-release.apk
 ```
 
-Transfer that APK to an Android phone and install it to test the app. If the build fails, read the first Gradle/Flutter error in the terminal, resolve the missing SDK, dependency or configuration issue, and run the build again. Do not share an APK until the live Supabase configuration and role-based workflows have been tested.
+Transfer that APK to an Android phone and install it to test the app. Do not share an APK until the live Supabase configuration and role-based workflows have been tested.
 
 ### Important signing status
 
@@ -181,18 +181,21 @@ The Flutter CI workflow runs the analyzer and automated tests. It also type-chec
 
 ## Roadmap and future enhancements
 
-The following feature is planned for a future version and is not part of the current login flow:
+- Guided first-time organization setup and clearer deployment diagnostics.
+- More complete user deactivation and role-management workflows.
+- Expanded multi-site Manager assignment controls.
+- Offline-first synchronization.
+- PDF and Excel report exports.
+- Production Android signing and store distribution.
 
-1. **Create New Account option (first Admin registration):** Add a clearly visible **Create New Account** option on the login screen for a company that is setting up BuildTrack for the first time. This option must open a secure, one-time Initial Admin Setup flow and work only when the organization has no Admin account yet. Once the first Admin account is successfully created, the option must disappear or become permanently unavailable for that organization. It must never allow strangers to register themselves into an existing organization. After setup, only the Admin can create Managers, Accountants and other staff accounts, assign their roles/sites, and provide temporary passwords that users must change on first login. Unrestricted public self-registration will remain disabled.
-
-The current delivery scope intentionally does not include offline-first synchronization, advanced PDF/Excel exports or unnecessary animation-heavy polish. These must not be presented as implemented features.
+These are future enhancements and must not be presented as already implemented.
 
 ## Current limitations
 
-- First-time Admin setup is currently performed during Supabase project initialization; the in-app one-time setup screen described above is not implemented yet.
+- First-Admin signup depends on the correct Supabase migrations and signup trigger being applied; verify it against the target project before demonstration.
 - Full live end-to-end verification for all roles and CRUD workflows remains in progress.
 - User deactivation and role-editing screens need further work.
-- Multi-site manager assignment needs further UI support.
+- Multi-site Manager assignment needs further UI support.
 - Offline-first synchronization is not implemented.
 - PDF and Excel report exports are not implemented.
 - Production Android release signing and store distribution remain pending. The documented APK command currently produces a debug-key-signed release-mode build for testing.
