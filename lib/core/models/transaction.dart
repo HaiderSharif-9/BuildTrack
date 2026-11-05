@@ -24,7 +24,7 @@ class Category {
       type: json['type'] as String,
       createdBy: json['created_by'] as String?,
       createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: DateTime.parse(json['updated_at'] as String),
+      updatedAt: DateTime.parse((json['updated_at'] ?? json['created_at']) as String),
     );
   }
 
@@ -85,7 +85,7 @@ class Transaction {
       date: DateTime.parse(json['date'] as String),
       type: json['type'] as String,
       categoryId: json['category_id'] as String,
-      description: json['description'] as String,
+      description: json['description'] as String? ?? '',
       amount: Money.fromString(json['amount'] as String),
       source: json['source'] as String,
       sourceId: json['source_id'] as String?,
