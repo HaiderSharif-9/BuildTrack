@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:buildtrack/core/theme/app_theme.dart';
-import 'package:buildtrack/core/widgets/index.dart';
-import 'package:buildtrack/core/models/labour.dart';
-import 'package:buildtrack/l10n/app_localizations.dart';
+import '../../../core/models/labour.dart';
+import '../../../core/models/money.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/app_button.dart';
+import '../../../core/widgets/app_card.dart';
+import '../../../core/widgets/app_text_field.dart';
+import '../../../core/widgets/state_widgets.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../auth/data/auth_providers.dart';
 import '../data/labour_providers.dart';
 
 class LabourScreen extends ConsumerWidget {
@@ -13,9 +18,11 @@ class LabourScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colors = AppColors.of(context);
     final labour = ref.watch(labourListProvider);
     final searchQuery = ref.watch(labourSearchProvider);
+    final colors = context.appColors;
+    final role = ref.watch(currentUserRoleProvider).asData?.value;
+    final canManage = role == 'admin' || role == 'accountant';
 
     return Scaffold(
       appBar: AppBar(
@@ -23,48 +30,36 @@ class LabourScreen extends ConsumerWidget {
         elevation: 0,
         backgroundColor: Colors.transparent,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.upload_file),
-            tooltip: 'Import from Excel',
-            onPressed: () {
-              // TODO: Show Excel import sheet
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              // TODO: Show add labour sheet
-            },
-          ),
+          if (canManage)
+            IconButton(
+              icon: const Icon(Icons.person_add_alt_1),
+              tooltip: 'Add labourer',
+              onPressed: () => _showAddLabourDialog(context, ref),
+            ),
         ],
       ),
       body: Column(
         children: [
-          // Search bar
           Padding(
             padding: const EdgeInsets.all(16),
             child: AppTextField(
               controller: TextEditingController(text: searchQuery),
-              label: 'Search',
+              label: l10n.search,
               hint: 'Name or trade',
-              icon: Icons.search,
+              prefixIcon: Icons.search,
               onChanged: (value) {
                 ref.read(labourSearchProvider.notifier).state = value;
               },
             ),
           ),
-          // Labour list
           Expanded(
             child: labour.when(
               data: (labourList) => labourList.isEmpty
                   ? EmptyState(
-                      icon: Icons.people_outline,
                       title: l10n.noData,
-                      description: 'No labour found',
-                      action: 'Add Labour',
-                      onAction: () {
-                        // TODO: Show add labour sheet
-                      },
+                      subtitle: canManage
+                          ? 'Add labourers and assign them to a construction site.'
+                          : 'No labourers are assigned to your sites.',
                     )
                   : ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -73,22 +68,19 @@ class LabourScreen extends ConsumerWidget {
                         final person = labourList[index];
                         return _LabourTile(
                           labour: person,
-                          onTap: () {
-                            // TODO: Navigate to detail
-                          },
                           colors: colors,
                           theme: theme,
+                          canManage: canManage,
+                          onEdit: () => _showEditLabourDialog(context, ref, person),
+                          onArchive: () => _confirmArchiveLabour(context, ref, person),
                         );
                       },
                     ),
-              loading: () => const Center(
-                child: CircularProgressIndicator(),
-              ),
+              loading: () => const Center(child: CircularProgressIndicator()),
               error: (err, stack) => ErrorState(
-                error: err.toString(),
-                onRetry: () {
-                  ref.invalidate(labourListProvider);
-                },
+                title: l10n.error,
+                message: err.toString(),
+                onRetry: () => ref.invalidate(labourListProvider),
               ),
             ),
           ),
@@ -96,90 +88,460 @@ class LabourScreen extends ConsumerWidget {
       ),
     );
   }
+
+  Future<void> _showEditLabourDialog(BuildContext context, WidgetRef ref, Labour labour) async {
+    final pageContext = context;
+    final repository = ref.read(labourRepositoryProvider);
+
+    try {
+      final detail = await repository.getLabourDetail(labour.id);
+      if (!pageContext.mounted || detail == null) return;
+
+      final privateRaw = detail['labour_private'];
+      final privateData = privateRaw is List
+          ? (privateRaw.isEmpty ? null : privateRaw.first)
+          : privateRaw;
+      final nameController = TextEditingController(text: labour.name);
+      final tradeController = TextEditingController(text: labour.trade);
+      final phoneController = TextEditingController(
+        text: privateData is Map ? privateData['phone']?.toString() ?? '' : '',
+      );
+      final cnicController = TextEditingController(
+        text: privateData is Map ? privateData['cnic']?.toString() ?? '' : '',
+      );
+      final rateController = TextEditingController(
+        text: privateData is Map ? privateData['default_rate']?.toString() ?? '' : '',
+      );
+
+      showDialog<void>(
+        context: pageContext,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('Edit Labourer'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AppTextField(controller: nameController, label: 'Full Name'),
+                const SizedBox(height: 10),
+                AppTextField(controller: tradeController, label: 'Trade'),
+                const SizedBox(height: 10),
+                AppTextField(
+                  controller: phoneController,
+                  label: 'Phone (optional)',
+                  keyboardType: TextInputType.phone,
+                ),
+                const SizedBox(height: 10),
+                AppTextField(
+                  controller: cnicController,
+                  label: 'CNIC (optional)',
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 10),
+                AppTextField(
+                  controller: rateController,
+                  label: 'Default Daily Rate (Rs.)',
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                final name = nameController.text.trim();
+                final trade = tradeController.text.trim();
+                final phone = phoneController.text.trim();
+                final cnic = cnicController.text.trim();
+                final rate = double.tryParse(rateController.text.trim());
+                if (name.isEmpty || trade.isEmpty || rate == null || rate <= 0) {
+                  ScaffoldMessenger.of(dialogContext).showSnackBar(
+                    const SnackBar(content: Text('Name, trade and a valid daily rate are required.')),
+                  );
+                  return;
+                }
+
+                try {
+                  final duplicate = await repository.hasDuplicateByPhoneOrCnic(
+                    phone: phone.isEmpty ? null : phone,
+                    cnic: cnic.isEmpty ? null : cnic,
+                    excludeLabourId: labour.id,
+                  );
+                  if (duplicate) {
+                    throw StateError('Another labourer already uses this phone or CNIC.');
+                  }
+
+                  await repository.updateLabour(
+                    id: labour.id,
+                    name: name,
+                    trade: trade,
+                  );
+                  await repository.updateLabourPrivate(
+                    labourId: labour.id,
+                    phone: phone.isEmpty ? null : phone,
+                    cnic: cnic.isEmpty ? null : cnic,
+                    defaultRate: Money.fromDouble(rate),
+                  );
+
+                  if (!pageContext.mounted || !dialogContext.mounted) return;
+                  Navigator.pop(dialogContext);
+                  ref.invalidate(labourListProvider);
+                  ScaffoldMessenger.of(pageContext).showSnackBar(
+                    const SnackBar(content: Text('Labourer details and wage rate updated')),
+                  );
+                } catch (error) {
+                  if (!dialogContext.mounted) return;
+                  ScaffoldMessenger.of(dialogContext).showSnackBar(
+                    SnackBar(content: Text('Unable to update labourer: $error')),
+                  );
+                }
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        ),
+      ).whenComplete(() {
+        nameController.dispose();
+        tradeController.dispose();
+        phoneController.dispose();
+        cnicController.dispose();
+        rateController.dispose();
+      });
+    } catch (error) {
+      if (!pageContext.mounted) return;
+      ScaffoldMessenger.of(pageContext).showSnackBar(
+        SnackBar(content: Text('Unable to load labourer details: $error')),
+      );
+    }
+  }
+
+  void _confirmArchiveLabour(BuildContext context, WidgetRef ref, Labour labour) {
+    final pageContext = context;
+    showDialog<void>(
+      context: pageContext,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete Labourer?'),
+        content: Text('Remove ${labour.name} from active labour lists? Attendance and payroll history will be preserved. This is a safe archive, not a permanent erasure.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              try {
+                await ref.read(labourRepositoryProvider).deleteLabour(labour.id);
+                if (!pageContext.mounted || !dialogContext.mounted) return;
+                Navigator.pop(dialogContext);
+                ref.invalidate(labourListProvider);
+                ScaffoldMessenger.of(pageContext).showSnackBar(
+                  const SnackBar(content: Text('Labourer deleted from active list. History preserved.')),
+                );
+              } catch (error) {
+                if (!pageContext.mounted) return;
+                ScaffoldMessenger.of(pageContext).showSnackBar(
+                  SnackBar(content: Text('Unable to archive labourer: $error')),
+                );
+              }
+            },
+            child: const Text('Archive', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAddLabourDialog(BuildContext context, WidgetRef ref) {
+    final pageContext = context;
+    final nameController = TextEditingController();
+    final tradeController = TextEditingController();
+    final phoneController = TextEditingController();
+    final cnicController = TextEditingController();
+    final rateController = TextEditingController();
+    final projectsFuture = ref.read(labourProjectsProvider.future);
+    String? selectedProjectId;
+    bool isSaving = false;
+
+    showModalBottomSheet<void>(
+      context: pageContext,
+      isScrollControlled: true,
+      backgroundColor: pageContext.appColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) => StatefulBuilder(
+        builder: (context, setSheetState) {
+          return Padding(
+            padding: EdgeInsets.fromLTRB(
+              20,
+              20,
+              20,
+              MediaQuery.of(context).viewInsets.bottom + 20,
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Add Labourer',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(height: 16),
+                  AppTextField(
+                    controller: nameController,
+                    label: 'Full Name',
+                    hint: 'e.g. Muhammad Ali',
+                  ),
+                  const SizedBox(height: 12),
+                  AppTextField(
+                    controller: tradeController,
+                    label: 'Trade',
+                    hint: 'e.g. Mason, Electrician, Helper',
+                  ),
+                  const SizedBox(height: 12),
+                  AppTextField(
+                    controller: phoneController,
+                    label: 'Phone (optional)',
+                    hint: '03XX-XXXXXXX',
+                    keyboardType: TextInputType.phone,
+                  ),
+                  const SizedBox(height: 12),
+                  AppTextField(
+                    controller: cnicController,
+                    label: 'CNIC (optional)',
+                    hint: 'XXXXX-XXXXXXX-X',
+                    keyboardType: TextInputType.number,
+                  ),
+                  const SizedBox(height: 12),
+                  AppTextField(
+                    controller: rateController,
+                    label: 'Default Daily Rate (Rs.)',
+                    hint: 'e.g. 1200',
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  ),
+                  const SizedBox(height: 12),
+                  FutureBuilder(
+                    future: projectsFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const LinearProgressIndicator();
+                      }
+                      if (snapshot.hasError) {
+                        return Text('Unable to load sites: ${snapshot.error}');
+                      }
+                      final projects = snapshot.data ?? [];
+                      if (projects.isEmpty) {
+                        return const Text('Create a site before adding labourers.');
+                      }
+                      if (selectedProjectId == null ||
+                          !projects.any((project) => project.id == selectedProjectId)) {
+                        selectedProjectId = projects.first.id;
+                      }
+                      return DropdownButtonFormField<String>(
+                        initialValue: selectedProjectId,
+                        decoration: InputDecoration(
+                          labelText: 'Assign to Site',
+                          filled: true,
+                          fillColor: context.appColors.surfaceAlt,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        items: projects
+                            .map(
+                              (project) => DropdownMenuItem<String>(
+                                value: project.id,
+                                child: Text(project.name),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (value) {
+                          if (value != null) {
+                            setSheetState(() => selectedProjectId = value);
+                          }
+                        },
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  AppButton(
+                    label: 'Save Labourer',
+                    isLoading: isSaving,
+                    onPressed: () async {
+                      final name = nameController.text.trim();
+                      final trade = tradeController.text.trim();
+                      final phone = phoneController.text.trim();
+                      final cnic = cnicController.text.trim();
+                      final rate = double.tryParse(rateController.text.trim());
+
+                      if (name.isEmpty ||
+                          trade.isEmpty ||
+                          rate == null ||
+                          rate <= 0 ||
+                          selectedProjectId == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Enter name, trade, a valid daily rate and select a site.'),
+                          ),
+                        );
+                        return;
+                      }
+
+                      setSheetState(() => isSaving = true);
+                      try {
+                        final repository = ref.read(labourRepositoryProvider);
+                        final hasDuplicate = await repository.hasDuplicateByPhoneOrCnic(
+                          phone: phone.isEmpty ? null : phone,
+                          cnic: cnic.isEmpty ? null : cnic,
+                        );
+                        if (hasDuplicate) {
+                          throw StateError('A labourer with this phone or CNIC already exists.');
+                        }
+
+                        await repository.createLabour(
+                          name: name,
+                          trade: trade,
+                          phone: phone.isEmpty ? null : phone,
+                          cnic: cnic.isEmpty ? null : cnic,
+                          defaultRate: Money.fromDouble(rate),
+                          projectId: selectedProjectId,
+                        );
+
+                        if (!pageContext.mounted || !sheetContext.mounted) return;
+                        Navigator.pop(sheetContext);
+                        ref.invalidate(labourListProvider);
+                        ScaffoldMessenger.of(pageContext).showSnackBar(
+                          SnackBar(
+                            content: Text('$name added and assigned to the selected site.'),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      } catch (error) {
+                        if (!pageContext.mounted || !sheetContext.mounted) return;
+                        setSheetState(() => isSaving = false);
+                        ScaffoldMessenger.of(pageContext).showSnackBar(
+                          SnackBar(
+                            content: Text('Unable to add labourer: $error'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    ).whenComplete(() {
+      nameController.dispose();
+      tradeController.dispose();
+      phoneController.dispose();
+      cnicController.dispose();
+      rateController.dispose();
+    });
+  }
 }
 
 class _LabourTile extends StatelessWidget {
   final Labour labour;
-  final VoidCallback onTap;
   final AppColorsValue colors;
   final ThemeData theme;
+  final bool canManage;
+  final VoidCallback onEdit;
+  final VoidCallback onArchive;
 
   const _LabourTile({
     required this.labour,
-    required this.onTap,
     required this.colors,
     required this.theme,
+    required this.canManage,
+    required this.onEdit,
+    required this.onArchive,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: AppCard(
-          child: Row(
-            children: [
-              // Avatar
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: colors.primary,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Text(
-                    labour.name.substring(0, 1).toUpperCase(),
-                    style: TextStyle(
-                      color: colors.charcoal900,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
-                  ),
-                ),
+    final initial = labour.name.isNotEmpty ? labour.name.substring(0, 1).toUpperCase() : '?';
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: AppCard(
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: colors.primary,
+                shape: BoxShape.circle,
               ),
-              const SizedBox(width: 12),
-              // Info
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      labour.name,
-                      style: theme.textTheme.titleSmall,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      labour.trade,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Status
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: colors.success.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
+              child: Center(
                 child: Text(
-                  'Active',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: colors.success,
+                  initial,
+                  style: TextStyle(
+                    color: colors.charcoal900,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    labour.name,
+                    style: theme.textTheme.titleSmall,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    labour.trade,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: colors.success.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                'Active',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: colors.success,
+                ),
+              ),
+            ),
+            if (canManage)
+              PopupMenuButton<String>(
+                onSelected: (value) {
+                  if (value == 'edit') onEdit();
+                  if (value == 'archive') onArchive();
+                },
+                itemBuilder: (context) => const [
+                  PopupMenuItem(value: 'edit', child: Text('Edit')),
+                  PopupMenuItem(
+                    value: 'archive',
+                    child: Text('Delete (keep history)', style: TextStyle(color: Colors.red)),
+                  ),
+                ],
+              ),
+          ],
         ),
       ),
     );

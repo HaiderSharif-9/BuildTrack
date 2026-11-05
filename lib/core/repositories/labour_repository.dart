@@ -11,8 +11,8 @@ class LabourRepository {
       final response = await _supabase
           .from('labour')
           .select()
-          .isFilter('deleted_at', null)
           .eq('active', true)
+          .isFilter('deleted_at', null)
           .order('name');
 
       return (response as List)
@@ -33,6 +33,8 @@ class LabourRepository {
             project_labour_rate(rate_override)
           ''')
           .eq('project_id', projectId)
+          .eq('labour.active', true)
+          .isFilter('labour.deleted_at', null)
           .order('labour(name)');
 
       return (response as List)
@@ -56,7 +58,7 @@ class LabourRepository {
           .isFilter('deleted_at', null)
           .maybeSingle();
 
-      return response as Map<String, dynamic>?;
+      return response;
     } catch (e) {
       throw Exception('Error fetching labour detail: $e');
     }
@@ -69,6 +71,7 @@ class LabourRepository {
     String? phone,
     String? cnic,
     required Money defaultRate,
+    String? projectId,
   }) async {
     try {
       // Create labour record
@@ -84,17 +87,24 @@ class LabourRepository {
 
       final labourId = labourResponse['id'] as String;
 
-      // Create labour_private record
-      if (phone != null || cnic != null) {
-        await _supabase.from('labour_private').insert({
+      // Always create the private rate row: the server-side attendance
+      // wage trigger requires a valid default rate for every labourer.
+      await _supabase.from('labour_private').insert({
+        'labour_id': labourId,
+        'phone': phone,
+        'cnic': cnic,
+        'default_rate': defaultRate.toDbString(),
+      });
+
+      // A labourer must be assigned to a site to appear in that site's sheet.
+      if (projectId != null) {
+        await _supabase.from('project_labour').insert({
+          'project_id': projectId,
           'labour_id': labourId,
-          'phone': phone,
-          'cnic': cnic,
-          'default_rate': defaultRate.toDbString(),
         });
       }
 
-      return Labour.fromJson(labourResponse as Map<String, dynamic>);
+      return Labour.fromJson(labourResponse);
     } catch (e) {
       throw Exception('Error creating labour: $e');
     }
@@ -117,7 +127,7 @@ class LabourRepository {
           .select()
           .single();
 
-      return Labour.fromJson(response as Map<String, dynamic>);
+      return Labour.fromJson(response);
     } catch (e) {
       throw Exception('Error updating labour: $e');
     }
@@ -150,7 +160,7 @@ class LabourRepository {
     try {
       await _supabase
           .from('labour')
-          .update({'deleted_at': DateTime.now().toIso8601String()})
+          .update({'active': false, 'deleted_at': DateTime.now().toIso8601String()})
           .eq('id', id);
     } catch (e) {
       throw Exception('Error deleting labour: $e');
@@ -163,8 +173,8 @@ class LabourRepository {
       final response = await _supabase
           .from('labour')
           .select()
-          .isFilter('deleted_at', null)
           .eq('active', true)
+          .isFilter('deleted_at', null)
           .or('name.ilike.%$query%,trade.ilike.%$query%')
           .order('name');
 
@@ -196,21 +206,17 @@ class LabourRepository {
         query += 'cnic.eq.$cnic';
       }
 
-      final response = await _supabase
+      var duplicateQuery = _supabase
           .from('labour_private')
           .select('labour_id')
-          .or(query)
-          .limit(1);
+          .or(query);
 
-      if ((response as List).isEmpty) return false;
-
-      // If excluding a labour ID, check if it's a different one
       if (excludeLabourId != null) {
-        final existingId = (response[0] as Map)['labour_id'];
-        return existingId != excludeLabourId;
+        duplicateQuery = duplicateQuery.neq('labour_id', excludeLabourId);
       }
 
-      return true;
+      final response = await duplicateQuery.limit(1);
+      return (response as List).isNotEmpty;
     } catch (e) {
       throw Exception('Error checking duplicates: $e');
     }

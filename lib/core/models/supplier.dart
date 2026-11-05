@@ -42,5 +42,3 @@ class Supplier {
   @override
   String toString() => 'Supplier(id=$id, name=$name)';
 }
-
-

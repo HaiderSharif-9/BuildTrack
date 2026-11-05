@@ -19,12 +19,15 @@ class KpiCard extends StatelessWidget {
   });
 
   Color _getColor(bool isDark) {
-    return switch (type) {
-      'income' => isDark ? AppColors.incomeDark : AppColors.incomeLight,
-      'expense' => isDark ? AppColors.expenseDark : AppColors.expenseLight,
-      'profit' => isDark ? AppColors.profitDark : AppColors.profitLight,
-      _ => AppColors.primary,
-    };
+    if (type == 'income') {
+      return isDark ? AppColors.incomeDark : AppColors.incomeLight;
+    } else if (type == 'expense') {
+      return isDark ? AppColors.expenseDark : AppColors.expenseLight;
+    } else if (type == 'profit') {
+      return isDark ? AppColors.profitDark : AppColors.profitLight;
+    } else {
+      return AppColors.primary;
+    }
   }
 
   @override
@@ -33,7 +36,7 @@ class KpiCard extends StatelessWidget {
     final color = _getColor(isDark);
 
     return AppCard(
-      padding: EdgeInsets.all(AppSpacing.lg),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -50,13 +53,13 @@ class KpiCard extends StatelessWidget {
                 Icon(icon, color: color, size: 24),
             ],
           ),
-          SizedBox(height: AppSpacing.md),
+          const SizedBox(height: AppSpacing.md),
           Text(
             value,
             style: AppTypography.kpiLight.copyWith(color: color),
           ),
           if (subtitle != null) ...[
-            SizedBox(height: AppSpacing.xs),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               subtitle!,
               style: AppTypography.captionLight.copyWith(

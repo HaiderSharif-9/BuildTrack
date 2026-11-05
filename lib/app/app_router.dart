@@ -2,22 +2,74 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../core/debug/debug_ui_kit.dart';
-import '../features/auth/presentation/splash_screen.dart';
-import '../features/auth/presentation/login_screen.dart';
-import '../features/auth/presentation/signup_screen.dart';
+import '../core/widgets/buildtrack_brand.dart';
+import '../features/attendance/presentation/attendance_screen.dart';
+import '../features/auth/data/auth_providers.dart';
+import '../features/auth/data/auth_service.dart';
 import '../features/auth/presentation/change_password_screen.dart';
 import '../features/auth/presentation/forgot_password_screen.dart';
+import '../features/auth/presentation/login_screen.dart';
 import '../features/auth/presentation/my_account_screen.dart';
+import '../features/auth/presentation/signup_screen.dart';
+import '../features/auth/presentation/splash_screen.dart';
 import '../features/dashboard/presentation/dashboard_screen.dart';
-import '../features/sites/presentation/sites_screen.dart';
-import '../features/sites/presentation/site_detail_screen.dart';
 import '../features/labour/presentation/labour_screen.dart';
+import '../features/money/presentation/money_screen.dart';
+import '../features/more/presentation/more_screen.dart';
+import '../features/reports/presentation/reports_screen.dart';
+import '../features/settings/presentation/users_screen.dart';
+import '../features/sites/presentation/site_detail_screen.dart';
+import '../features/sites/presentation/sites_screen.dart';
 import 'app_shell.dart';
 
 /// Router provider for go_router
 final goRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/',
+    redirect: (context, state) async {
+      final location = state.matchedLocation;
+      final isPublicRoute = location == '/' ||
+          location == '/login' ||
+          location == '/signup' ||
+          location == '/forgot-password';
+
+      final user = ref.read(currentUserProvider);
+      if (user == null) {
+        return isPublicRoute ? null : '/login';
+      }
+
+      final profile = await ref.read(currentProfileProvider.future);
+      if (profile == null || !profile.active) {
+        await ref.read(authServiceProvider).signOut();
+        return '/login';
+      }
+
+      // Temporary-password accounts cannot enter any other screen until changed.
+      if (profile.mustChangePassword) {
+        return location == '/change-password' ? null : '/change-password';
+      }
+      if (location == '/change-password') return '/home';
+      // Always land authenticated users on the dashboard from the app root
+      // or an auth page (including after a successful email confirmation).
+      if (location == '/' || location == '/login' || location == '/signup') {
+        return '/home';
+      }
+
+      final needsFinanceAccess =
+          location.startsWith('/money') || location == '/more/reports';
+      final needsAdminAccess = location == '/more/users';
+      if (needsAdminAccess && profile.role != 'admin') return '/more';
+      if (needsFinanceAccess &&
+          profile.role != 'admin' &&
+          profile.role != 'accountant') {
+        return '/more';
+      }
+      return null;
+    },
+    // Supabase email links and stale browser URLs can arrive on a path that
+    // is not a Flutter route. Recover to the correct authenticated entry
+    // screen instead of showing GoRouter's dead-end Page Not Found screen.
+    errorBuilder: (context, state) => const RouteRecoveryScreen(),
     routes: [
       // Splash screen
       GoRoute(
@@ -49,16 +101,16 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           navigationShell: navigationShell,
         ),
         branches: [
-          // Home branch
+          // 0: Home branch
           StatefulShellBranch(
             routes: [
               GoRoute(
                 path: '/home',
-                builder: (context, state) => const HomeScreen(),
+                builder: (context, state) => const DashboardScreen(),
               ),
             ],
           ),
-          // Sites branch
+          // 1: Sites branch
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -75,7 +127,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          // Attendance branch (center)
+          // 2: Attendance branch (center)
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -84,7 +136,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          // Money branch
+          // 3: Money branch (Ledger, Payroll, Purchases)
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -93,7 +145,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          // More branch (Labour, Payments, Purchases, Reports, Settings)
+          // 4: More branch (Labour, Reports, Users, Account, About)
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -103,6 +155,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'labour',
                     builder: (context, state) => const LabourScreen(),
+                  ),
+                  GoRoute(
+                    path: 'reports',
+                    builder: (context, state) => const ReportsScreen(),
+                  ),
+                  GoRoute(
+                    path: 'users',
+                    builder: (context, state) => const UsersScreen(),
                   ),
                   GoRoute(
                     path: 'account',
@@ -128,65 +188,96 @@ final goRouterProvider = Provider<GoRouter>((ref) {
   );
 });
 
-// Placeholder screens
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const DashboardScreen();
-  }
-}
-
-
-class AttendanceScreen extends StatelessWidget {
-  const AttendanceScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('Attendance'),
-      ),
-    );
-  }
-}
-
-class MoneyScreen extends StatelessWidget {
-  const MoneyScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('Money & Ledger'),
-      ),
-    );
-  }
-}
-
-class MoreScreen extends StatelessWidget {
-  const MoreScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('More Options'),
-      ),
-    );
-  }
-}
-
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('About')),
+      appBar: AppBar(title: const Text('About BuildTrack')),
       body: const Center(
-        child: Text('About BuildTrack'),
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              BuildTrackBrand(iconSize: 72),
+              SizedBox(height: 16),
+              Text(
+                'BuildTrack',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+              ),
+              SizedBox(height: 4),
+              Text(
+                'Care Constructiona Pvt Ltd, Multan',
+                style: TextStyle(fontSize: 14, color: Colors.grey),
+              ),
+              SizedBox(height: 16),
+              Text(
+                'BUILDING TODAY | FOR A BETTER TOMORROW',
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12, letterSpacing: 1),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 24),
+              Text('Version 1.0.0+1', style: TextStyle(fontSize: 12, color: Colors.grey)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+/// Recovers unknown web/deep-link paths after authentication.
+class RouteRecoveryScreen extends ConsumerStatefulWidget {
+  const RouteRecoveryScreen({super.key});
+
+  @override
+  ConsumerState<RouteRecoveryScreen> createState() => _RouteRecoveryScreenState();
+}
+
+class _RouteRecoveryScreenState extends ConsumerState<RouteRecoveryScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _recoverRoute());
+  }
+
+  Future<void> _recoverRoute() async {
+    if (!mounted) return;
+    final user = ref.read(currentUserProvider);
+    if (user == null) {
+      context.go('/login');
+      return;
+    }
+
+    try {
+      final profile = await ref.read(currentProfileProvider.future);
+      if (!mounted) return;
+      if (profile == null || !profile.active) {
+        await ref.read(authServiceProvider).signOut();
+        if (mounted) context.go('/login');
+        return;
+      }
+      context.go(profile.mustChangePassword ? '/change-password' : '/home');
+    } catch (_) {
+      if (mounted) context.go('/login');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Opening BuildTrack...'),
+          ],
+        ),
       ),
     );
   }

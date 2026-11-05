@@ -16,11 +16,13 @@ class AmountText extends StatelessWidget {
   });
 
   Color _getColor(bool isDark) {
-    return switch (type) {
-      'income' => isDark ? AppColors.incomeDark : AppColors.incomeLight,
-      'expense' => isDark ? AppColors.expenseDark : AppColors.expenseLight,
-      _ => isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-    };
+    if (type == 'income') {
+      return isDark ? AppColors.incomeDark : AppColors.incomeLight;
+    } else if (type == 'expense') {
+      return isDark ? AppColors.expenseDark : AppColors.expenseLight;
+    } else {
+      return isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    }
   }
 
   String _formatAmount() {
@@ -39,7 +41,7 @@ class AmountText extends StatelessWidget {
       _formatAmount(),
       style: (style ?? AppTypography.bodyLight).copyWith(
         color: color,
-        fontFeatures: [FontFeature.tabularFigures()],
+        fontFeatures: [const FontFeature.tabularFigures()],
       ),
     );
   }

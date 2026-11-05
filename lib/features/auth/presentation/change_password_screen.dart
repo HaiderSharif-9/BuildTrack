@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:buildtrack/core/theme/app_theme.dart';
-import 'package:buildtrack/core/widgets/index.dart';
-import 'package:buildtrack/l10n/app_localizations.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/index.dart';
+import '../../../l10n/app_localizations.dart';
 import '../data/auth_service.dart';
+import '../data/auth_providers.dart';
 
 class ChangePasswordScreen extends ConsumerStatefulWidget {
   final bool isForced;
@@ -62,6 +63,9 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
     try {
       final authService = ref.read(authServiceProvider);
       await authService.updatePassword(_newPasswordController.text);
+      ref.invalidate(currentProfileProvider);
+      ref.invalidate(mustChangePasswordProvider);
+      ref.invalidate(currentUserRoleProvider);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -88,15 +92,14 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colors = AppColors.of(context);
 
-    return WillPopScope(
-      onWillPop: () async => !widget.isForced,
+    return PopScope(
+      canPop: !widget.isForced,
       child: Scaffold(
         appBar: widget.isForced
             ? null
             : AppBar(
-                leading: BackButton(color: colors.textPrimary),
+                leading: const BackButton(color: AppColors.lightTextPrimary),
                 backgroundColor: Colors.transparent,
                 elevation: 0,
               ),
@@ -105,10 +108,10 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
           child: Column(
             children: [
               if (widget.isForced) ...[
-                Icon(
+                const Icon(
                   Icons.lock_outline,
                   size: 48,
-                  color: colors.primary,
+                  color: AppColors.primary,
                 ),
                 const SizedBox(height: 16),
               ],
@@ -123,7 +126,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                     ? l10n.forceChangePasswordMessage
                     : l10n.enterNewPassword,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: colors.textSecondary,
+                  color: AppColors.lightTextSecondary,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -135,12 +138,12 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                       controller: _newPasswordController,
                       label: l10n.newPassword,
                       hint: l10n.enterNewPassword,
-                      enabled: !_isLoading,
+                      
                       obscure: !_showPassword,
                       suffixIcon: _showPassword
                           ? Icons.visibility_off
                           : Icons.visibility,
-                      onSuffixIconTap: () {
+                      onSuffixTap: () {
                         setState(() => _showPassword = !_showPassword);
                       },
                     ),
@@ -148,13 +151,13 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                     AppTextField(
                       controller: _confirmPasswordController,
                       label: l10n.confirmPassword,
-                      hint: l10n.confirmPasswordHint,
-                      enabled: !_isLoading,
+                      hint: l10n.confirmPassword,
+                      
                       obscure: !_showConfirmPassword,
                       suffixIcon: _showConfirmPassword
                           ? Icons.visibility_off
                           : Icons.visibility,
-                      onSuffixIconTap: () {
+                      onSuffixTap: () {
                         setState(
                             () => _showConfirmPassword = !_showConfirmPassword);
                       },
@@ -164,21 +167,21 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: colors.error.withOpacity(0.1),
-                          border: Border.all(color: colors.error),
+                          color: AppColors.expenseLight.withValues(alpha: 0.1),
+                          border: Border.all(color: AppColors.expenseLight),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
                           _errorMessage!,
-                          style: TextStyle(
-                            color: colors.error,
+                          style: const TextStyle(
+                            color: AppColors.expenseLight,
                             fontSize: 13,
                           ),
                         ),
                       ),
                     if (_errorMessage != null) const SizedBox(height: 16),
                     AppButton(
-                      onPressed: _isLoading ? null : _handleChangePassword,
+                      onPressed: _isLoading ? () {} : _handleChangePassword,
                       isLoading: _isLoading,
                       label: l10n.updatePassword,
                     ),

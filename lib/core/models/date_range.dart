@@ -64,8 +64,8 @@ class DateRange {
 
   /// Get dates as ISO strings for API
   Map<String, String> get apiParams => {
-        'from': start.toIso8601String(),
-        'to': end.toIso8601String(),
+        'from': start.toIso8601String().split('T').first,
+        'to': end.toIso8601String().split('T').first,
       };
 
   @override

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:buildtrack/core/theme/app_theme.dart';
-import 'package:buildtrack/core/widgets/index.dart';
-import 'package:buildtrack/l10n/app_localizations.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/index.dart';
+import '../../../core/widgets/buildtrack_brand.dart';
+import '../../../l10n/app_localizations.dart';
 import '../data/auth_service.dart';
+import '../data/auth_providers.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -47,6 +49,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         password: _passwordController.text,
       );
 
+      // Load the signed-in user's profile before entering the protected app.
+      // Email confirmation is handled during first-account signup, not here.
+      ref.invalidate(currentProfileProvider);
+      await ref.read(currentProfileProvider.future);
+
       if (mounted) {
         context.go('/home');
       }
@@ -71,19 +78,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colors = AppColors.of(context);
 
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
           height: MediaQuery.of(context).size.height,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                colors.charcoal900,
-                colors.charcoal700,
+                AppColors.charcoal900,
+                AppColors.charcoal700,
               ],
             ),
           ),
@@ -92,38 +98,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Logo and branding
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: colors.primary,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Center(
-                    child: Text(
-                      '◆',
-                      style: TextStyle(
-                        fontSize: 40,
-                        color: colors.charcoal900,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'BuildTrack',
-                  style: theme.textTheme.headlineLarge?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
+                const BuildTrackBrand(iconSize: 80),
                 const SizedBox(height: 4),
                 Text(
                   l10n.appSubtitle,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: colors.goldText,
+                    color: AppColors.goldTextLight,
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -144,9 +124,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         controller: _loginIdController,
                         label: l10n.phoneOrEmail,
                         hint: l10n.enterPhoneOrEmail,
-                        enabled: !_isLoading,
+                        
                         keyboardType: TextInputType.text,
-                        icon: Icons.person,
+                        
                       ),
                       const SizedBox(height: 16),
 
@@ -155,12 +135,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         controller: _passwordController,
                         label: l10n.password,
                         hint: l10n.enterPassword,
-                        enabled: !_isLoading,
+                        
                         obscure: !_showPassword,
                         suffixIcon: _showPassword
                             ? Icons.visibility_off
                             : Icons.visibility,
-                        onSuffixIconTap: () {
+                        onSuffixTap: () {
                           setState(() {
                             _showPassword = !_showPassword;
                           });
@@ -179,8 +159,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 },
                           child: Text(
                             l10n.forgotPassword,
-                            style: TextStyle(
-                              color: colors.goldText,
+                            style: const TextStyle(
+                              color: AppColors.goldTextLight,
                               fontSize: 12,
                             ),
                           ),
@@ -193,16 +173,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: colors.error.withOpacity(0.1),
+                            color: AppColors.expenseLight.withValues(alpha: 0.1),
                             border: Border.all(
-                              color: colors.error,
+                              color: AppColors.expenseLight,
                             ),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
                             _errorMessage!,
-                            style: TextStyle(
-                              color: colors.error,
+                            style: const TextStyle(
+                              color: AppColors.expenseLight,
                               fontSize: 13,
                             ),
                           ),
@@ -211,9 +191,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                       // Login button
                       AppButton(
-                        onPressed: _isLoading
-                            ? null
-                            : () {
+                        onPressed: () {
+                                if (_isLoading) return;
                                 if (_loginIdController.text.isEmpty ||
                                     _passwordController.text.isEmpty) {
                                   setState(() {
@@ -232,19 +211,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // First-admin sign-up link (dev mode only)
-                TextButton(
-                  onPressed: () {
-                    context.push('/signup');
-                  },
-                  child: Text(
-                    l10n.signUpAsFirstAdmin,
-                    style: TextStyle(
-                      color: colors.goldText,
-                      fontSize: 13,
-                    ),
-                  ),
-                ),
               ],
             ),
           ),

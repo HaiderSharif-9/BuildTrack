@@ -1,6 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:buildtrack/core/models/date_range.dart';
-import 'package:buildtrack/core/models/dashboard_summary.dart';
+import '../../../core/models/dashboard_summary.dart';
 
 class DashboardRepository {
   final _supabase = Supabase.instance.client;
@@ -60,11 +59,13 @@ class DashboardRepository {
   Future<List<SiteTotals>> getSiteTotals({
     required String from,
     required String to,
+    String? projectId,
   }) async {
     try {
       final params = {
         'from': from,
         'to': to,
+        'project': projectId,
       };
 
       final response = await _supabase.rpc('site_totals', params: params) as List;
@@ -104,6 +105,7 @@ class DashboardRepository {
           .from('project_members')
           .select('project_id, projects(id, name, status)')
           .eq('user_id', userId)
+          .isFilter('projects.deleted_at', null)
           .order('projects(name)');
 
       return (response as List)
@@ -117,13 +119,20 @@ class DashboardRepository {
   /// Get recent activity (transactions + wage payments)
   Future<List<Map<String, dynamic>>> getRecentActivity({
     int limit = 10,
+    String? projectId,
   }) async {
     try {
-      final response = await _supabase
+      var query = _supabase
           .from('transactions')
           .select(
               'id, date, type, category_id, description, amount, categories(name)')
-          .isFilter('deleted_at', null)
+          .isFilter('deleted_at', null);
+
+      if (projectId != null) {
+        query = query.eq('project_id', projectId);
+      }
+
+      final response = await query
           .order('date', ascending: false)
           .limit(limit);
 

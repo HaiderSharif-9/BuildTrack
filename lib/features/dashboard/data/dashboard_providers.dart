@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:buildtrack/core/models/date_range.dart';
-import 'package:buildtrack/core/models/dashboard_summary.dart';
-import 'package:buildtrack/features/auth/data/auth_providers.dart';
+import '../../../core/models/date_range.dart';
+import '../../../core/models/dashboard_summary.dart';
+import '../../auth/data/auth_providers.dart';
 import 'dashboard_repository.dart';
 
 /// Dashboard repository provider
@@ -51,11 +51,13 @@ final dailyTrendProvider = FutureProvider<List<DailySummary>>((ref) async {
 final siteTotalsProvider = FutureProvider<List<SiteTotals>>((ref) async {
   final repo = ref.watch(dashboardRepositoryProvider);
   final dateRange = ref.watch(selectedDateRangeProvider);
+  final siteId = ref.watch(selectedSiteProvider);
 
   final params = dateRange.apiParams;
   return repo.getSiteTotals(
     from: params['from']!,
     to: params['to']!,
+    projectId: siteId,
   );
 });
 
@@ -74,5 +76,6 @@ final availableProjectsProvider = FutureProvider<List<Map<String, dynamic>>>((re
 /// Recent activity
 final recentActivityProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
   final repo = ref.watch(dashboardRepositoryProvider);
-  return repo.getRecentActivity(limit: 10);
+  final siteId = ref.watch(selectedSiteProvider);
+  return repo.getRecentActivity(limit: 10, projectId: siteId);
 });

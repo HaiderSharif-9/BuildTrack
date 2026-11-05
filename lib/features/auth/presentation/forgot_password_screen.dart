@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:buildtrack/core/theme/app_theme.dart';
-import 'package:buildtrack/core/widgets/index.dart';
-import 'package:buildtrack/l10n/app_localizations.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/index.dart';
+import '../../../l10n/app_localizations.dart';
 import '../data/auth_service.dart';
 
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
@@ -75,11 +75,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colors = AppColors.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(color: colors.textPrimary),
+        leading: const BackButton(color: AppColors.lightTextPrimary),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -88,10 +87,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         child: Column(
           children: [
             const SizedBox(height: 32),
-            Icon(
+            const Icon(
               Icons.mail_outline,
               size: 48,
-              color: colors.primary,
+              color: AppColors.primary,
             ),
             const SizedBox(height: 16),
             Text(
@@ -103,7 +102,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             Text(
               l10n.enterEmailToResetPassword,
               style: theme.textTheme.bodySmall?.copyWith(
-                color: colors.textSecondary,
+                color: AppColors.lightTextSecondary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -115,23 +114,23 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                     controller: _emailController,
                     label: l10n.email,
                     hint: l10n.enterEmail,
-                    enabled: !_isLoading,
+                    
                     keyboardType: TextInputType.emailAddress,
-                    icon: Icons.email,
+                    
                   ),
                   const SizedBox(height: 20),
                   if (_errorMessage != null)
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: colors.error.withOpacity(0.1),
-                        border: Border.all(color: colors.error),
+                        color: AppColors.expenseLight.withValues(alpha: 0.1),
+                        border: Border.all(color: AppColors.expenseLight),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         _errorMessage!,
-                        style: TextStyle(
-                          color: colors.error,
+                        style: const TextStyle(
+                          color: AppColors.expenseLight,
                           fontSize: 13,
                         ),
                       ),
@@ -140,23 +139,23 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: colors.success.withOpacity(0.1),
-                        border: Border.all(color: colors.success),
+                        color: AppColors.incomeLight.withValues(alpha: 0.1),
+                        border: Border.all(color: AppColors.incomeLight),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.check_circle,
-                            color: colors.success,
+                            color: AppColors.incomeLight,
                             size: 20,
                           ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               _successMessage!,
-                              style: TextStyle(
-                                color: colors.success,
+                              style: const TextStyle(
+                                color: AppColors.incomeLight,
                                 fontSize: 13,
                               ),
                             ),
@@ -167,7 +166,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   if (_errorMessage != null || _successMessage != null)
                     const SizedBox(height: 16),
                   AppButton(
-                    onPressed: _isLoading ? null : _handleResetPassword,
+                    onPressed: _isLoading ? () {} : _handleResetPassword,
                     isLoading: _isLoading,
                     label: l10n.sendResetEmail,
                   ),

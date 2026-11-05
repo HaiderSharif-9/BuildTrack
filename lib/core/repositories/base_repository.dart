@@ -4,8 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 abstract class BaseRepository {
   final SupabaseClient supabase;
 
-  BaseRepository([SupabaseClient? client])
-      : supabase = client ?? Supabase.instance.client;
+  BaseRepository(this.supabase);
 
   /// Handle database errors with friendly messages
   String handleError(dynamic error) {

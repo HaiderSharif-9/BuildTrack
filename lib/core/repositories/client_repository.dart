@@ -10,7 +10,6 @@ class ClientRepository {
       final response = await _supabase
           .from('clients')
           .select()
-          .isFilter('deleted_at', null)
           .order('name');
 
       return (response as List)
@@ -28,11 +27,10 @@ class ClientRepository {
           .from('clients')
           .select()
           .eq('id', id)
-          .isFilter('deleted_at', null)
           .maybeSingle();
 
       if (response == null) return null;
-      return Client.fromJson(response as Map<String, dynamic>);
+      return Client.fromJson(response);
     } catch (e) {
       throw Exception('Error fetching client: $e');
     }
@@ -53,7 +51,7 @@ class ClientRepository {
         'notes': notes,
       }).select().single();
 
-      return Client.fromJson(response as Map<String, dynamic>);
+      return Client.fromJson(response);
     } catch (e) {
       throw Exception('Error creating client: $e');
     }
@@ -80,7 +78,7 @@ class ClientRepository {
           .select()
           .single();
 
-      return Client.fromJson(response as Map<String, dynamic>);
+      return Client.fromJson(response);
     } catch (e) {
       throw Exception('Error updating client: $e');
     }
@@ -104,7 +102,6 @@ class ClientRepository {
       final response = await _supabase
           .from('clients')
           .select()
-          .isFilter('deleted_at', null)
           .ilike('name', '%$query%')
           .order('name');
 

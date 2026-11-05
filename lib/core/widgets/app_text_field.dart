@@ -11,11 +11,8 @@ class AppTextField extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final int maxLines;
   final IconData? prefixIcon;
-  final IconData? icon;
   final IconData? suffixIcon;
   final VoidCallback? onSuffixTap;
-  final VoidCallback? onSuffixIconTap;
-  final bool? enabled;
 
   const AppTextField({
     required this.label,
@@ -27,11 +24,8 @@ class AppTextField extends StatefulWidget {
     this.onChanged,
     this.maxLines = 1,
     this.prefixIcon,
-    this.icon,
     this.suffixIcon,
     this.onSuffixTap,
-    this.onSuffixIconTap,
-    this.enabled,
     super.key,
   });
 
@@ -49,10 +43,17 @@ class _AppTextFieldState extends State<AppTextField> {
   }
 
   @override
+  void didUpdateWidget(covariant AppTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Keep internal visibility synchronized with parent-controlled state.
+    if (oldWidget.obscure != widget.obscure) {
+      _obscured = widget.obscure;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final leadingIcon = widget.icon ?? widget.prefixIcon;
-    final trailingTap = widget.onSuffixIconTap ?? widget.onSuffixTap;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,21 +64,20 @@ class _AppTextFieldState extends State<AppTextField> {
             color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
           ),
         ),
-        SizedBox(height: AppSpacing.sm),
+        const SizedBox(height: AppSpacing.sm),
         TextFormField(
           controller: widget.controller,
           keyboardType: widget.keyboardType,
           obscureText: _obscured,
           validator: widget.validator,
           onChanged: widget.onChanged,
-          enabled: widget.enabled,
           maxLines: _obscured ? 1 : widget.maxLines,
           decoration: InputDecoration(
             hintText: widget.hint,
-            prefixIcon: leadingIcon != null ? Icon(leadingIcon) : null,
+            prefixIcon: widget.prefixIcon != null ? Icon(widget.prefixIcon) : null,
             suffixIcon: widget.suffixIcon != null
                 ? GestureDetector(
-                    onTap: trailingTap ?? (widget.obscure ? _toggleObscure : null),
+                    onTap: widget.onSuffixTap ?? (widget.obscure ? _toggleObscure : null),
                     child: Icon(widget.suffixIcon),
                   )
                 : null,

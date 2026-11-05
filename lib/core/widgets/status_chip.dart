@@ -14,23 +14,31 @@ class StatusChip extends StatelessWidget {
   });
 
   Color _getBackgroundColor(bool isDark) {
-    return switch (type) {
-      'income' => isDark ? AppColors.incomeBgDark : AppColors.incomeBgLight,
-      'expense' => isDark ? AppColors.expenseBgDark : AppColors.expenseBgLight,
-      'profit' => isDark ? AppColors.profitBgDark : AppColors.profitBgLight,
-      'warning' => isDark ? AppColors.warningBgDark : AppColors.warningBgLight,
-      _ => isDark ? AppColors.darkSurfaceAlt : AppColors.lightSurfaceAlt,
-    };
+    if (type == 'income') {
+      return isDark ? AppColors.incomeBgDark : AppColors.incomeBgLight;
+    } else if (type == 'expense') {
+      return isDark ? AppColors.expenseBgDark : AppColors.expenseBgLight;
+    } else if (type == 'profit') {
+      return isDark ? AppColors.profitBgDark : AppColors.profitBgLight;
+    } else if (type == 'warning') {
+      return isDark ? AppColors.warningBgDark : AppColors.warningBgLight;
+    } else {
+      return isDark ? AppColors.darkSurfaceAlt : AppColors.lightSurfaceAlt;
+    }
   }
 
   Color _getTextColor(bool isDark) {
-    return switch (type) {
-      'income' => AppColors.incomeTextLight,
-      'expense' => AppColors.expenseTextLight,
-      'profit' => AppColors.profitTextLight,
-      'warning' => AppColors.warningLight,
-      _ => isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-    };
+    if (type == 'income') {
+      return AppColors.incomeTextLight;
+    } else if (type == 'expense') {
+      return AppColors.expenseTextLight;
+    } else if (type == 'profit') {
+      return AppColors.profitTextLight;
+    } else if (type == 'warning') {
+      return AppColors.warningLight;
+    } else {
+      return isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    }
   }
 
   @override
@@ -38,7 +46,7 @@ class StatusChip extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
       decoration: BoxDecoration(
         color: _getBackgroundColor(isDark),
         borderRadius: BorderRadius.circular(AppRadius.chip),

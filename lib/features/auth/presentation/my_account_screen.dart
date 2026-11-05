@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:buildtrack/core/theme/app_theme.dart';
-import 'package:buildtrack/core/widgets/index.dart';
-import 'package:buildtrack/l10n/app_localizations.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/index.dart';
+import '../../../l10n/app_localizations.dart';
 import '../data/auth_service.dart';
 import '../data/auth_providers.dart';
 
@@ -30,7 +30,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
     final themeMode = ref.watch(themeModeProvider);
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colors = AppColors.of(context);
+    final colors = context.appColors;
 
     return Scaffold(
       appBar: AppBar(
@@ -50,15 +50,15 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                     Container(
                       width: 80,
                       height: 80,
-                      decoration: BoxDecoration(
-                        color: colors.primary,
+                      decoration: const BoxDecoration(
+                        color: AppColors.primary,
                         shape: BoxShape.circle,
                       ),
                       child: Center(
                         child: Text(
                           _getInitials(userProfile?.fullName ?? ''),
                           style: theme.textTheme.headlineLarge?.copyWith(
-                            color: colors.charcoal900,
+                            color: AppColors.charcoal900,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -76,19 +76,13 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: _getRoleBgColor(
-                          userProfile?.role,
-                          colors,
-                        ),
+                        color: _getRoleBgColor(userProfile?.role, colors),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Text(
                         _getRoleLabel(userProfile?.role, l10n),
                         style: theme.textTheme.labelSmall?.copyWith(
-                          color: _getRoleTextColor(
-                            userProfile?.role,
-                            colors,
-                          ),
+                          color: _getRoleTextColor(userProfile?.role, colors),
                         ),
                       ),
                     ),
@@ -97,7 +91,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                       Text(
                         userProfile!.phone!,
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: colors.textSecondary,
+                          color: AppColors.lightTextSecondary,
                         ),
                       ),
                     ],
@@ -109,7 +103,6 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
               // Settings section
               SectionHeader(
                 title: l10n.settings,
-                action: null,
               ),
               const SizedBox(height: 12),
 
@@ -120,7 +113,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.language, color: colors.primary),
+                        const Icon(Icons.language, color: AppColors.primary),
                         const SizedBox(width: 12),
                         Text(
                           l10n.language,
@@ -130,8 +123,8 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                     ),
                     DropdownButton<String>(
                       value: language,
-                      underline: SizedBox.shrink(),
-                      items: [
+                      underline: const SizedBox.shrink(),
+                      items: const [
                         DropdownMenuItem(
                           value: 'en',
                           child: Text('English'),
@@ -163,7 +156,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                           themeMode == ThemeMode.dark
                               ? Icons.dark_mode
                               : Icons.light_mode,
-                          color: colors.primary,
+                          color: AppColors.primary,
                         ),
                         const SizedBox(width: 12),
                         Text(
@@ -174,7 +167,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                     ),
                     DropdownButton<ThemeMode>(
                       value: themeMode,
-                      underline: SizedBox.shrink(),
+                      underline: const SizedBox.shrink(),
                       items: [
                         DropdownMenuItem(
                           value: ThemeMode.light,
@@ -203,7 +196,6 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
               // Actions
               SectionHeader(
                 title: l10n.actions,
-                action: null,
               ),
               const SizedBox(height: 12),
 
@@ -217,7 +209,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.lock_outline, color: colors.primary),
+                        const Icon(Icons.lock_outline, color: AppColors.primary),
                         const SizedBox(width: 12),
                         Text(
                           l10n.changePassword,
@@ -225,7 +217,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                         ),
                       ],
                     ),
-                    Icon(Icons.arrow_forward, color: colors.textSecondary),
+                    const Icon(Icons.arrow_forward, color: AppColors.lightTextSecondary),
                   ],
                 ),
               ),
@@ -241,7 +233,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.info_outline, color: colors.primary),
+                        const Icon(Icons.info_outline, color: AppColors.primary),
                         const SizedBox(width: 12),
                         Text(
                           l10n.about,
@@ -249,7 +241,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                         ),
                       ],
                     ),
-                    Icon(Icons.arrow_forward, color: colors.textSecondary),
+                    const Icon(Icons.arrow_forward, color: AppColors.lightTextSecondary),
                   ],
                 ),
               ),
@@ -279,7 +271,8 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
                   if (confirmed ?? false) {
                     final authService = ref.read(authServiceProvider);
                     await authService.signOut();
-                    if (mounted) {
+                    if (!mounted) return;
+                    if (context.mounted) {
                       context.go('/login');
                     }
                   }
@@ -293,7 +286,7 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
         loading: () => const Center(
           child: CircularProgressIndicator(),
         ),
-        error: (err, stack) => Center(
+        error: (err, stack) => const Center(
           child: Text('Error loading profile'),
         ),
       ),
@@ -326,13 +319,13 @@ class _MyAccountScreenState extends ConsumerState<MyAccountScreen> {
   Color _getRoleBgColor(String? role, AppColorsValue colors) {
     switch (role) {
       case 'admin':
-        return colors.primary.withOpacity(0.1);
+        return colors.primary.withValues(alpha: 0.1);
       case 'accountant':
-        return colors.success.withOpacity(0.1);
+        return colors.success.withValues(alpha: 0.1);
       case 'manager':
-        return colors.info.withOpacity(0.1);
+        return colors.info.withValues(alpha: 0.1);
       default:
-        return colors.border;
+        return colors.border.withValues(alpha: 0.1);
     }
   }
 

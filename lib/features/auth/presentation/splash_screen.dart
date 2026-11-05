@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:buildtrack/core/theme/app_theme.dart';
-import 'package:buildtrack/l10n/app_localizations.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/buildtrack_brand.dart';
 import '../data/auth_service.dart';
 import '../data/auth_providers.dart';
 
@@ -59,17 +59,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = AppColors.of(context);
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              colors.charcoal900,
-              colors.charcoal700,
+              AppColors.charcoal900,
+              AppColors.charcoal700,
             ],
           ),
         ),
@@ -77,55 +76,29 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Logo placeholder (SVG will be here)
-              Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  color: colors.primary,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Center(
-                  child: Text(
-                    '◆',
-                    style: TextStyle(
-                      fontSize: 48,
-                      color: colors.charcoal900,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                'BuildTrack',
-                style: theme.textTheme.displaySmall?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+              const BuildTrackBrand(iconSize: 100, showTagline: true),
               const SizedBox(height: 8),
               Text(
                 'by Care Constructiona Pvt Ltd',
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colors.textSecondary.withOpacity(0.8),
+                  color: AppColors.lightTextSecondary.withValues(alpha: 0.8),
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 'Building Today | For A Better Tomorrow',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: colors.goldText,
+                  color: AppColors.goldTextLight,
                   fontStyle: FontStyle.italic,
                 ),
               ),
               const SizedBox(height: 48),
-              SizedBox(
+              const SizedBox(
                 width: 24,
                 height: 24,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
                 ),
               ),
             ],

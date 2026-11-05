@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:buildtrack/core/theme/app_theme.dart';
-import 'package:buildtrack/l10n/app_localizations.dart';
-import 'package:buildtrack/features/auth/data/auth_providers.dart';
+import '../../core/theme/app_theme.dart';
+import '../../l10n/app_localizations.dart';
+import '../features/auth/data/auth_providers.dart';
 
 class AppShell extends ConsumerWidget {
   final StatefulNavigationShell navigationShell;
@@ -13,29 +13,29 @@ class AppShell extends ConsumerWidget {
     required this.navigationShell,
   });
 
-  void _goBranch(int index) {
+  void _goBranch(int branchIndex) {
     navigationShell.goBranch(
-      index,
-      initialLocation: index == navigationShell.currentIndex,
+      branchIndex,
+      initialLocation: branchIndex == navigationShell.currentIndex,
     );
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userRole = ref.watch(currentUserRoleProvider);
-    final theme = Theme.of(context);
-    final colors = AppColors.of(context);
     final l10n = AppLocalizations.of(context)!;
+    final colors = context.appColors;
 
     return userRole.when(
       data: (role) {
-        // Define visible tabs based on role
         final tabs = _getVisibleTabs(role, l10n);
+        final selectedTabIndex = tabs.indexWhere((tab) => tab.branchIndex == navigationShell.currentIndex);
 
         return Scaffold(
           body: navigationShell,
           bottomNavigationBar: Container(
             decoration: BoxDecoration(
+              color: colors.surface,
               border: Border(
                 top: BorderSide(
                   color: colors.border,
@@ -44,18 +44,39 @@ class AppShell extends ConsumerWidget {
               ),
             ),
             child: NavigationBar(
-              selectedIndex: navigationShell.currentIndex,
-              onDestinationSelected: _goBranch,
+              selectedIndex: selectedTabIndex < 0 ? 0 : selectedTabIndex,
+              onDestinationSelected: (index) => _goBranch(tabs[index].branchIndex),
               backgroundColor: colors.surface,
-              indicatorColor: colors.primary.withOpacity(0.1),
+              indicatorColor: AppColors.primary.withValues(alpha: 0.15),
               height: 64,
-              destinations: tabs
-                  .map((tab) => NavigationDestination(
-                        icon: Icon(tab.icon),
-                        selectedIcon: Icon(tab.selectedIcon),
-                        label: tab.label,
-                      ))
-                  .toList(),
+              destinations: tabs.map((tab) {
+                if (tab.route == '/attendance') {
+                  return NavigationDestination(
+                    icon: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: const BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.check, color: AppColors.textOnGold, size: 20),
+                    ),
+                    selectedIcon: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: const BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.check, color: AppColors.textOnGold, size: 20),
+                    ),
+                    label: tab.label,
+                  );
+                }
+                return NavigationDestination(
+                  icon: Icon(tab.icon),
+                  selectedIcon: Icon(tab.selectedIcon),
+                  label: tab.label,
+                );
+              }).toList(),
             ),
           ),
         );
@@ -65,7 +86,7 @@ class AppShell extends ConsumerWidget {
           child: CircularProgressIndicator(),
         ),
       ),
-      error: (err, stack) => Scaffold(
+      error: (err, stack) => const Scaffold(
         body: Center(
           child: Text('Error loading role'),
         ),
@@ -74,56 +95,64 @@ class AppShell extends ConsumerWidget {
   }
 
   List<_NavTab> _getVisibleTabs(String? role, AppLocalizations l10n) {
-    final allTabs = [
+    final tabs = <_NavTab>[
       _NavTab(
+        branchIndex: 0,
         label: l10n.home,
         icon: Icons.home_outlined,
         selectedIcon: Icons.home_filled,
         route: '/home',
       ),
       _NavTab(
+        branchIndex: 1,
         label: l10n.sites,
         icon: Icons.business_outlined,
         selectedIcon: Icons.business,
         route: '/sites',
       ),
       _NavTab(
+        branchIndex: 2,
         label: l10n.attendance,
         icon: Icons.check_circle_outline,
         selectedIcon: Icons.check_circle,
         route: '/attendance',
       ),
+    ];
+
+    if (role == 'admin' || role == 'accountant') {
+      tabs.add(
+        _NavTab(
+          branchIndex: 3,
+          label: l10n.money,
+          icon: Icons.account_balance_wallet_outlined,
+          selectedIcon: Icons.account_balance_wallet,
+          route: '/money',
+        ),
+      );
+    }
+
+    tabs.add(
       _NavTab(
-        label: l10n.money,
-        icon: Icons.account_balance_wallet_outlined,
-        selectedIcon: Icons.account_balance_wallet,
-        route: '/money',
-      ),
-      _NavTab(
+        branchIndex: 4,
         label: l10n.more,
         icon: Icons.more_horiz,
         selectedIcon: Icons.more_horiz,
         route: '/more',
       ),
-    ];
-
-    // Managers see all tabs
-    if (role == 'manager') {
-      return allTabs;
-    }
-
-    // Admin and accountant see all tabs
-    return allTabs;
+    );
+    return tabs;
   }
 }
 
 class _NavTab {
+  final int branchIndex;
   final String label;
   final IconData icon;
   final IconData selectedIcon;
   final String route;
 
   _NavTab({
+    required this.branchIndex,
     required this.label,
     required this.icon,
     required this.selectedIcon,

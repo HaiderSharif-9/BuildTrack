@@ -4,11 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 /// BuildTrack Color Palette - Charcoal + Gold (FIXED)
 /// Light mode and Dark mode with semantic colors (income, expense, profit, warning)
 abstract class AppColors {
-  static AppColorsValue of(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return AppColorsValue(isDark: isDark);
-  }
-
   // Light mode
   static const Color lightBg = Color(0xFFF7F5F2);
   static const Color lightSurface = Color(0xFFFFFFFF);
@@ -30,15 +25,15 @@ abstract class AppColors {
   // Brand colors (consistent across light/dark)
   static const Color charcoal900 = Color(0xFF15171C);
   static const Color charcoal700 = Color(0xFF343A46); // Header/hero gradient
-  static const Color primary = Color(0xFFF2B632); // Brand gold
-  static const Color primaryGradientLight = Color(0xFFF7C85A);
+  static const Color primary = Color(0xFFF47A20); // BuildTrack brand orange
+  static const Color primaryGradientLight = Color(0xFFFFA45C);
 
   // Text on gold (charcoal in both modes)
   static const Color textOnGold = Color(0xFF15171C);
 
   // Gold text (for links, small labels)
-  static const Color goldTextLight = Color(0xFF8A5A00);
-  static const Color goldTextDark = Color(0xFFF2B632);
+  static const Color goldTextLight = Color(0xFFB45309);
+  static const Color goldTextDark = Color(0xFFFFA45C);
 
   // Semantic colors - Income (green)
   static const Color incomeLight = Color(0xFF12A150);
@@ -66,6 +61,27 @@ abstract class AppColors {
   static const Color warningBgLight = Color(0xFFFFF4DC);
   static const Color warningDark = Color(0xFFFFC456);
   static const Color warningBgDark = Color(0xFF2B2310);
+
+  // Common aliases and fallbacks for static access
+  static const Color success = incomeLight;
+  static const Color income = incomeLight;
+  static const Color error = expenseLight;
+  static const Color expense = expenseLight;
+  static const Color info = profitLight;
+  static const Color profit = profitLight;
+  static const Color warning = warningLight;
+  static const Color border = lightBorder;
+  static const Color surface = lightSurface;
+  static const Color surfaceAlt = lightSurfaceAlt;
+  static const Color textPrimary = lightTextPrimary;
+  static const Color textSecondary = lightTextSecondary;
+  static const Color textMuted = lightTextMuted;
+
+  /// Compatibility accessor to get brightness-aware AppColorsValue
+  static AppColorsValue of(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return AppColorsValue(isDark: isDark);
+  }
 }
 
 /// Typography tokens (Plus Jakarta Sans headings, Inter body, Noto Nastaliq Urdu)
@@ -168,7 +184,7 @@ ThemeData buildLightTheme() {
         color: AppColors.lightTextPrimary,
       ),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: AppColors.lightSurface,
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -218,7 +234,7 @@ ThemeData buildDarkTheme() {
         color: AppColors.darkTextPrimary,
       ),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: AppColors.darkSurface,
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -280,6 +296,9 @@ class AppColorsValue {
   Color get goldText => isDark ? AppColors.goldTextDark : AppColors.goldTextLight;
 
   // Semantic
+  Color get income => success;
+  Color get expense => error;
+  Color get profit => info;
   Color get success => isDark ? AppColors.incomeDark : AppColors.incomeLight;
   Color get successText => isDark ? AppColors.incomeDark : AppColors.incomeTextLight;
   Color get successBg => isDark ? AppColors.incomeBgDark : AppColors.incomeBgLight;
@@ -293,4 +312,12 @@ class AppColorsValue {
 
   Color get warning => isDark ? AppColors.warningDark : AppColors.warningLight;
   Color get warningBg => isDark ? AppColors.warningBgDark : AppColors.warningBgLight;
+}
+
+/// Compatibility accessor for AppColors
+extension AppColorsAccessor on AppColors {
+  static AppColorsValue of(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return AppColorsValue(isDark: isDark);
+  }
 }

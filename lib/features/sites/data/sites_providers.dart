@@ -1,8 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:buildtrack/core/models/client.dart';
-import 'package:buildtrack/core/models/project.dart';
-import 'package:buildtrack/core/repositories/client_repository.dart';
-import 'package:buildtrack/features/auth/data/auth_providers.dart';
+import '../../../core/models/client.dart';
+import '../../../core/repositories/client_repository.dart';
+import '../../auth/data/auth_providers.dart';
 import 'sites_repository.dart';
 
 /// Repository providers

@@ -25,7 +25,7 @@ class Labour {
     return Labour(
       id: json['id'] as String,
       name: json['name'] as String,
-      trade: json['trade'] as String,
+      trade: json['trade'] as String? ?? 'General',
       active: json['active'] as bool,
       createdBy: json['created_by'] as String?,
       createdAt: DateTime.parse(json['created_at'] as String),

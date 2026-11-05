@@ -5,33 +5,24 @@ import 'app_button.dart';
 class EmptyState extends StatelessWidget {
   final String title;
   final String? subtitle;
-  final String? description;
   final IconData icon;
   final VoidCallback? onRetry;
-  final String? action;
-  final VoidCallback? onAction;
 
   const EmptyState({
     required this.title,
     this.subtitle,
-    this.description,
     this.icon = Icons.inbox_outlined,
     this.onRetry,
-    this.action,
-    this.onAction,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textSubtitle = subtitle ?? description;
-    final actionCallback = onAction ?? onRetry;
-    final buttonLabel = action ?? 'Try Again';
 
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(AppSpacing.xxl),
+        padding: const EdgeInsets.all(AppSpacing.xxl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -40,7 +31,7 @@ class EmptyState extends StatelessWidget {
               size: 64,
               color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
             ),
-            SizedBox(height: AppSpacing.lg),
+            const SizedBox(height: AppSpacing.lg),
             Text(
               title,
               style: AppTypography.subtitleLight.copyWith(
@@ -48,21 +39,21 @@ class EmptyState extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            if (textSubtitle != null) ...[
-              SizedBox(height: AppSpacing.sm),
+            if (subtitle != null) ...[
+              const SizedBox(height: AppSpacing.sm),
               Text(
-                textSubtitle,
+                subtitle!,
                 style: AppTypography.bodyLight.copyWith(
                   color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
                 ),
                 textAlign: TextAlign.center,
               ),
             ],
-            if (actionCallback != null) ...[
-              SizedBox(height: AppSpacing.lg),
+            if (onRetry != null) ...[
+              const SizedBox(height: AppSpacing.lg),
               AppButton(
-                label: buttonLabel,
-                onPressed: actionCallback,
+                label: 'Try Again',
+                onPressed: onRetry!,
                 isSmall: true,
               ),
             ],
@@ -74,15 +65,13 @@ class EmptyState extends StatelessWidget {
 }
 
 class ErrorState extends StatelessWidget {
-  final String? title;
+  final String title;
   final String? message;
-  final String? error;
   final VoidCallback? onRetry;
 
   const ErrorState({
-    this.title,
+    required this.title,
     this.message,
-    this.error,
     this.onRetry,
     super.key,
   });
@@ -90,8 +79,8 @@ class ErrorState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return EmptyState(
-      title: title ?? 'Error',
-      subtitle: message ?? error,
+      title: title,
+      subtitle: message,
       icon: Icons.error_outline,
       onRetry: onRetry,
     );

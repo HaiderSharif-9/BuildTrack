@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:buildtrack/core/theme/app_theme.dart';
-import 'package:buildtrack/core/widgets/index.dart';
-import 'package:buildtrack/l10n/app_localizations.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/index.dart';
+import '../../../core/widgets/buildtrack_brand.dart';
+import '../../../l10n/app_localizations.dart';
 import '../data/auth_service.dart';
 
 class SignUpScreen extends ConsumerStatefulWidget {
@@ -22,6 +23,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   String? _errorMessage;
   bool _showPassword = false;
   bool _showConfirmPassword = false;
+  bool _emailConfirmationRequired = false;
+  String _registeredEmail = '';
 
   @override
   void initState() {
@@ -77,14 +80,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       );
 
       if (mounted) {
-        // Show success and navigate to login
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.accountCreatedSuccessfully),
-            backgroundColor: Colors.green,
-          ),
-        );
-        context.go('/login');
+        setState(() {
+          _registeredEmail = _emailController.text.trim();
+          _emailConfirmationRequired = true;
+        });
       }
     } on AuthException catch (e) {
       setState(() => _errorMessage = e.message);
@@ -102,11 +101,77 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colors = AppColors.of(context);
+
+    if (_emailConfirmationRequired) {
+      return Scaffold(
+        body: Container(
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [AppColors.charcoal900, AppColors.charcoal700],
+            ),
+          ),
+          child: SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: AppCard(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.mark_email_read_outlined,
+                        size: 64,
+                        color: AppColors.primary,
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'Check your email',
+                        style: theme.textTheme.headlineSmall,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'We sent a verification link to:',
+                        style: theme.textTheme.bodyMedium,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        _registeredEmail,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Open the email and tap the confirmation link. '
+                        'Check your Spam or Junk folder too. After confirming, '
+                        'return here and continue to the login page.',
+                        style: theme.textTheme.bodySmall,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 24),
+                      AppButton(
+                        onPressed: () => context.go('/login'),
+                        label: 'I have confirmed my email — Go to Login',
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(color: colors.textPrimary),
+        leading: const BackButton(color: AppColors.lightTextPrimary),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -115,6 +180,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         child: Column(
           children: [
             const SizedBox(height: 16),
+            const BuildTrackBrand(iconSize: 64),
+            const SizedBox(height: 24),
             Text(
               l10n.createFirstAdminAccount,
               style: theme.textTheme.headlineSmall,
@@ -124,7 +191,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             Text(
               l10n.devModeMessage,
               style: theme.textTheme.bodySmall?.copyWith(
-                color: colors.textSecondary,
+                color: AppColors.lightTextSecondary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -136,29 +203,29 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     controller: _fullNameController,
                     label: l10n.fullName,
                     hint: l10n.enterFullName,
-                    enabled: !_isLoading,
-                    icon: Icons.person,
+                    
+                    
                   ),
                   const SizedBox(height: 16),
                   AppTextField(
                     controller: _emailController,
                     label: l10n.email,
                     hint: l10n.enterEmail,
-                    enabled: !_isLoading,
+                    
                     keyboardType: TextInputType.emailAddress,
-                    icon: Icons.email,
+                    
                   ),
                   const SizedBox(height: 16),
                   AppTextField(
                     controller: _passwordController,
                     label: l10n.password,
                     hint: l10n.enterPassword,
-                    enabled: !_isLoading,
+                    
                     obscure: !_showPassword,
                     suffixIcon: _showPassword
                         ? Icons.visibility_off
                         : Icons.visibility,
-                    onSuffixIconTap: () {
+                    onSuffixTap: () {
                       setState(() =>
                           _showPassword = !_showPassword);
                     },
@@ -167,13 +234,13 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   AppTextField(
                     controller: _confirmPasswordController,
                     label: l10n.confirmPassword,
-                    hint: l10n.confirmPasswordHint,
-                    enabled: !_isLoading,
+                    hint: l10n.confirmPassword,
+                    
                     obscure: !_showConfirmPassword,
                     suffixIcon: _showConfirmPassword
                         ? Icons.visibility_off
                         : Icons.visibility,
-                    onSuffixIconTap: () {
+                    onSuffixTap: () {
                       setState(() =>
                           _showConfirmPassword = !_showConfirmPassword);
                     },
@@ -183,14 +250,14 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: colors.error.withOpacity(0.1),
-                        border: Border.all(color: colors.error),
+                        color: AppColors.expenseLight.withValues(alpha: 0.1),
+                        border: Border.all(color: AppColors.expenseLight),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         _errorMessage!,
-                        style: TextStyle(
-                          color: colors.error,
+                        style: const TextStyle(
+                          color: AppColors.expenseLight,
                           fontSize: 13,
                         ),
                       ),
@@ -199,7 +266,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     const SizedBox(height: 16),
                   AppButton(
                     onPressed:
-                        _isLoading ? null : _handleSignUp,
+                        _isLoading ? () {} : _handleSignUp,
                     isLoading: _isLoading,
                     label: l10n.createAccount,
                   ),

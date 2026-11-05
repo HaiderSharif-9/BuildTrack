@@ -3,7 +3,7 @@ import '../theme/app_theme.dart';
 
 class AppButton extends StatelessWidget {
   final String label;
-  final dynamic Function()? onPressed;
+  final VoidCallback? onPressed;
   final bool isLoading;
   final bool isSecondary;
   final bool isSmall;
@@ -11,7 +11,7 @@ class AppButton extends StatelessWidget {
 
   const AppButton({
     required this.label,
-    required this.onPressed,
+    this.onPressed,
     this.isLoading = false,
     this.isSecondary = false,
     this.isSmall = false,
@@ -23,8 +23,8 @@ class AppButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final padding = isSmall
-        ? EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm)
-        : EdgeInsets.symmetric(horizontal: AppSpacing.xxl, vertical: AppSpacing.lg);
+        ? const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm)
+        : const EdgeInsets.symmetric(horizontal: AppSpacing.xxl, vertical: AppSpacing.lg);
 
     final backgroundColor = isSecondary
         ? (isDark ? AppColors.darkSurfaceAlt : AppColors.lightSurfaceAlt)
@@ -48,14 +48,14 @@ class AppButton extends StatelessWidget {
             children: [
               if (icon != null) ...[
                 Icon(icon, size: isSmall ? 16 : 20),
-                SizedBox(width: AppSpacing.sm),
+                const SizedBox(width: AppSpacing.sm),
               ],
               Text(label),
             ],
           );
 
     return FilledButton(
-      onPressed: (isLoading || onPressed == null) ? null : () => onPressed!(),
+      onPressed: isLoading ? null : onPressed,
       style: FilledButton.styleFrom(
         backgroundColor: backgroundColor,
         foregroundColor: foregroundColor,
