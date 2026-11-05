@@ -179,7 +179,7 @@ Future<void> _showEditSiteDialog(
               AppTextField(controller: locationController, label: 'Location'),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
-                value: status,
+                initialValue: status,
                 decoration: const InputDecoration(labelText: 'Site status'),
                 items: const [
                   DropdownMenuItem(value: 'planning', child: Text('Planning')),
@@ -274,20 +274,29 @@ class _StatusPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = switch (status) {
-      'planning' => AppColors.warning,
-      'in_progress' => AppColors.income,
-      'on_hold' => AppColors.lightTextSecondary,
-      'completed' => AppColors.primary,
-      _ => AppColors.lightTextSecondary,
-    };
-    final label = switch (status) {
-      'planning' => 'Planning',
-      'in_progress' => 'In Progress',
-      'on_hold' => 'On Hold',
-      'completed' => 'Completed',
-      _ => status,
-    };
+    Color color;
+    String label;
+    switch (status) {
+      case 'planning':
+        color = AppColors.warning;
+        label = 'Planning';
+        break;
+      case 'in_progress':
+        color = AppColors.income;
+        label = 'In Progress';
+        break;
+      case 'on_hold':
+        color = AppColors.lightTextSecondary;
+        label = 'On Hold';
+        break;
+      case 'completed':
+        color = AppColors.primary;
+        label = 'Completed';
+        break;
+      default:
+        color = AppColors.lightTextSecondary;
+        label = status;
+    }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
