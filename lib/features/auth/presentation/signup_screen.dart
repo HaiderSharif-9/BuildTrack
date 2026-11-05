@@ -189,7 +189,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              l10n.devModeMessage,
+              'Create the first Admin account for your company here. '
+              'After setup, the Admin will create accounts for all other users.',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: AppColors.lightTextSecondary,
               ),
