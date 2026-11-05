@@ -22,6 +22,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   String? _errorMessage;
   bool _showPassword = false;
   bool _showConfirmPassword = false;
+  bool _emailConfirmationRequired = false;
+  String _registeredEmail = '';
 
   @override
   void initState() {
@@ -77,14 +79,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       );
 
       if (mounted) {
-        // Show success and navigate to login
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.accountCreatedSuccessfully),
-            backgroundColor: Colors.green,
-          ),
-        );
-        context.go('/login');
+        setState(() {
+          _registeredEmail = _emailController.text.trim();
+          _emailConfirmationRequired = true;
+        });
       }
     } on AuthException catch (e) {
       setState(() => _errorMessage = e.message);
@@ -102,6 +100,73 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+
+    if (_emailConfirmationRequired) {
+      return Scaffold(
+        body: Container(
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [AppColors.charcoal900, AppColors.charcoal700],
+            ),
+          ),
+          child: SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: AppCard(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.mark_email_read_outlined,
+                        size: 64,
+                        color: AppColors.primary,
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'Check your email',
+                        style: theme.textTheme.headlineSmall,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'We sent a verification link to:',
+                        style: theme.textTheme.bodyMedium,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        _registeredEmail,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Open the email and tap the confirmation link. '
+                        'Check your Spam or Junk folder too. After confirming, '
+                        'return here and continue to the login page.',
+                        style: theme.textTheme.bodySmall,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 24),
+                      AppButton(
+                        onPressed: () => context.go('/login'),
+                        label: 'I have confirmed my email — Go to Login',
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
