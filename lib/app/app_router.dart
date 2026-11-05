@@ -49,7 +49,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         return location == '/change-password' ? null : '/change-password';
       }
       if (location == '/change-password') return '/home';
-      if (location == '/login' || location == '/signup') return '/home';
+      // Always land authenticated users on the dashboard from the app root
+      // or an auth page (including after a successful email confirmation).
+      if (location == '/' || location == '/login' || location == '/signup') {
+        return '/home';
+      }
 
       final needsFinanceAccess =
           location.startsWith('/money') || location == '/more/reports';
@@ -62,6 +66,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       }
       return null;
     },
+    // Supabase email links and stale browser URLs can arrive on a path that
+    // is not a Flutter route. Recover to the correct authenticated entry
+    // screen instead of showing GoRouter's dead-end Page Not Found screen.
+    errorBuilder: (context, state) => const RouteRecoveryScreen(),
     routes: [
       // Splash screen
       GoRoute(
@@ -214,6 +222,61 @@ class AboutScreen extends StatelessWidget {
               Text('Version 1.0.0+1', style: TextStyle(fontSize: 12, color: Colors.grey)),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+
+/// Recovers unknown web/deep-link paths after authentication.
+class RouteRecoveryScreen extends ConsumerStatefulWidget {
+  const RouteRecoveryScreen({super.key});
+
+  @override
+  ConsumerState<RouteRecoveryScreen> createState() => _RouteRecoveryScreenState();
+}
+
+class _RouteRecoveryScreenState extends ConsumerState<RouteRecoveryScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _recoverRoute());
+  }
+
+  Future<void> _recoverRoute() async {
+    if (!mounted) return;
+    final user = ref.read(currentUserProvider);
+    if (user == null) {
+      context.go('/login');
+      return;
+    }
+
+    try {
+      final profile = await ref.read(currentProfileProvider.future);
+      if (!mounted) return;
+      if (profile == null || !profile.active) {
+        await ref.read(authServiceProvider).signOut();
+        if (mounted) context.go('/login');
+        return;
+      }
+      context.go(profile.mustChangePassword ? '/change-password' : '/home');
+    } catch (_) {
+      if (mounted) context.go('/login');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Opening BuildTrack...'),
+          ],
         ),
       ),
     );
