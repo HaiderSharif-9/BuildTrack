@@ -25,6 +25,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final colors = context.appColors;
+    final compactLayout = MediaQuery.sizeOf(context).height < 680;
     final role = ref.watch(currentUserRoleProvider).asData?.value;
     final canViewWages = role == 'admin' || role == 'accountant';
 
@@ -103,10 +104,11 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           ),
 
           // 2. Horizontal Date Picker Strip (Week view)
-          _buildDatePickerStrip(selectedDate, colors, theme),
+          _buildDatePickerStrip(selectedDate, colors, theme, compact: compactLayout),
 
           // 3. Helper Instruction Strip
-          Container(
+          if (!compactLayout)
+            Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
             color: isDark ? AppColors.charcoal700 : const Color(0xFFF0EBE1),
@@ -152,21 +154,21 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           ),
 
           // 5. Bottom Sticky Summary & Action Bar
-          _buildSummaryBar(summary, colors, theme, canViewWages: canViewWages),
+          _buildSummaryBar(summary, colors, theme, canViewWages: canViewWages, compact: compactLayout),
         ],
       ),
     );
   }
 
   /// Horizontal calendar strip (past 3 days, today, next 3 days)
-  Widget _buildDatePickerStrip(DateTime selectedDate, AppColorsValue colors, ThemeData theme) {
+  Widget _buildDatePickerStrip(DateTime selectedDate, AppColorsValue colors, ThemeData theme, {bool compact = false}) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final days = List.generate(7, (i) => today.subtract(Duration(days: 3 - i)));
 
     return Container(
       color: colors.surface,
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.symmetric(vertical: compact ? 3 : 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: days.map((date) {
@@ -182,7 +184,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
               ref.read(attendanceSelectedDateProvider.notifier).state = date;
             },
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              padding: EdgeInsets.symmetric(horizontal: compact ? 7 : 10, vertical: compact ? 4 : 8),
               decoration: BoxDecoration(
                 color: isSelected
                     ? AppColors.primary
@@ -645,9 +647,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
   }
 
   /// Sticky bottom summary and Save button bar
-  Widget _buildSummaryBar(AttendanceSummary summary, AppColorsValue colors, ThemeData theme, {required bool canViewWages}) {
+  Widget _buildSummaryBar(AttendanceSummary summary, AppColorsValue colors, ThemeData theme, {required bool canViewWages, bool compact = false}) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(compact ? 8 : 16),
       decoration: BoxDecoration(
         color: colors.surface,
         boxShadow: [
@@ -674,7 +676,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                   _buildCounter('Total Wages', summary.totalWages.toDisplayString(), colors.textPrimary),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: compact ? 6 : 12),
             // Actions
             Row(
               children: [
@@ -684,7 +686,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                       ref.read(attendanceSheetProvider.notifier).markAllPresent();
                     },
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      padding: EdgeInsets.symmetric(vertical: compact ? 8 : 14),
                       side: const BorderSide(color: AppColors.primary),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
