@@ -94,7 +94,7 @@ Future<void> _showAddSiteDialog(BuildContext context, WidgetRef ref) async {
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
-                value: status,
+                initialValue: status,
                 decoration: const InputDecoration(labelText: 'Status'),
                 items: const [
                   DropdownMenuItem(value: 'planning', child: Text('Planning')),
