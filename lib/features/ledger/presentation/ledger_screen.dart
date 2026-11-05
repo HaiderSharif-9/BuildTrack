@@ -22,6 +22,7 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = context.appColors;
+    final compactLayout = MediaQuery.sizeOf(context).height < 680;
 
     final txAsync = ref.watch(ledgerTransactionsProvider);
     final balance = ref.watch(ledgerBalanceSummaryProvider);
@@ -55,7 +56,7 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
         children: [
           // 1. Balance Summary Card (Income, Expense, Net)
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(compactLayout ? 8 : 16),
             child: AppCard(
               child: Column(
                 children: [
@@ -75,9 +76,9 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: compactLayout ? 6 : 12),
                   const Divider(height: 1),
-                  const SizedBox(height: 12),
+                  SizedBox(height: compactLayout ? 6 : 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
@@ -124,7 +125,7 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
           // 2. Filter Bar (Type and Site)
           Container(
             color: colors.surface,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: compactLayout ? 3 : 8),
             child: Row(
               children: [
                 _buildFilterChip('All', 'all', typeFilter == 'all', colors),
