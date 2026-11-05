@@ -92,6 +92,30 @@ class LedgerNotifier extends StateNotifier<AsyncValue<List<Transaction>>> {
     await loadTransactions();
   }
 
+  /// Update a manually entered ledger transaction.
+  Future<void> updateTransaction({
+    required String id,
+    required String type,
+    required String categoryId,
+    required String description,
+    required Money amount,
+    required String? projectId,
+    required DateTime date,
+  }) async {
+    final supabase = Supabase.instance.client;
+    await supabase.from('transactions').update({
+      'type': type,
+      'category_id': categoryId,
+      'description': description,
+      'amount': amount.toDbString(),
+      'project_id': projectId,
+      'date': date.toIso8601String().split('T')[0],
+      'updated_at': DateTime.now().toIso8601String(),
+    }).eq('id', id).eq('source', 'manual');
+
+    await loadTransactions();
+  }
+
   /// Soft delete transaction
   Future<void> deleteTransaction(String id) async {
     final supabase = Supabase.instance.client;
