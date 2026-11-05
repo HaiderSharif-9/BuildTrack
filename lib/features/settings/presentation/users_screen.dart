@@ -192,7 +192,7 @@ class UsersScreen extends ConsumerWidget {
                     const Text('Role:', style: TextStyle(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 8),
                     Row(
-                      children: ['admin', 'accountant', 'manager'].map((role) {
+                      children: ['accountant', 'manager'].map((role) {
                         final isSel = selectedRole == role;
                         return Padding(
                           padding: const EdgeInsets.only(right: 8),
