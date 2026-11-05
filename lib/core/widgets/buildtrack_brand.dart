@@ -1,6 +1,7 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
-/// BuildTrack's reusable orange-and-charcoal brand mark and wordmark.
+/// BuildTrack's reusable charcoal-and-gold construction mark and wordmark.
 class BuildTrackBrand extends StatelessWidget {
   final double iconSize;
   final bool showTagline;
@@ -23,7 +24,7 @@ class BuildTrackBrand extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         CustomPaint(
-          size: Size(iconSize, iconSize),
+          size: Size(iconSize, iconSize * 0.8),
           painter: _BuildTrackMarkPainter(),
         ),
         if (!compact) ...[
@@ -57,55 +58,62 @@ class BuildTrackBrand extends StatelessWidget {
 }
 
 class _BuildTrackMarkPainter extends CustomPainter {
-  static const orange = Color(0xFFF47A20);
-  static const charcoal = Color(0xFF20232A);
+  static const charcoal = Color(0xFF17181B);
+  static const gold = Color(0xFFF7B82F);
 
   @override
   void paint(Canvas canvas, Size size) {
-    final scale = size.width / 100;
-    final rect = Offset.zero & size;
-    final radius = Radius.circular(size.width * 0.24);
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(rect, radius),
-      Paint()..color = charcoal,
-    );
+    final scale = math.min(size.width / 800, size.height / 640);
+    final dx = (size.width - 800 * scale) / 2;
+    final dy = (size.height - 640 * scale) / 2;
+    canvas.save();
+    canvas.translate(dx, dy);
+    canvas.scale(scale);
 
-    final p = Paint()
-      ..color = orange
+    final structurePaint = Paint()
+      ..color = charcoal
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 7 * scale
+      ..strokeWidth = 48
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
 
     final structure = Path()
-      ..moveTo(22 * scale, 75 * scale)
-      ..lineTo(22 * scale, 42 * scale)
-      ..lineTo(50 * scale, 22 * scale)
-      ..lineTo(78 * scale, 42 * scale)
-      ..lineTo(78 * scale, 75 * scale);
-    canvas.drawPath(structure, p);
+      ..moveTo(224, 490)
+      ..lineTo(224, 250)
+      ..lineTo(416, 96)
+      ..lineTo(608, 250)
+      ..lineTo(608, 490);
+    canvas.drawPath(structure, structurePaint);
 
-    final tower = Path()
-      ..moveTo(39 * scale, 75 * scale)
-      ..lineTo(39 * scale, 48 * scale)
-      ..lineTo(61 * scale, 48 * scale)
-      ..lineTo(61 * scale, 75 * scale);
-    canvas.drawPath(tower, p);
+    final sideMarks = Path()
+      ..moveTo(96, 490)
+      ..lineTo(96, 354)
+      ..lineTo(148, 354)
+      ..moveTo(528, 490)
+      ..lineTo(528, 308)
+      ..moveTo(680, 490)
+      ..lineTo(680, 340);
+    canvas.drawPath(sideMarks, structurePaint);
 
-    final detail = Paint()
-      ..color = Colors.white
-      ..strokeWidth = 4 * scale
-      ..strokeCap = StrokeCap.round;
-    canvas.drawLine(
-      Offset(50 * scale, 56 * scale),
-      Offset(50 * scale, 67 * scale),
-      detail,
-    );
-    canvas.drawLine(
-      Offset(22 * scale, 78 * scale),
-      Offset(78 * scale, 78 * scale),
-      p,
-    );
+    final doorway = Path()
+      ..moveTo(352, 490)
+      ..lineTo(352, 336)
+      ..arcToPoint(
+        const Offset(480, 336),
+        radius: const Radius.circular(64),
+        clockwise: false,
+      )
+      ..lineTo(480, 490)
+      ..close();
+    canvas.drawPath(doorway, Paint()..color = gold);
+
+    final ground = Path()
+      ..moveTo(24, 576)
+      ..quadraticBezierTo(400, 448, 776, 576)
+      ..close();
+    canvas.drawPath(ground, Paint()..color = gold);
+
+    canvas.restore();
   }
 
   @override
