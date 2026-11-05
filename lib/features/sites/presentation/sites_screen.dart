@@ -88,11 +88,13 @@ Future<void> _confirmArchiveSite(BuildContext context, WidgetRef ref, Map<String
   if (confirmed != true || !context.mounted) return;
   try {
     await ref.read(sitesRepositoryProvider).deleteSite(site['id'] as String);
+    if (!context.mounted) return;
     ref.invalidate(sitesListProvider);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Site archived. Historical records were preserved.')),
     );
   } catch (error) {
+    if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Could not archive site: $error')),
     );
