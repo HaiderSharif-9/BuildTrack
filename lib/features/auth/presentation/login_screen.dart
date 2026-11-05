@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/index.dart';
+import '../../../core/widgets/buildtrack_brand.dart';
 import '../../../l10n/app_localizations.dart';
 import '../data/auth_service.dart';
 
@@ -91,33 +92,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Logo and branding
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      '◆',
-                      style: TextStyle(
-                        fontSize: 40,
-                        color: AppColors.charcoal900,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'BuildTrack',
-                  style: theme.textTheme.headlineLarge?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
+                const BuildTrackBrand(iconSize: 80),
                 const SizedBox(height: 4),
                 Text(
                   l10n.appSubtitle,
