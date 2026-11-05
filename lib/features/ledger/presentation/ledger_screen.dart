@@ -222,12 +222,25 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
                                     color: isIncome ? colors.success : colors.error,
                                   ),
                                 ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete_outline, size: 16, color: Colors.grey),
-                                  padding: EdgeInsets.zero,
-                                  constraints: const BoxConstraints(),
-                                  onPressed: () => _confirmDeleteTx(context, tx),
-                                ),
+                                if (tx.source == 'manual')
+                                  PopupMenuButton<String>(
+                                    icon: const Icon(Icons.more_vert, size: 18),
+                                    padding: EdgeInsets.zero,
+                                    onSelected: (value) {
+                                      if (value == 'edit') {
+                                        _showAddTransactionDialog(context, tx);
+                                      } else if (value == 'delete') {
+                                        _confirmDeleteTx(context, tx);
+                                      }
+                                    },
+                                    itemBuilder: (context) => const [
+                                      PopupMenuItem(value: 'edit', child: Text('Edit')),
+                                      PopupMenuItem(
+                                        value: 'delete',
+                                        child: Text('Delete', style: TextStyle(color: Colors.red)),
+                                      ),
+                                    ],
+                                  ),
                               ],
                             ),
                           ],
