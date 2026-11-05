@@ -4,9 +4,9 @@
 
 BuildTrack helps construction teams manage sites, workforce, attendance, payroll, purchases and project finances from one application. It is built with Flutter and Supabase, with role-based access for administrators, accountants and site managers.
 
-[![Flutter CI](https://github.com/HaiderSharif-9/BuildTrack/actions/workflows/flutter-ci.yml/badge.svg?branch=buildtrack-completion)](https://github.com/HaiderSharif-9/BuildTrack/actions/workflows/flutter-ci.yml)
+[![Flutter CI](https://github.com/HaiderSharif-9/BuildTrack/actions/workflows/flutter-ci.yml/badge.svg?branch=master)](https://github.com/HaiderSharif-9/BuildTrack/actions/workflows/flutter-ci.yml)
 
-> **Project status:** Active development. Automated checks are passing on the `buildtrack-completion` branch. Live deployment, role-by-role end-to-end testing and release preparation are still in progress.
+> **Project status:** Active development. Automated checks run on the repository's default `master` branch. Live deployment, role-by-role end-to-end testing and release preparation are still in progress.
 
 ## Project overview
 
@@ -88,11 +88,7 @@ git clone https://github.com/HaiderSharif-9/BuildTrack.git
 cd BuildTrack
 ```
 
-The latest development source is currently on the **`buildtrack-completion`** branch:
-
-```bash
-git checkout buildtrack-completion
-```
+The latest source is available directly from the default branch, **`master`**.
 
 ### 2. Install dependencies
 
