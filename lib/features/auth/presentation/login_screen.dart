@@ -230,19 +230,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // First-admin sign-up link (dev mode only)
-                TextButton(
-                  onPressed: () {
-                    context.push('/signup');
-                  },
-                  child: Text(
-                    l10n.signUpAsFirstAdmin,
-                    style: const TextStyle(
-                      color: AppColors.goldTextLight,
-                      fontSize: 13,
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
