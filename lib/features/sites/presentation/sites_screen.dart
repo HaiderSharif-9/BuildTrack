@@ -46,6 +46,8 @@ class SitesScreen extends ConsumerWidget {
                   final site = siteList[index];
                   return _SiteCard(
                     site: site,
+                    canManage: canManage,
+                    onDelete: () => _confirmArchiveSite(context, ref, site),
                     onTap: () {
                       context.push('/sites/${site['id']}');
                     },
@@ -67,6 +69,35 @@ class SitesScreen extends ConsumerWidget {
   }
 }
 
+
+Future<void> _confirmArchiveSite(BuildContext context, WidgetRef ref, Map<String, dynamic> site) async {
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: const Text('Archive Site?'),
+      content: Text('Archive ${site['name']}? The site will disappear from active lists, while its attendance, purchases and financial history will be preserved.'),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')),
+        TextButton(
+          onPressed: () => Navigator.pop(dialogContext, true),
+          child: const Text('Archive', style: TextStyle(color: Colors.red)),
+        ),
+      ],
+    ),
+  );
+  if (confirmed != true || !context.mounted) return;
+  try {
+    await ref.read(sitesRepositoryProvider).deleteSite(site['id'] as String);
+    ref.invalidate(sitesListProvider);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Site archived. Historical records were preserved.')),
+    );
+  } catch (error) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Could not archive site: $error')),
+    );
+  }
+}
 
 Future<void> _showAddSiteDialog(BuildContext context, WidgetRef ref) async {
   final nameController = TextEditingController();
@@ -157,10 +188,14 @@ Future<void> _showAddSiteDialog(BuildContext context, WidgetRef ref) async {
 
 class _SiteCard extends StatelessWidget {
   final Map<String, dynamic> site;
+  final bool canManage;
+  final VoidCallback onDelete;
   final VoidCallback onTap;
 
   const _SiteCard({
     required this.site,
+    required this.canManage,
+    required this.onDelete,
     required this.onTap,
   });
 
@@ -233,6 +268,19 @@ class _SiteCard extends StatelessWidget {
                     ),
                   ),
                 ),
+                if (canManage)
+                  PopupMenuButton<String>(
+                    tooltip: 'Site actions',
+                    onSelected: (value) {
+                      if (value == 'archive') onDelete();
+                    },
+                    itemBuilder: (context) => const [
+                      PopupMenuItem(
+                        value: 'archive',
+                        child: Text('Archive site', style: TextStyle(color: Colors.red)),
+                      ),
+                    ],
+                  ),
               ],
             ),
           ],
