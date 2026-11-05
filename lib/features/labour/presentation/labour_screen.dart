@@ -223,8 +223,8 @@ class LabourScreen extends ConsumerWidget {
     showDialog<void>(
       context: pageContext,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Archive Labourer?'),
-        content: Text('Archive ${labour.name}? Existing attendance and payroll history will be kept.'),
+        title: const Text('Delete Labourer?'),
+        content: Text('Remove ${labour.name} from active labour lists? Attendance and payroll history will be preserved. This is a safe archive, not a permanent erasure.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
@@ -238,7 +238,7 @@ class LabourScreen extends ConsumerWidget {
                 Navigator.pop(dialogContext);
                 ref.invalidate(labourListProvider);
                 ScaffoldMessenger.of(pageContext).showSnackBar(
-                  const SnackBar(content: Text('Labourer archived')),
+                  const SnackBar(content: Text('Labourer deleted from active list. History preserved.')),
                 );
               } catch (error) {
                 if (!pageContext.mounted) return;
@@ -537,7 +537,7 @@ class _LabourTile extends StatelessWidget {
                   PopupMenuItem(value: 'edit', child: Text('Edit')),
                   PopupMenuItem(
                     value: 'archive',
-                    child: Text('Archive', style: TextStyle(color: Colors.red)),
+                    child: Text('Delete (keep history)', style: TextStyle(color: Colors.red)),
                   ),
                 ],
               ),
