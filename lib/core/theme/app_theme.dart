@@ -25,15 +25,15 @@ abstract class AppColors {
   // Brand colors (consistent across light/dark)
   static const Color charcoal900 = Color(0xFF15171C);
   static const Color charcoal700 = Color(0xFF343A46); // Header/hero gradient
-  static const Color primary = Color(0xFFF2B632); // Brand gold
-  static const Color primaryGradientLight = Color(0xFFF7C85A);
+  static const Color primary = Color(0xFFF47A20); // BuildTrack brand orange
+  static const Color primaryGradientLight = Color(0xFFFFA45C);
 
   // Text on gold (charcoal in both modes)
   static const Color textOnGold = Color(0xFF15171C);
 
   // Gold text (for links, small labels)
-  static const Color goldTextLight = Color(0xFF8A5A00);
-  static const Color goldTextDark = Color(0xFFF2B632);
+  static const Color goldTextLight = Color(0xFFB45309);
+  static const Color goldTextDark = Color(0xFFFFA45C);
 
   // Semantic colors - Income (green)
   static const Color incomeLight = Color(0xFF12A150);
