@@ -296,13 +296,15 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
     );
   }
 
-  void _showAddTransactionDialog(BuildContext context) {
+  void _showAddTransactionDialog(BuildContext context, [Transaction? existing]) {
     final pageContext = context;
-    String selectedType = 'expense';
-    String? selectedCategoryId;
-    String? selectedSiteId;
-    final amountController = TextEditingController();
-    final descController = TextEditingController();
+    final isEditing = existing != null;
+    String selectedType = existing?.type ?? 'expense';
+    String? selectedCategoryId = existing?.categoryId;
+    String? selectedSiteId = existing?.projectId ?? ref.read(ledgerSelectedSiteProvider);
+    DateTime selectedDate = existing?.date ?? DateTime.now();
+    final amountController = TextEditingController(text: existing?.amount.toDbString() ?? '');
+    final descController = TextEditingController(text: existing?.description ?? '');
     bool isSaving = false;
 
     showModalBottomSheet(
@@ -324,7 +326,7 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Add Financial Transaction', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    Text(isEditing ? 'Edit Financial Transaction' : 'Add Financial Transaction', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                     const SizedBox(height: 16),
                     // Type selector (Income or Expense)
                     Row(
@@ -400,6 +402,23 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
                       error: (err, _) => Text('Error loading categories: $err'),
                     ),
                     const SizedBox(height: 12),
+                    // Project/site selector (null means company-level entry)
+                    FutureBuilder(
+                      future: ref.read(ledgerProjectRepoProvider).listProjects(),
+                      builder: (context, snapshot) {
+                        final projects = snapshot.data ?? [];
+                        return DropdownButtonFormField<String?>(
+                          value: selectedSiteId,
+                          decoration: InputDecoration(labelText: 'Site / Project (optional)', filled: true, fillColor: context.appColors.surfaceAlt, border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
+                          items: [
+                            const DropdownMenuItem<String?>(value: null, child: Text('Company-wide')),
+                            ...projects.map((project) => DropdownMenuItem<String?>(value: project.id, child: Text(project.name))),
+                          ],
+                          onChanged: (value) => setSheetState(() => selectedSiteId = value),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 12),
                     // Amount
                     AppTextField(
                       controller: amountController,
@@ -416,7 +435,7 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
                     ),
                     const SizedBox(height: 16),
                     AppButton(
-                      label: 'Save Entry',
+                      label: isEditing ? 'Update Entry' : 'Save Entry',
                       isLoading: isSaving,
                       onPressed: () async {
                         final amt = double.tryParse(amountController.text) ?? 0.0;
@@ -431,18 +450,23 @@ class _LedgerScreenState extends ConsumerState<LedgerScreen> {
 
                         setSheetState(() => isSaving = true);
                         try {
-                          await ref.read(ledgerTransactionsProvider.notifier).addTransaction(
-                                type: selectedType,
-                                categoryId: selectedCategoryId!,
-                                description: desc.isNotEmpty ? desc : selectedType.toUpperCase(),
-                                amount: Money.fromDouble(amt),
-                                projectId: selectedSiteId,
-                                date: DateTime.now(),
-                              );
+                          if (isEditing) {
+                            await ref.read(ledgerTransactionsProvider.notifier).updateTransaction(
+                              id: existing.id, type: selectedType, categoryId: selectedCategoryId!,
+                              description: desc.isNotEmpty ? desc : selectedType.toUpperCase(),
+                              amount: Money.fromDouble(amt), projectId: selectedSiteId, date: selectedDate,
+                            );
+                          } else {
+                            await ref.read(ledgerTransactionsProvider.notifier).addTransaction(
+                              type: selectedType, categoryId: selectedCategoryId!,
+                              description: desc.isNotEmpty ? desc : selectedType.toUpperCase(),
+                              amount: Money.fromDouble(amt), projectId: selectedSiteId, date: selectedDate,
+                            );
+                          }
                           if (!pageContext.mounted) return;
                           Navigator.pop(ctx);
                           ScaffoldMessenger.of(pageContext).showSnackBar(
-                            const SnackBar(content: Text('Transaction saved to ledger!'), backgroundColor: Colors.green),
+                            SnackBar(content: Text(isEditing ? 'Transaction updated!' : 'Transaction saved to ledger!'), backgroundColor: Colors.green),
                           );
                         } catch (e) {
                           if (!pageContext.mounted) return;
