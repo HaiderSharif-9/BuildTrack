@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/index.dart';
+import '../../../core/widgets/buildtrack_brand.dart';
 import '../../../l10n/app_localizations.dart';
 import '../data/auth_service.dart';
 
@@ -179,6 +180,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         child: Column(
           children: [
             const SizedBox(height: 16),
+            const BuildTrackBrand(iconSize: 64),
+            const SizedBox(height: 24),
             Text(
               l10n.createFirstAdminAccount,
               style: theme.textTheme.headlineSmall,
