@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - buildtrack-completion
   pull_request:
     branches:
       - master
