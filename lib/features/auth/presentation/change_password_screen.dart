@@ -5,6 +5,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/index.dart';
 import '../../../l10n/app_localizations.dart';
 import '../data/auth_service.dart';
+import '../data/auth_providers.dart';
 
 class ChangePasswordScreen extends ConsumerStatefulWidget {
   final bool isForced;
@@ -62,6 +63,9 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
     try {
       final authService = ref.read(authServiceProvider);
       await authService.updatePassword(_newPasswordController.text);
+      ref.invalidate(currentProfileProvider);
+      ref.invalidate(mustChangePasswordProvider);
+      ref.invalidate(currentUserRoleProvider);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
