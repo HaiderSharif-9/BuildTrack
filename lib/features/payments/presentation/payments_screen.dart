@@ -20,6 +20,7 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = context.appColors;
+    final compactLayout = MediaQuery.sizeOf(context).height < 680;
 
     final period = ref.watch(payrollPeriodProvider);
     final periodFilter = ref.watch(paymentsPeriodFilterProvider);
@@ -92,7 +93,7 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
           // 1. Period Selector & Date Range Banner
           Container(
             color: colors.surface,
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+            padding: EdgeInsets.fromLTRB(16, compactLayout ? 3 : 8, 16, compactLayout ? 5 : 12),
             child: Column(
               children: [
                 Row(
@@ -116,7 +117,8 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
           ),
 
           // 2. Thursday Payout Reminder Banner (as in Figma)
-          Container(
+          if (!compactLayout)
+            Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             color: AppColors.primary.withValues(alpha: 0.15),
@@ -170,7 +172,7 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
           ),
 
           // 4. Sticky Bottom Total Payable Bar
-          _buildBottomPayableBar(summary, colors, theme),
+          _buildBottomPayableBar(summary, colors, theme, compact: compactLayout),
         ],
       ),
     );
@@ -436,9 +438,9 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
   }
 
   /// Sticky Bottom Summary
-  Widget _buildBottomPayableBar(PayrollSummary summary, AppColorsValue colors, ThemeData theme) {
+  Widget _buildBottomPayableBar(PayrollSummary summary, AppColorsValue colors, ThemeData theme, {bool compact = false}) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(compact ? 8 : 16),
       decoration: BoxDecoration(
         color: colors.surface,
         boxShadow: [
