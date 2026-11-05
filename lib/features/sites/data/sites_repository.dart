@@ -15,6 +15,7 @@ class SitesRepository {
             created_at, updated_at, deleted_at,
             project_finance(budget)
           ''')
+          .isFilter('deleted_at', null)
           .order('name');
 
       return (response as List)
