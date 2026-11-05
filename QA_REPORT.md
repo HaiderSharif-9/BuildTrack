@@ -1,8 +1,8 @@
 # BuildTrack — Quality Assurance Report
 
-**Source branch:** `buildtrack-completion`  
+**Source branch:** `master`  
 **Last reviewed:** 5 November 2026  
-**Latest reviewed commit:** `dffaae744f5d500cba4e8ec3f296ef3bbfe9aa01`
+**Latest reviewed commit:** See the latest commit on the repository's `master` branch.
 
 ## 1. Automated verification
 
@@ -77,13 +77,13 @@ The following checks must be completed against the intended Supabase project bef
 
 ## 4. Known limitations
 
-- First-time Admin setup is performed during Supabase project initialization; an in-app setup wizard is a future enhancement.
+- First-time Admin setup is performed during Supabase project initialization; the one-time in-app Initial Admin Setup screen remains a planned future enhancement.
 - Full live end-to-end verification is not yet complete.
 - User deactivation and role-editing screens need further work.
 - Multi-site manager assignment needs additional UI support.
 - Offline-first synchronization is not implemented.
 - PDF/Excel report exports are not implemented.
-- Android release signing and distribution are pending.
+- A release-mode APK can be built for testing using the documented command; production keystore signing and distribution are pending.
 
 ## 5. Release assessment
 
