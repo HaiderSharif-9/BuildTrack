@@ -5,6 +5,7 @@ import '../core/debug/debug_ui_kit.dart';
 import '../core/theme/app_theme.dart';
 import '../features/attendance/presentation/attendance_screen.dart';
 import '../features/auth/data/auth_providers.dart';
+import '../features/auth/data/auth_service.dart';
 import '../features/auth/presentation/change_password_screen.dart';
 import '../features/auth/presentation/forgot_password_screen.dart';
 import '../features/auth/presentation/login_screen.dart';
@@ -27,14 +28,38 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: '/',
     redirect: (context, state) async {
       final location = state.matchedLocation;
-      final needsFinanceAccess = location.startsWith('/money') || location == '/more/reports';
-      final needsAdminAccess = location == '/more/users';
-      if (!needsFinanceAccess && !needsAdminAccess) return null;
+      final isPublicRoute = location == '/' ||
+          location == '/login' ||
+          location == '/signup' ||
+          location == '/forgot-password';
 
-      final role = await ref.read(currentUserRoleProvider.future);
-      if (role == null) return '/login';
-      if (needsAdminAccess && role != 'admin') return '/more';
-      if (needsFinanceAccess && role != 'admin' && role != 'accountant') return '/more';
+      final user = ref.read(currentUserProvider);
+      if (user == null) {
+        return isPublicRoute ? null : '/login';
+      }
+
+      final profile = await ref.read(currentProfileProvider.future);
+      if (profile == null || !profile.active) {
+        await ref.read(authServiceProvider).signOut();
+        return '/login';
+      }
+
+      // Temporary-password accounts cannot enter any other screen until changed.
+      if (profile.mustChangePassword) {
+        return location == '/change-password' ? null : '/change-password';
+      }
+      if (location == '/change-password') return '/home';
+      if (location == '/login' || location == '/signup') return '/home';
+
+      final needsFinanceAccess =
+          location.startsWith('/money') || location == '/more/reports';
+      final needsAdminAccess = location == '/more/users';
+      if (needsAdminAccess && profile.role != 'admin') return '/more';
+      if (needsFinanceAccess &&
+          profile.role != 'admin' &&
+          profile.role != 'accountant') {
+        return '/more';
+      }
       return null;
     },
     routes: [
