@@ -6,6 +6,7 @@ import '../../../core/widgets/index.dart';
 import '../../../core/widgets/buildtrack_brand.dart';
 import '../../../l10n/app_localizations.dart';
 import '../data/auth_service.dart';
+import '../data/auth_providers.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -47,6 +48,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         loginId: _loginIdController.text.trim(),
         password: _passwordController.text,
       );
+
+      // Load the signed-in user's profile before entering the protected app.
+      // Email confirmation is handled during first-account signup, not here.
+      ref.invalidate(currentProfileProvider);
+      await ref.read(currentProfileProvider.future);
 
       if (mounted) {
         context.go('/home');
