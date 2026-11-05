@@ -183,7 +183,7 @@ The Flutter CI workflow runs the analyzer and automated tests. It also type-chec
 
 The following feature is planned for a future version and is not part of the current login flow:
 
-1. **One-time Initial Admin Setup screen:** On a fresh company installation, provide a secure first-run flow that lets the company initialize its first Admin account from inside BuildTrack. It must be available only when no Admin has been initialized, prevent anyone from claiming an existing organization, and permanently close after successful initialization. After setup, the Admin will create Managers, Accountants and other staff accounts with temporary passwords and role/site permissions. Public self-registration will remain disabled.
+1. **Create New Account option (first Admin registration):** Add a clearly visible **Create New Account** option on the login screen for a company that is setting up BuildTrack for the first time. This option must open a secure, one-time Initial Admin Setup flow and work only when the organization has no Admin account yet. Once the first Admin account is successfully created, the option must disappear or become permanently unavailable for that organization. It must never allow strangers to register themselves into an existing organization. After setup, only the Admin can create Managers, Accountants and other staff accounts, assign their roles/sites, and provide temporary passwords that users must change on first login. Unrestricted public self-registration will remain disabled.
 
 The current delivery scope intentionally does not include offline-first synchronization, advanced PDF/Excel exports or unnecessary animation-heavy polish. These must not be presented as implemented features.
 
