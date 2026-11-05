@@ -127,6 +127,39 @@ Run on a connected Android device:
 flutter run --dart-define-from-file=env.json
 ```
 
+## Build an Android APK
+
+BuildTrack can be run in Chrome during development and packaged as an Android APK when the app is ready for device testing.
+
+### Requirements
+
+- Flutter SDK installed and available on your PATH.
+- Android SDK and Android build tools installed (Android Studio can install these).
+- A configured Supabase project and a local `env.json` file as described above.
+- Android licenses accepted (`flutter doctor --android-licenses`).
+
+### Build a release-mode APK for testing
+
+From the repository root, run:
+
+```powershell
+flutter doctor
+flutter pub get
+flutter build apk --release --dart-define-from-file=env.json
+```
+
+When the build completes, the APK is generated at:
+
+```text
+build/app/outputs/flutter-apk/app-release.apk
+```
+
+Transfer that APK to an Android phone and install it to test the app. If the build fails, read the first Gradle/Flutter error in the terminal, resolve the missing SDK, dependency or configuration issue, and run the build again. Do not share an APK until the live Supabase configuration and role-based workflows have been tested.
+
+### Important signing status
+
+The current Android Gradle configuration uses the default **debug signing key** for the release build. This is suitable only for development/testing distribution. Before publishing or distributing a production release, create a private upload/release keystore, configure the release signing properties securely, and never commit the keystore or passwords to Git. See [Android APK Build Guide](docs/ANDROID_BUILD.md) for the full procedure.
+
 ## Development checks
 
 Run these commands before submitting code changes:
@@ -154,7 +187,7 @@ The Flutter CI workflow runs the analyzer and automated tests. It also type-chec
 - Multi-site manager assignment needs further UI support.
 - Offline-first synchronization is not implemented.
 - PDF and Excel report exports are not implemented.
-- Android release signing and store distribution remain pending.
+- Production Android release signing and store distribution remain pending. The documented APK command currently produces a debug-key-signed release-mode build for testing.
 
 For a more detailed feature and verification checklist, see [QA Report](QA_REPORT.md). For the high-level design, see [Architecture Overview](docs/ARCHITECTURE.md).
 
