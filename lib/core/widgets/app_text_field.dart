@@ -43,6 +43,15 @@ class _AppTextFieldState extends State<AppTextField> {
   }
 
   @override
+  void didUpdateWidget(covariant AppTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Keep internal visibility synchronized with parent-controlled state.
+    if (oldWidget.obscure != widget.obscure) {
+      _obscured = widget.obscure;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
