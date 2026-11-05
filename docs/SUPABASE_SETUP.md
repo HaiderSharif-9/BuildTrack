@@ -16,7 +16,7 @@ The SQL files are in `supabase/migrations/`. Apply migrations `001` through `011
 
 Migration `012_first_signup_admin_and_promote_initial_owner.sql` is a one-time bootstrap migration. It deliberately stops unless there is exactly one Auth user and exactly one matching profile.
 
-For a fresh project:
+For a completely fresh project, use this sequence:
 
 1. Apply migrations `001` through `011`.
 2. Create the first Auth user in Supabase Dashboard → Authentication → Users. Provide the user's full name in user metadata if creating the user through an API.
@@ -26,7 +26,11 @@ For a fresh project:
 
 Do not rerun migration `012` on a database that already has its migration recorded or that contains more than one Auth user/profile. For an existing deployment, check the migration history and current Admin profile before making changes.
 
-The app currently displays the Login screen. The initial Admin is provisioned during backend setup; an in-app first-run setup wizard is planned as a future enhancement.
+### First-Admin signup in the app
+
+The login screen includes a **Create New Account** link. The signup screen creates an Auth account through Supabase. With migration `013` applied, the database trigger grants the Admin role only when `public.profiles` is empty. Once the first profile exists, public signups are rejected; additional staff accounts must be created by an authenticated Admin through the `admin-create-user` Edge Function.
+
+For a fresh project following the numbered bootstrap sequence above, the first Admin is created in the dashboard before migration `012` is applied. The in-app first-account flow is useful when the database has already been initialized with the signup restriction and has no profile yet (for example, a reset development environment). Never bypass the database restriction to make public signup work.
 
 ## 3. Configure the Edge Function
 
@@ -68,11 +72,12 @@ The `env.json` file is listed in `.gitignore`. Do not remove that protection or 
 
 - [ ] Confirm the initial Admin can sign in.
 - [ ] Confirm the profile role is `admin` and the account is active.
+- [ ] Confirm public signup is rejected after the first profile exists.
 - [ ] Confirm the Edge Function is deployed and can be invoked by the Admin.
 - [ ] Confirm non-Admin users cannot provision staff accounts.
 - [ ] Confirm a newly provisioned Manager is assigned only to the intended site.
 - [ ] Confirm temporary-password change is required on first sign-in.
-- [ ] Confirm RLS prevents access to data outside the user's role and site assignments.
+- [ ] Confirm RLS prevents access to data outside the user's role/site assignment.
 
 ## Troubleshooting notes
 
