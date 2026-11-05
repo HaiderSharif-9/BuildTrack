@@ -111,7 +111,7 @@ class AttendanceSheetNotifier extends StateNotifier<AsyncValue<List<LabourAttend
       // 1. Get all active labourers
       final labourResponse = await supabase
           .from('labour')
-          .select('id, name, trade, active')
+          .select()
           .eq('active', true)
           .isFilter('deleted_at', null)
           .order('name');
