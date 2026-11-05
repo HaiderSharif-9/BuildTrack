@@ -98,6 +98,7 @@ Deno.serve(async (request: Request) => {
       password: temporaryPassword,
       email_confirm: true,
       user_metadata: { full_name: fullName },
+      app_metadata: { provisioned_by_admin: true },
     });
     if (createError || !created.user) {
       return jsonResponse(400, { error: createError?.message ?? "Unable to create account" });
