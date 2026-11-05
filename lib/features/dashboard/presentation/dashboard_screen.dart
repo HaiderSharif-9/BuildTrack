@@ -11,6 +11,7 @@ import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/kpi_card.dart';
 import '../../../core/widgets/state_widgets.dart';
 import '../../../core/widgets/layout_widgets.dart';
+import '../../../core/widgets/buildtrack_brand.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../auth/data/auth_providers.dart';
 import '../data/dashboard_providers.dart';
@@ -32,7 +33,13 @@ class DashboardScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.dashboard),
+        title: Row(
+          children: [
+            const BuildTrackBrand(iconSize: 30, compact: true),
+            const SizedBox(width: 10),
+            Text(l10n.dashboard),
+          ],
+        ),
         elevation: 0,
         backgroundColor: Colors.transparent,
       ),
