@@ -179,9 +179,17 @@ The Flutter CI workflow runs the analyzer and automated tests. It also type-chec
 - Local configuration files, signing keys and environment files are excluded through `.gitignore`.
 - Do not commit real user data, credentials, API keys or production database exports.
 
-## Current limitations and planned improvements
+## Roadmap and future enhancements
 
-- First-time Admin setup is currently performed during Supabase project initialization; an in-app one-time setup experience is a future enhancement.
+The following feature is planned for a future version and is not part of the current login flow:
+
+1. **One-time Initial Admin Setup screen:** On a fresh company installation, provide a secure first-run flow that lets the company initialize its first Admin account from inside BuildTrack. It must be available only when no Admin has been initialized, prevent anyone from claiming an existing organization, and permanently close after successful initialization. After setup, the Admin will create Managers, Accountants and other staff accounts with temporary passwords and role/site permissions. Public self-registration will remain disabled.
+
+The current delivery scope intentionally does not include offline-first synchronization, advanced PDF/Excel exports or unnecessary animation-heavy polish. These must not be presented as implemented features.
+
+## Current limitations
+
+- First-time Admin setup is currently performed during Supabase project initialization; the in-app one-time setup screen described above is not implemented yet.
 - Full live end-to-end verification for all roles and CRUD workflows remains in progress.
 - User deactivation and role-editing screens need further work.
 - Multi-site manager assignment needs further UI support.
