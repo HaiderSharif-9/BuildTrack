@@ -1,71 +1,92 @@
-# BuildTrack QA Report
+# BuildTrack — Quality Assurance Report
 
-**Branch:** `buildtrack-completion`  
-**Last reviewed:** 2026-11-05
+**Source branch:** `buildtrack-completion`  
+**Last reviewed:** 5 November 2026  
+**Latest reviewed commit:** `dffaae744f5d500cba4e8ec3f296ef3bbfe9aa01`
 
-## Automated verification
+## 1. Automated verification
 
-- GitHub Actions has passed `flutter analyze` and `flutter test` on recent branch commits after the analyzer cleanup.
-- The dashboard replacement introduced four informational lint findings; those were corrected and the next run passed.
-- The developer reported that the debug app launched on a TECNO BG7 before the latest dashboard and backend changes.
+<details>
+<summary>Latest GitHub Actions result</summary>
 
-The latest branch head still needs its own CI result and a local device retest after pulling.
+- Workflow: **Flutter CI**
+- Run: [41973329749](https://github.com/HaiderSharif-9/BuildTrack/actions/runs/41973329749)
+- Commit: `dffaae744f5d500cba4e8ec3f296ef3bbfe9aa01`
+- Result: **Passed**
 
-## Changes added to this branch
+The workflow checks Flutter analysis, Flutter tests and the Deno type-check for the administrator user-provisioning Edge Function.
 
-- Resolved the original feature-module analyzer errors and cleaned informational lints.
-- Added migration 008 for missing CRUD RLS policies, persisted attendance overtime, wage-payment ledger synchronization, purchase ledger soft-delete synchronization and the safe self-service password-change RPC.
-- Added migration 009 with RLS-aware dashboard summary, daily trend and site totals functions.
-- Replaced dashboard mock values and placeholder charts/activity with live Supabase-backed data and functional period/site filters.
-- Added an admin-only `admin-create-user` Edge Function that creates a real Auth account and assigns manager accounts to a selected site.
-- Added labour creation, editing, archiving and site assignment.
-- Added site-specific wage-rate calculations, site-required payroll recording and role-based finance visibility.
-- Added GitHub Actions for Flutter analyze, unit tests and Edge Function type-checking; made APK builds manual or version-tag triggered.
+</details>
 
-## Required live Supabase verification
+A passing CI run confirms the automated checks for that commit. It does **not** prove that the connected Supabase project is configured correctly or that every screen has passed live end-to-end testing.
+
+## 2. Implemented areas
+
+- Authentication, role-aware navigation and forced password change for provisioned staff accounts.
+- Dashboard summaries, date/site filters, trends and recent activity.
+- Site and client management, including site overview and manually controlled project status.
+- Labour records, editing/archive flow and site assignment.
+- Attendance records with work hours and overtime.
+- Payroll calculations and payment recording.
+- Material purchase records and linked ledger entries.
+- Ledger and financial reporting screens.
+- Admin-only staff account provisioning through a Supabase Edge Function.
+- English and Urdu localization.
+- GitHub Actions for Flutter analysis, tests and Edge Function type-checking.
+
+## 3. Required live verification
+
+The following checks must be completed against the intended Supabase project before describing the application as production-ready.
 
 ### Database and authentication
-- [ ] Confirm migrations 001–007 are applied.
-- [ ] Apply migration 008.
-- [ ] Apply migration 009.
-- [ ] Deploy `admin-create-user`.
-- [ ] Verify an active admin can create a manager and assign that manager to a site.
-- [ ] Verify accountant/admin can create users and non-admin callers receive HTTP 403.
-- [ ] Verify a created user can sign in and is forced to change the temporary password.
-- [ ] Verify completing password change clears the forced-change flag.
+
+- [ ] Confirm migrations `001`–`014` are applied in the correct project and sequence.
+- [ ] Confirm the first Admin profile exists and has the correct role.
+- [ ] Deploy the `admin-create-user` Edge Function.
+- [ ] Verify an active Admin can create an Accountant and a Manager.
+- [ ] Verify Manager creation requires a valid site assignment.
+- [ ] Verify non-Admin callers receive HTTP 403 from the user-provisioning function.
+- [ ] Verify provisioned users can sign in and are required to change their temporary password.
+- [ ] Verify the forced-password-change flag clears after a successful password update.
 
 ### Role and site access
-- [ ] Manager sees only assigned sites and labourers.
-- [ ] Manager does not see the Money tab, financial reports, wage rates, wage totals or transaction details.
-- [ ] Accountant/admin can access dashboard finance, payroll, ledger and reports.
-- [ ] Direct navigation to restricted routes redirects to a safe route.
 
-### Functional tests
-- [ ] Dashboard totals, chart, site filter, date periods and recent activity match known transaction data.
-- [ ] Create, edit and archive a labourer; verify a private wage-rate row and site assignment are created.
-- [ ] Mark attendance, save, refresh and confirm status/time/overtime persist.
-- [ ] Verify server-calculated full-day, half-day and overtime wages.
-- [ ] Record a payroll payment for a selected site; verify attendance locks and exactly one net wage ledger transaction is created.
-- [ ] Soft-delete a payroll payment; verify attendance unlocks and its ledger entry is soft-deleted.
-- [ ] Create, edit and soft-delete a purchase; verify exactly one linked Materials transaction exists and is removed from active totals after deletion.
-- [ ] Verify ledger totals and site profitability against known sample records.
-- [ ] Test English and Urdu layouts, including RTL navigation.
+- [ ] Manager sees only assigned sites and permitted operational information.
+- [ ] Manager cannot access restricted financial screens or records.
+- [ ] Admin and Accountant can access their permitted finance, payroll, ledger and reporting features.
+- [ ] Restricted routes and direct navigation enforce the same role restrictions as the UI.
 
-### Automated and device checks
-- [ ] Confirm GitHub Actions passes on the latest branch head.
-- [ ] Pull the latest branch locally and run `flutter analyze`.
-- [ ] Run `flutter test`.
-- [ ] Run the latest debug build on the TECNO BG7 and test the flows above.
+### Functional workflows
 
-## Known limitations
+- [ ] Create, edit and update a site; verify its manually selected status persists.
+- [ ] Create, edit and archive a labour record; verify site assignment and wage-rate data.
+- [ ] Record attendance, refresh and confirm status, hours and overtime persist.
+- [ ] Verify full-day, half-day and overtime wage calculations against known examples.
+- [ ] Record a payroll payment and verify the related attendance and ledger behavior.
+- [ ] Create, edit and soft-delete a purchase; verify its linked Materials ledger entry.
+- [ ] Verify ledger totals and site summaries against known test records.
+- [ ] Test English and Urdu layouts, including right-to-left rendering.
 
-- Language and theme selections are currently session-only.
-- User deactivation/role editing and multi-site manager assignment UI are not complete.
+### Local and device testing
+
+- [ ] Pull the latest `buildtrack-completion` branch.
+- [ ] Run `flutter analyze` locally.
+- [ ] Run `flutter test` locally.
+- [ ] Launch the app in Chrome and test the main workflows.
+- [ ] Test the latest build on a physical Android device.
+
+## 4. Known limitations
+
+- First-time Admin setup is performed during Supabase project initialization; an in-app setup wizard is a future enhancement.
+- Full live end-to-end verification is not yet complete.
+- User deactivation and role-editing screens need further work.
+- Multi-site manager assignment needs additional UI support.
 - Offline-first synchronization is not implemented.
-- PDF/Excel exports are not implemented.
-- APK signing and release distribution remain pending.
-- Live Supabase end-to-end testing has not yet been completed.
+- PDF/Excel report exports are not implemented.
+- Android release signing and distribution are pending.
 
-## Release decision
+## 5. Release assessment
 
-**Not yet production-ready.** The automated Flutter checks have passed on recent commits, but database migrations, Edge Function deployment, live RLS behavior, dashboard aggregates and full end-to-end flows still need verification.
+**Status: Development / testing build — not yet production-ready.**
+
+The latest reviewed CI run passed. Production readiness still depends on completing the live Supabase, role-permission, functional and device checks listed above.
